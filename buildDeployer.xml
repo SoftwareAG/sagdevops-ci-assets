@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<project name="Deploy" default="deployWM" basedir=".">
+     
+	<!-- Global Variables that concern the code and should be changed only if the code is changed -->
+	<!-- Template for the Deployer Project Specification -->
+	<property name="deployerProjectDefinitionTemplate" value="resources/ProjectSpecificationTemplate.xml"/>
+	
+	<!-- Target filename of the Deployer Project Specification for this run -->
+	<property name="deployerProjectDefinition" value="${workspace.dir}/ProjectAutomator/${projectName}DeploymentSpec.xml"/>
+	
+	<!-- XSLT for the Deployer Project Specification - adding Repository and Project Sections -->
+	<property name="initialXSLT" value="resources/setUpInitial.xslt"/>
+	
+	<target name="deployWM" description="main deploy task" depends="startDeployment, initPAandDeployerWindows, initPAandDeployerUnix, createDeployerSpec,execProjectAutomator,triggerDeploy">
+	</target>
+
+	<target name="startDeployment">		
+		<echo message="Start deploying ${projectName}" />
+	</target>
+
+    <!-- determine which PA and Deployer executables are used - different for Windows and Unix -->
+	<condition property="isWindows">
+		<os family="windows" />
+	</condition>
+
+	<condition property="isUnix">
+		<os family="unix" />
+	</condition>
+
+	<target name="initPAandDeployerWindows" if="isWindows">
+		<property name="deployerExecutable" value="Deployer.bat" />
+		<property name="deployerAutomatorExecutable" value="projectautomator.bat" />
+	</target>
+
+	<target name="initPAandDeployerUnix" if="isUnix">
+		<property name="deployerExecutable" value="Deployer.sh" />
+		<property name="deployerAutomatorExecutable" value="projectautomatorUnix.sh" />
+	</target>
+	<!-- determine which PA and Deployer executables are used - different for Windows and Unix -->
+        
+		
+	<target name="createDeployerSpec" depends="cleanupDeployerSpec,setupDeployerSpec">		
+	</target>
+	
+	<target name="cleanupDeployerSpec">
+		<if>
+			<available file="${deployerProjectDefinition}"/>
+			<then>
+				<delete file="${deployerProjectDefinition}"/>	
+			</then>
+		</if>	
+	</target>
+	
+	<target name="setupDeployerSpec" description="Creates the project automator xml with XSLT based on the given variables.">				
+		<xslt style="${initialXSLT}" in="${deployerProjectDefinitionTemplate}" out="${deployerProjectDefinition}">
+			<!--build/deployer server props -->
+			<param name="deployerHost" expression="${deployerHost}" />
+			<param name="deployerPort" expression="${deployerPort}" />
+			<param name="deployerUsername" expression="${deployerUsername}" />
+			<param name="deployerPassword" expression="${deployerPassword}" />
+			
+			<!--target server props -->
+			<param name="testISHost" expression="${testISHost}" />
+			<param name="testISPort" expression="${testISPort}" />
+			<param name="testISUsername" expression="${testISUsername}" />
+			<param name="testISPassword" expression="${testISPassword}" />
+			
+			<!-- general props -->
+			<param name="repoName" expression="${repositoryName}" />
+			<param name="repoPath" expression="${buildOutputDir}" />
+			<param name="projectName" expression="${projectName}" />				
+		</xslt>				
+	</target>
+	
+		
+	<target name="execProjectAutomator">
+		<path id="pathProjectdefinition">
+			<pathelement location="${deployerProjectDefinition}" />
+		</path>
+		<pathconvert refid="pathProjectdefinition" property="pathProjectdefinitionFile"/>
+		
+				
+		<exec dir="${deployerInstallationPath}"  executable="${deployerInstallationPath}/${deployerAutomatorExecutable}" failonerror="true" resultproperty="appState">		
+			<arg value="${pathProjectdefinitionFile}" />
+		</exec>
+		
+		<if>			
+			<equals arg1="${appState}" arg2="0" trim="true"/>			
+			<then>
+				<echo message ="Project Automator successfully executed."/>
+			</then>
+			<else>			    				
+				<fail message="Project Automator failed."/>
+			</else>
+		</if>		
+	</target>
+	
+	<target name="triggerDeploy">
+		<exec executable="${deployerInstallationPath}/${deployerExecutable}" dir="${deployerInstallationPath}" failonerror="true" resultproperty="appState">
+			<arg value="--deploy"/>
+			<arg line="-project ${projectName}"/>
+			<arg line="-dc myDeployment"/>
+			<arg line="-host ${deployerHost}"/>
+			<arg line="-port ${deployerPort}"/>
+			<arg line="-user ${deployerUsername}"/>
+			<arg line="-pwd ${deployerPassword}"/>
+			<arg value="-force"/>
+		</exec>
+		
+		<if>			
+		<equals arg1="${appState}" arg2="0" trim="true"/>			
+			<then>
+				<echo message="WMDeployer successfully executed."/>
+			</then>
+			<else>			    				
+				<fail message="WMDeployer failed."/>
+			</else>
+		</if>		
+	</target>	
+</project>

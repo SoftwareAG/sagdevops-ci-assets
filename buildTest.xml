@@ -1,0 +1,150 @@
+<?xml version="1.0"?>
+<project name="test" default="startTest" basedir=".">
+
+	<property name="testSuitePackagesPath" value="${isTestDir}"/>
+
+	<path id="junitClasspath">
+		<fileset dir="${SAGHome}/common/lib/ext" includes="enttoolkit.jar" />
+		<fileset dir="${SAGHome}/common/lib" includes="**/gf.javax.mail.jar" />
+		<fileset dir="${SAGHome}/common/lib" includes="wm-isclient.jar" />
+		<fileset dir="${SAGHome}/IntegrationServer/lib" includes="wm-isserver.jar" />
+		<fileset dir="./lib" includes="httpunit.jar" />
+		<fileset dir="./lib" includes="junit*.jar" />
+		<fileset dir="./lib" includes="xmlunit*.jar" />
+		<fileset dir="./lib" includes="serviceInterceptor.jar" />
+		<fileset dir="./lib" includes="serviceMockClient.jar" />
+	</path>
+	
+	<target name="startTest" depends="jenkinsCheck">		
+		<var name="failedTestList" value=""/>
+		
+                <!-- interate over the test project and triiger all xml tests in the setup folder -->
+                <for param="testProject" keepgoing="true" trim="true">
+			<path>
+				<dirset dir="${testSuitePackagesPath}" includes="*" excludes=".*,replicate" />
+			</path>
+			<sequential>
+				<trycatch reference="exception_ref">
+					<try>
+                        <echo message="@{testProject}"/>
+						<antcall target="junitTestAndReportXML">
+							<param name="testPackageName" value="@{testProject}" />
+						</antcall>
+						<!--antcall target="junitTestAndReportJava">
+							<param name="testPackageName" value="${testSuitePackagesPath}/@{testProject}" />
+						</antcall-->
+					</try>
+					<catch>
+						<echo message="JUnit test for package '@{testProject}' failed" />
+						<var name="failedTestList" value="${failedTestList}'@{packageName}', " />
+						<property name="testFail" refid="exception_ref" />
+					</catch>
+				</trycatch>
+			</sequential>
+		</for>
+
+
+
+		
+		<if>
+			<not>
+				<equals arg1="${failedTestList}" arg2="" trim="true" />
+			</not>
+			<then>
+				<fail unless="isReportingToJenkins" message="At least one test failed. Failed packages: ${failedTestList}" />
+			</then>
+			<else>
+				<echo message="All JUnit Tests passed."/>
+			</else>
+		</if>
+	</target>
+
+	<target name="junitInitTest">
+		<echo message="Init JUnit tests for package ${testPackageName}" />
+		
+		<property name="testPackageReportsDir" value="${testPackageName}/resources/reports" />
+	</target>
+	
+	<target name="junitCleanUp">
+		<delete dir="${testPackageReportsDir}" />								
+	</target>
+	
+
+	<!--execute only if the XML Test directory exists in the test package -->
+	<target name="junitTestAndReportXML" depends="junitInitTest,junitCleanUp">
+		<echo message="Starting JUnit tests for package '${testPackageName}'"/>
+		
+		<mkdir dir="${testPackageReportsDir}" />
+
+		<property name="resourcesFolder" value="${testPackageName}/resources" />
+		
+		<for param="testSetupFile" keepgoing="true">
+			<path>
+				<!--fileset dir="${testPackageXmlDir}" includes="*.xml" /-->
+				<fileset dir="${testPackageName}" includes="**/setup/*.xml" />
+			</path>
+			<sequential>
+				<basename property="fileBasename" file="@{testSetupFile}" suffix=".xml" />
+				<echo message="Running JUnit test '@{testSetupFile}'"/>
+				<junit printsummary="yes" haltonfailure="no" fork="true" failureproperty="test:failure" showoutput="true" dir="${testPackageName}">
+					<jvmarg value="-DwebMethods.integrationServer.name=${testISHost}" />
+					<jvmarg value="-DwebMethods.integrationServer.port=${testISPort}" />
+					<jvmarg value="-DwebMethods.integrationServer.userid=${testISUsername}" />
+					<jvmarg value="-DwebMethods.integrationServer.password=${testISPassword}" />
+					<jvmarg value="-DwebMethods.test.setup.filename=@{testSetupFile}" />
+					<!--jvmarg value="-Dresources.folder=${resourcesFolder}" /-->
+					<classpath>
+						<path refid="junitClasspath" />
+					</classpath>
+					<formatter type="xml" />
+					<test name="com.wm.ps.test.WmTestSuite" outfile="TEST-${fileBasename}" haltonerror="false" haltonfailure="false" todir="${testPackageReportsDir}" />
+				</junit>
+				<replaceregexp file="${testPackageReportsDir}/TEST-${fileBasename}.xml" match=" name=&quot;com.wm.ps.test.WmTestSuite&quot; " replace=" name=&quot;com.wm.ps.test.WmTestSuite [${fileBasename}]&quot; " />												
+				<var name="fileBasename" unset="true" />
+			</sequential>
+		</for>
+
+		
+		<!-- if jenkins report dir is set publicate results there-->
+		<antcall target="junitCopyResultsToReportsDir">
+			<param name="current.report.dir" value="${testPackageReportsDir}" />
+		</antcall>
+		
+		
+		<!-- create HTML report of the test results -->
+		<junitreport todir="${testPackageReportsDir}">
+			<fileset dir="${testPackageReportsDir}">
+				<include name="TEST-*.xml" />
+				<exclude name="TESTS-TestSuites.xml" />
+			</fileset>
+			<report format="frames" todir="${testPackageReportsDir}/html" />
+		</junitreport>
+
+		<fail if="test:failure">Unit test failure</fail>
+	</target>
+
+
+
+
+
+	<!-- if jenkins report dir is set publicate results there-->
+	<target name="junitCopyResultsToReportsDir" depends="jenkinsCheck" if="isReportingToJenkins">
+		<echo message="Copying JUnit test results to folder '${jenkinsReportDir}'"/>
+		<copy todir="${jenkinsReportDir}">
+			<fileset dir="${current.report.dir}">
+				<include name="*.*" />
+				<exclude name="TESTS-TestSuites.xml"/>
+			</fileset>
+		</copy>
+	</target>
+	
+	<!-- will jenkins evaluate the test results -->
+	<target name="jenkinsCheck" >
+		 <condition property="isReportingToJenkins">
+		 	<not>
+            	<equals arg1="${jenkinsReportDir}" arg2="" trim="true"/>
+	 		</not>	
+	     </condition>
+	</target>
+	
+</project>

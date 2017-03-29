@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><DeployerSpec exitOnError="false" sourceType="Repository">
+	<DeployerServer>
+		<!-- host>localhost:5555</host>
+		<user>Administrator</user>
+		<pwd>{AES}Y5IgMqjfvkgbg7p5VUZztw==</pwd -->
+	</DeployerServer>
+  <Environment>
+		<!--IS>
+			<isalias name="target">
+				<host>localhost</host>
+				<port>5555</port>
+				<user>Administrator</user>
+				<pwd>{AES}Y5IgMqjfvkgbg7p5VUZztw==</pwd>
+				<useSSL>false</useSSL>
+				<installDeployerResource>true</installDeployerResource>
+				<Test>true</Test>
+			</isalias>
+		</IS>
+		< ProcessModel>
+			<pmalias name="target">
+				<host>localhost</host>
+				<port>5555</port>
+				<user>Administrator</user>
+				<pwd>{AES}Y5IgMqjfvkgbg7p5VUZztw==</pwd>
+				<useSSL>false</useSSL>
+				<Test>true</Test>
+			</pmalias>	
+		</ProcessModel>
+		<MWS>
+			<mwsalias name="target">
+				<host>localhost</host>
+				<port>8585</port>
+				<user>sysadmin</user>
+				<pwd>{AES}Y5IgMqjfvkgbg7p5VUZztw==</pwd>
+				<useSSL>false</useSSL>
+				<excludeCoreTaskEngineDependencies>true</excludeCoreTaskEngineDependencies>
+				<cacheTimeOut>0</cacheTimeOut>
+				<includeSecurityDependencies>true</includeSecurityDependencies>
+				<rootFolderAliases>folder.public</rootFolderAliases>
+				<maximumFolderObjectCount>8000</maximumFolderObjectCount>
+				<enableAddtionalLogging>true</enableAddtionalLogging>
+				<maxFolderDepth>25</maxFolderDepth>
+				<Test>true</Test>
+			</mwsalias>
+		</MWS>
+		<RulesServer>
+			<rulesserveralias name="target">
+				<host>localhost</host>
+				<port>5555</port>
+				<user>Administrator</user>
+				<pwd>{AES}Y5IgMqjfvkgbg7p5VUZztw==</pwd>
+				<useSSL>false</useSSL>
+				<Test>true</Test>
+			</rulesserveralias>
+		</RulesServer-->		
+		<Repository>
+		</Repository>	
+	</Environment>
+	
+	<Projects>
+	</Projects>
+</DeployerSpec>

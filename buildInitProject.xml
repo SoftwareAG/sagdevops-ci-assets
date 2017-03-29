@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<project name="ProjectInitializer" default="" basedir="." >
+	
+	<!-- system properties properties -->
+	<target name="initSAGHome" unless="SAGHome">
+		<fail message="System property 'SAGHome' should be defined!"/>
+	</target>
+
+	<target name="initDeployerInstallationPath" unless="deployerInstallationPath">
+		<fail message="System property 'deployerInstallationPath' should be defined!"/>
+	</target>
+
+	<target name="initDeployerHost" unless="deployerHost">
+		<fail message="System property 'deployerHost' should be defined!"/>
+	</target>
+	
+	<target name="initDeployerPort" unless="deployerPort">
+		<fail message="System property 'deployerPort' should be defined!"/>
+	</target>
+	
+	<target name="initDeployerUsername" unless="deployerUsername">
+		<fail message="System property 'deployerUsername' should be defined!"/>
+	</target>
+	
+	<target name="initDeployerPassword" unless="deployerPassword">
+		<fail message="System property 'deployerPassword' should be defined!"/>
+	</target>
+			
+	<!-- mandatory properties -->
+	<target name="initProjcetName" unless="projectName">
+		<fail message="Property 'projectName' should be defined!"/>
+	</target>
+		
+	<target name="initBuildOutputDir" unless="buildOutputDir">
+		<fail message="Property 'buildOutputDir' should be defined!"/>
+	</target>
+	
+	<target name="initRepositoryName" unless="repositoryName">
+		<fail message="Property 'repositoryName' should be defined!"/>
+	</target>
+	
+	<target name="initDeployerProjectDefinition" unless="deployerProjectDefinition">
+		<fail message="Property 'deployerProjectDefinition' should be defined!"/>
+	</target>
+
+	
+	<!-- optional properties -->
+	<target name="initISProjectsDir" unless="isProjectsDir">
+		<property name="isProjectsDir" value=""/>
+	</target>
+	
+	<target name="initISConfigDir" unless="isConfigDir">
+		<property name="isConfigDir" value=""/>
+	</target>
+	
+	<target name="initBPMProjectsDir" unless="bpmProjectsDir">
+		<property name="bpmProjectsDir" value=""/>
+	</target>
+	
+	<target name="initMWSProjectsDir" unless="mwsProjectsDir">
+		<property name="mwsProjectsDir" value=""/>
+	</target>
+	
+	<target name="initRulesProjectsDir" unless="rulesProjectsDir">
+		<property name="rulesProjectsDir" value=""/>
+	</target>
+	
+	<target name="initUMProjectDir" unless="umProjectsDir">
+		<property name="umProjectsDir" value=""/>
+	</target>
+	
+	<target name="initTestPackageNamePattern" unless="testPackageNamePattern">
+		<property name="testPackageNamePattern" value=""/>
+	</target>
+	
+	
+	<target name="initJenkinsReportDir" unless="jenkinsReportDir">
+		<property name="jenkinsReportDir" value=""/>
+	</target>
+
+	
+	<!--Main Init targets-->
+	<target name="initSystemProperties" depends="initSAGHome,initDeployerInstallationPath,initDeployerHost,initDeployerPort,initDeployerUsername,initDeployerPassword">
+	</target>
+	
+	<target name="initMandatoryProperties" depends="initProjcetName,initBuildOutputDir,initRepositoryName,initDeployerProjectDefinition">
+	</target>
+	
+	<target name="initOptionalProperties" depends="initISProjectsDir,initISConfigDir,initBPMProjectsDir,initMWSProjectsDir,initRulesProjectsDir,initUMProjectDir,initTestPackageNamePattern,initJenkinsReportDir">
+	</target>
+		
+	<target name="initProject" depends="initSystemProperties,initMandatoryProperties,initOptionalProperties" description="init properties needed for the project">
+	</target>
+	
+</project>
