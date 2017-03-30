@@ -17,7 +17,7 @@ Your test server can be more complex as CI will execute unit and integration tes
 Download the library on your build server by
 
 ```
-https://github.com/SoftwareAG/sagdevops-ci-assets.git
+git clone https://github.com/SoftwareAG/sagdevops-ci-assets.git
 ```
 
 Edit the _System.properties_ to correspond to your inftrastucture - deployerHost is the machine where your Deployer is running(normally the build server) where targetHost is your test server - where the packages will be deployed and tested. 
