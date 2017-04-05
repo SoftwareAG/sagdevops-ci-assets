@@ -1,0 +1,326 @@
+<?xml version="1.0"?>
+
+<project default="bda.deployer.startDeployer" basedir="." name="build_Deployer">
+
+	<property file="${build.properties.file}" />
+
+	<property name="bda.deployer.automator.resources" value="." />
+	<property name="bda.deployer.vs.dir" value="./resources/vs" />
+	<property name="bda.deployer.automator.projectTemplateDir" value="./resources/ProjectAutomator" />
+
+
+        <condition property="isWindows">
+                <os family="windows" />
+        </condition>
+
+        <condition property="isUnix">
+                <os family="unix" />
+        </condition>
+
+        <target name="initPAandDeployerWindows" if="isWindows">
+                <property name="deployerExecutable" value="Deployer.bat" />
+                <property name="deployerAutomatorExecutable" value="projectautomator.bat" />
+        </target>
+
+        <target name="initPAandDeployerUnix" if="isUnix">
+                <property name="deployerExecutable" value="Deployer.sh" />
+                <property name="deployerAutomatorExecutable" value="projectautomatorUnix.sh" />
+        </target>
+
+
+	<target name="bda.deployer.initDeployer" depends="initPAandDeployerWindows, initPAandDeployerUnix">
+		<!--
+		     	If antcontrib has not been included by parent script already, uncomment these lines...
+			<taskdef classpathref="bda.classpath" resource="net/sf/antcontrib/antlib.xml" />
+			<taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="bda.classpath" />
+		-->
+		<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpathref="bda.classpath" />
+		<taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy" classpathref="bda.classpath" />
+
+
+		<property name="bda.deployer.definition.projectProperties" value="${bda.deployer.automator.projectTemplateDir}/${bda.target.env}.properties" />
+		<log msg="Not doing a feature deployment since property bda.feature.file is not set." />
+		<property name="projectName" value="BDA_${bda.target.env}_${deployer.project.projectName}" />
+		<property name="bda.deployer.repoName" value="Repo_${bda.target.env}_${deployer.project.projectName}" />
+		<log msg="Init build Deployer with project name='${projectName}' and repository='${bda.deployer.repoName}'." />
+
+		<!-- Prepare template properties -->
+		<property name="projectTemplate" value="${deployer.automator.projectTemplateFile}" />
+		<property name="bda.deployer.definition.projectTemplate" value="${bda.deployer.automator.projectTemplateDir}/${projectTemplate}" />
+		<!--<property name="bda.deployer.definition.projectDefinition" location="${bda.tmpdir}/${bda.deployer.definition.projectTemplate}.definition" />-->
+		<log msg="bda.deployer.definition.projectTemplate: ${bda.deployer.definition.projectTemplate}, bda.deployer.definition.projectDefinition: ${bda.deployer.definition.projectDefinition}" />
+	</target>
+
+	<target name="bda.deployer.createDeployerSpec" depends="bda.deployer.initDeployerSpec, bda.deployer.parseFBR">
+	</target>
+
+	<target name="bda.deployer.parseFBR">
+		<log msg="Using FBR: ${buildOutputDir}" />
+		<groovy>
+			import groovy.xml.DOMBuilder
+	    	import groovy.xml.dom.DOMCategory
+			
+			def packages = []
+			def bpms = []
+			def mws = []
+	
+			new File(properties.'buildOutputDir').eachDirRecurse() { dir ->
+			    dir.eachFileMatch(~/.*.acdl/) { file ->			
+					def doc  = groovy.xml.DOMBuilder.parse(new FileReader(file))
+			    	def asset_composite = doc.documentElement
+			    	use (DOMCategory) {
+						def implementation_generic = asset_composite.'implementation.generic'
+						def type=implementation_generic.'@type'[0]
+						def displayName = asset_composite.'@displayName'
+					    def name = asset_composite.'@name'
+			
+					
+				    	println "found acdl ${file} of type=${type} with name=${name} and displayName=${displayName}"
+			
+						 if(type == 'bpmprocess') {
+				            bpms.add([name: name, displayName: displayName])
+				        } else if (type == 'ispackage') {
+				            packages.add([name: name, displayName: name])
+				        } else if (type == 'war') {
+				            mws.add([name: name, displayName: displayName])
+				        } else if (type == 'pdp') {
+							mws.add([name: name, displayName: displayName])
+				        } else if (type == 'cdp') {
+							mws.add([name: name, displayName: displayName])
+						} 
+					}
+				}
+			}
+			
+			def xmlFile = properties.'bda.deployer.definition.projectDefinition'
+			def repoName = "Repo_" + properties.'projectName'
+		    	println "parsing xml project definition file '${xmlFile}' in order to add ACDLs from FBR to it"
+			def xml = new XmlParser().parse(xmlFile)
+			
+			def deploymentSet = xml.Projects.Project.DeploymentSet[0]
+			if (!packages.empty) {								
+				packages.each() {
+					def newComposite = new Node(null, 'Composite', [name:"${it.name}", displayName:"${it.name}", srcAlias:"${repoName}", type:'IS'])
+					//def newComposite = new Node(null, 'Composite', [name:"${it.name}", srcAlias:"${repoName}", type:'IS'])
+					deploymentSet.append(newComposite)
+				}
+			}
+			if (!bpms.empty) {
+				bpms.each() {
+						def newComposite = new Node(null, 'Composite', [displayName:"${it.displayName}", name:"${it.name}", srcAlias:"${repoName}", type:'BPM'])
+						deploymentSet.append(newComposite)
+				}
+			}
+			if (!mws.empty) {
+				mws.each() {
+					def newComposite = new Node(null, 'Composite', [displayName:"${it.displayName}", name:"${it.name}", srcAlias:"${repoName}", type:'MWS'])
+					deploymentSet.append(newComposite)
+				}			
+			}	
+			def output = properties.'bda.deployer.definition.projectDefinition'
+			XmlNodePrinter np = new XmlNodePrinter(new PrintWriter(new FileWriter(output)))
+			np.preserveWhitespace = true
+			np.print(xml)
+			println "Finished adding composites to project automator template '${output}'"
+		</groovy>
+	</target>
+
+
+	<target name="bda.deployer.initDeployerSpecNoTemplate" >
+		<property name="bda.deployer.definition.projectDefinition" location="${bda.tmpdir}/PA_template_Generic.definition" />
+		<property name="environments" location="${deployer.automator.environmentsDefinition}"/>
+		<property name="environments" location="${bda.deployer.automator.projectTemplateDir}/${deployer.automator.environmentsDefinition}"/>
+		<log msg="Creating project definition file '${bda.deployer.definition.projectDefinition}' using environments defined in '${environments}'. Groovy script: 'resources/ProjectAutomator/ParseProjectAutomatorProperties.groovy'" />
+		<groovy src="resources/scripts/CreateProjectAutomatorTemplate.groovy">
+			 <arg line="-r ${buildOutputDir}"/>
+			 <arg line="-p ${projectName}"/>
+			 <arg line="-f ${bda.deployer.definition.projectDefinition}"/>
+			 <arg line="-t ${bda.target.env}"/>
+			 <arg line="-d ${deployerHost}:${deployerPort}"/>
+			 <arg line="-u ${deployerUsername}"/>
+			 <arg line="-s ${deployerPassword}"/>
+			 <arg line="-e ${environments}"/>
+		</groovy>
+	</target>
+
+	<target name="bda.deployer.initDeployerSpec" depends="bda.deployer.cleanup, bda.deployer.initDeployerSpecNoTemplate">
+	</target>
+
+	<target name="bda.deployer.cleanup">
+		<delete file="${bda.deployer.definition.projectDefinition}">
+		</delete>
+	</target>
+
+	<target name="bda.deployer.startDeployer" depends="bda.deployer.setupDeployer, bda.deployer.deployDeployer">
+
+	</target>
+
+
+	<target name="bda.deployer.setupDeployer" depends="bda.deployer.initDeployer, bda.deployer.createDeployerSpec, bda.deployer.execProjectAutomator, bda.deployer.importVarSubDeployer, bda.deployer.setProjectProperties">
+
+	</target>
+
+	<target name="bda.deployer.execProjectAutomator">
+		<path id="path.projectdefinition">
+			<pathelement location="${bda.deployer.definition.projectDefinition}" />
+		</path>
+		<pathconvert refid="path.projectdefinition" property="path.projectdefinition.file">
+		</pathconvert>
+	
+		<property name="output" value="${deployerInstallationPath}/logs/CLI.log"/>
+		
+		<exec resultproperty="paResult" failonerror="false" dir="${deployerInstallationPath}" executable="${deployerInstallationPath}/${deployerAutomatorExecutable}" output="${output}">
+			<arg value="${path.projectdefinition.file}" />
+		</exec>
+		
+		<if>
+			<not>
+				<equals arg1="${paResult}" arg2="0"/>
+			</not>
+			<then>
+				<loadfile property="CLI.log" srcFile="${output}"/>
+				<log msg="Project Automator returned an error. Output of file '${output}'" level="ERROR"/>
+				<log msg="${CLI.log}" level="ERROR"/>
+				<fail message="Project Automator returned an error."/>
+			</then>
+		</if>
+	</target>
+
+
+	<condition property="doVarSub">
+		<equals arg1="${deployer.project.doVarSub}" arg2="true" />
+	</condition>
+	
+	<target name="bda.deployer.importVarSubDeployer" depends="bda.deployer.createVarSub" if="doVarSub" description="the entry point for the varsub implementation">
+	    <xmltask source="${deployer.project.varsubfile.path}">
+	      <copy path="count(//DeploementSet)" property="countDeploementSet"/>
+		</xmltask>
+		<if>
+			<and>
+				<available file="${deployer.project.varsubfile.path}" type="file" />
+				<not>
+					<equals arg1="0" arg2="${countDeploementSet}"/>
+				</not>
+			</and>
+			<then>
+				<log msg="At least one varsub was created, copy file ${deployer.project.varsubfile.path} to Deployer replicate inbound dir." />
+				<copy file="${deployer.project.varsubfile.path}" todir="${deployer.installation.path}/../replicate/inbound" />
+				<log msg="-- variable substitution will be used: '${deployer.project.varsubfile.file}'" />
+				
+				<property name="output" value="${deployerInstallationPath}/logs/CLI.log"/>
+				<exec executable="${deployerInstallationPath}/${deployerExecutable}" dir="${deployerInstallationPath}" output="${output}" resultproperty="importVarsubReturnCode" failonerror="false">
+					<arg value="--import" />
+					<arg value="-varsub" />
+					<arg line="-vsFile ${deployer.project.varsubfile.file}" />
+					<arg line="-map DeploymentMap" />
+					<arg line="-project ${projectName}" />
+					<arg line="-host ${deployerHost}" />
+					<arg line="-port ${deployerPort}" />
+					<arg line="-user ${deployerUsername}" />
+					<arg line="-pwd ${deployerPassword}" />
+				</exec>
+				<log msg="Importing the varsub file ${deployer.project.varsubfile.file} restulted in return code ${importVarsubReturnCode}" />
+				<if>
+					<equals arg1="${importVarsubReturnCode}" arg2="8" />
+					<then>
+						<loadfile property="CLI.log" srcFile="${output}"/>
+						<log msg="Deployer varsub import returned an error. Output of file '${output}'" level="ERROR"/>
+						<log msg="${CLI.log}" level="ERROR"/>
+						<fail message="Error when importing the varsub file ${deployer.project.varsubfile.file}." />
+					</then>
+				</if>
+			</then>
+			<else>
+				<log msg="-- no variable substitution will be used." />
+			</else>
+		</if>
+	</target>
+
+	<target name="bda.deployer.deployDeployer">
+		<log msg="-- Invoking Deployer executable '${deployerInstallationPath}/${deployerExecutable}' with parameters: -project ${projectName}, -dc myDeployment, -host ${deployerHost}, -port ${deployerPort}, -user ${deployerUsername}" />
+		<property name="output" value="${bda.logging.dir}/Deployer.log"/>
+		<exec resultproperty="deployerResult" executable="${deployerInstallationPath}/${deployerExecutable}" dir="${deployerInstallationPath}" failonerror="false" output="${output}">
+			<arg value="--deploy" />
+			<arg line="-project ${projectName}" />
+			<arg line="-dc Deployment" />
+			<arg line="-host ${deployerHost}" />
+			<arg line="-port ${deployerPort}" />
+			<arg line="-user ${deployerUsername}" />
+			<arg line="-pwd ${deployerPassword}" />
+			<arg value="-force" />
+		</exec>
+		<if>
+			<and>
+				<isset property="deployerResult" />
+				<equals arg1="${deployerResult}" arg2="8" />
+			</and>
+			<then>
+				<log msg="Deployer returned an error result code: '${deployerResult}'. Output of file '${output}':" level="ERROR" />
+				<loadfile property="CLI.log" srcFile="${output}"/>
+				<log msg="${CLI.log}" level="ERROR"/>					
+				<fail message="Deployer returned an error result code: '${deployerResult}'." />
+			</then>
+			<else>
+				<log msg="Deployer succeeded with result code '${deployerResult}'." level="INFO" />
+			</else>
+		</if>
+	</target>
+
+	<target name="bda.deployer.setProjectProperties">
+		<if>
+			<and>
+				<isset property="deployer.project.propertiesFiles" />
+				<not>
+					<equals arg1="${deployer.project.propertiesFiles}" arg2="" />
+				</not>
+			</and>
+			<then>
+				<log msg="-- Setting project properties from file '${deployer.project.propertiesFiles}'" />
+				<property name="deployer.project.propertiesFiles.path" value="${deployerInstallationPath}/../replicate/inbound/${projectName}.properties" />
+				<antcall target="common.copyToFile">
+					<param name="fileName" value="${deployer.project.propertiesFiles}" />
+					<param name="toFile" value="${deployer.project.propertiesFiles.path}" />
+				</antcall>
+				<exec executable="${deployerInstallationPath}/${deployerExecutable}" dir="${deployerInstallationPath}" output="${bda.logging.dir}/Deployer.log">
+					<arg value="--setProjectProperties" />
+					<arg line="-project ${projectName}" />
+					<arg line="-projectFile ${deployer.project.propertiesFiles.path}" />
+					<arg line="-host ${deployerHost}" />
+					<arg line="-port ${deployerPort}" />
+					<arg line="-user ${deployerUsername}" />
+					<arg line="-pwd ${deployerPassword}" />
+				</exec>
+			</then>
+			<else>
+				<log msg="-- NOT setting project properties from file '${deployer.project.propertiesFiles}'" />
+			</else>
+		</if>
+	</target>
+
+	<target name="bda.deployer.createVarSub">
+		<log msg="Creating variable substitution for target environment ${bda.target.env} and project definition at ${deployer.definition.projectDefinition}." />
+
+		<property name="deployer.project.varsubfile.file" value="${projectName}.vs" />
+		<!-- store temp varsub files in a special vs tmp dir -->
+		<property name="varsubTmpDir" value="${bda.tmpdir}/vs/${bda.target.env}" />
+		<antcall target="common.create_dir">
+			<param name="overwrite" value="false" />
+			<param name="dir" value="${varsubTmpDir}" />
+		</antcall>
+		<property name="deployer.project.varsubfile.path" location="${varsubTmpDir}/${deployer.project.varsubfile.file}" />
+		<property name="varsubDir" location="${bda.deployer.vs.dir}"/>
+
+		<delete file="${deployer.project.varsubfile.path}" />
+		
+		<property name="groovyScript.CreateVarSub" location="resources/scripts/CreateVarSub.groovy"/>
+		<log msg="Calling ${groovyScript.CreateVarSub}"/>
+		<groovy src="${groovyScript.CreateVarSub}">
+			 <arg line="-a ${bda.deployer.definition.projectDefinition}"/>
+			 <arg line="-p ${projectName}"/>
+			 <arg line="-f ${deployer.project.varsubfile.path}"/>
+			 <arg line="-t ${bda.target.env}"/>
+			 <arg line="-vs ${varsubDir}"/>
+		</groovy>
+		
+	</target>
+</project>

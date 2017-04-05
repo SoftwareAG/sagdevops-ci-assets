@@ -12,8 +12,13 @@
 		<fileset dir="./lib" includes="junit*.jar" />
 		<fileset dir="./lib" includes="xmlunit*.jar" />
 		<fileset dir="./lib" includes="serviceInterceptor.jar" />
-		<fileset dir="./lib" includes="serviceMockClient.jar" />
+		<fileset dir="./lib" includes="*junit.jar" />
+		<fileset dir="./lib" includes="**/*.jar" />
 	</path>
+
+	<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
+		  <classpath refid="junitClasspath"/>
+	</taskdef>
 	
 	<target name="startTest" depends="jenkinsCheck">		
 		<var name="failedTestList" value=""/>
@@ -42,16 +47,13 @@
 				</trycatch>
 			</sequential>
 		</for>
-
-
-
-		
 		<if>
 			<not>
 				<equals arg1="${failedTestList}" arg2="" trim="true" />
 			</not>
 			<then>
 				<fail unless="isReportingToJenkins" message="At least one test failed. Failed packages: ${failedTestList}" />
+
 			</then>
 			<else>
 				<echo message="All JUnit Tests passed."/>
@@ -72,7 +74,7 @@
 
 	<!--execute only if the XML Test directory exists in the test package -->
 	<target name="junitTestAndReportXML" depends="junitInitTest,junitCleanUp">
-		<echo message="Starting JUnit tests for package '${testPackageName}'"/>
+		<echo message="> Starting JUnit tests for package '${testPackageName}'"/>
 		
 		<mkdir dir="${testPackageReportsDir}" />
 
@@ -140,6 +142,7 @@
 	
 	<!-- will jenkins evaluate the test results -->
 	<target name="jenkinsCheck" >
+		<echo message="-- jenkins report dir: ${jenkinsReportDir}"/>
 		 <condition property="isReportingToJenkins">
 		 	<not>
             	<equals arg1="${jenkinsReportDir}" arg2="" trim="true"/>

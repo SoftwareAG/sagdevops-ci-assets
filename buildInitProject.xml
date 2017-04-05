@@ -1,5 +1,16 @@
 <?xml version="1.0"?>
 <project name="ProjectInitializer" default="" basedir="." >
+
+        <path id="bda.classpath">
+                <fileset dir="${SAGHome}/common/lib" includes="**/*.jar" />
+                <fileset dir="${SAGHome}/common/lib/ext" includes="**/*.jar" />
+                <fileset dir="${SAGHome}/IntegrationServer/lib" includes="wm-isserver.jar" />
+                <fileset dir="${SAGHome}/IntegrationServer/lib/jars" includes="**/*.jar" />
+                <fileset dir="./lib" includes="**/*.jar" />
+        </path>
+
+        <property file="System.properties" />
+
 	
 	<!-- system properties properties -->
 	<target name="initSAGHome" unless="SAGHome">
@@ -90,6 +101,55 @@
 	</target>
 		
 	<target name="initProject" depends="initSystemProperties,initMandatoryProperties,initOptionalProperties" description="init properties needed for the project">
+		<property name="bda.logging.log4j.propertiesFile" location="./resources/log4j.properties"/>
+	        <taskdef name="log" classname="com.sag.wm.ant.tasks.is.util.TALogger" classpathref="bda.classpath" />
+
+		<antcall target="common.create_dir">
+			<param name="dir" value="${bda.tmpdir}"/>
+		</antcall>
+
 	</target>
+
+        <target name="common.create_dir" depends="common.check">
+                <if>
+                        <equals arg1="${overwrite}" arg2="true" />
+                        <then>
+                                <antcall target="common.deldir">
+                                        <param name="dir" value="${dir}" />
+                                </antcall>
+                        </then>
+                </if>
+                <log level="INFO" msg="Creating dir '${dir}'" />
+                <mkdir dir="${dir}" />
+        </target>
+
+
+        <target name="common.check">
+                <log msg="Checking for the existance of the directory ${dir}" level="DEBUG" />
+                <condition property="direxists">
+                        <available file="${dir}" type="dir" />
+                </condition>
+        </target>
+
+        <target name="common.deldir" depends="common.check" if="direxists">
+                <log msg="Deleting the directory ${dir}" level="TRACE" />
+                <delete dir="${dir}" />
+        </target>
+
+
+        <target name="common.checkos">
+                <condition property="testrunner.cmd" value="${soapUI.home}/bin/testrunner.bat">
+                        <os family="windows" />
+                </condition>
+                <condition property="testrunner.cmd" value="${soapUI.home}/bin/testrunner.sh">
+                        <os family="unix" />
+                </condition>
+        </target>
+
+        <target name="common.createLogDir">
+                <!-- create the common log dir -->
+                <mkdir dir="${bda.logging.dir}" />
+        </target>
+
 	
 </project>

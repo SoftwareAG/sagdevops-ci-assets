@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<DeployerSpec exitOnError="true" sourceType="Repository">
+	<DeployerServer>
+		<host>${deployer.host}:${deployer.port}</host>
+		<user>${deployer.username}</user>
+		<pwd>${deployer.password}</pwd>
+	</DeployerServer>
+	<Environment>
+		<IS>
+			<isalias name="${deployer.target.is.alias1}">
+				<host>${deployer.target.is.host1}</host>
+				<port>${deployer.target.is.port1}</port>
+				<user>${deployer.target.is.user1}</user>
+				<pwd>${deployer.target.is.password1}</pwd>
+				<useSSL>false</useSSL>
+				<version>${deployer.target.is.version}</version>
+				<installDeployerResource>true</installDeployerResource>
+				<Test>false</Test>
+			</isalias>
+			<isalias name="${deployer.target.is.alias2}">
+				<host>${deployer.target.is.host2}</host>
+				<port>${deployer.target.is.port2}</port>
+				<user>${deployer.target.is.user2}</user>
+				<pwd>${deployer.target.is.password2}</pwd>
+				<useSSL>false</useSSL>
+				<version>${deployer.target.is.version}</version>
+				<installDeployerResource>true</installDeployerResource>
+				<Test>false</Test>
+			</isalias>
+		</IS>
+		<MWS>
+			<mwsalias name="${deployer.target.mws.alias}">
+				<host>${deployer.target.mws.host}</host>
+				<port>${deployer.target.mws.port}</port>
+				<user>${deployer.target.mws.user}</user>
+				<pwd>${deployer.target.mws.password}</pwd>
+				<useSSL>false</useSSL>
+				<version>${deployer.target.mws.version}</version>
+				<excludeCoreTaskEngineDependencies>true</excludeCoreTaskEngineDependencies>
+				<cacheTimeOut>0</cacheTimeOut>
+				<includeSecurityDependencies>true</includeSecurityDependencies>
+				<rootFolderAliases>folder.public</rootFolderAliases>
+				<maximumFolderObjectCount>8000</maximumFolderObjectCount>
+				<enableAddtionalLogging>true</enableAddtionalLogging>
+				<maxFolderDepth>25</maxFolderDepth>
+				<Test>true</Test>
+			</mwsalias>
+		</MWS>
+		<ProcessModel>
+			<pmalias name="${deployer.target.processmodel.alias1}">
+				<host>${deployer.target.processmodel.host1}</host>
+				<port>${deployer.target.processmodel.port1}</port>
+				<user>${deployer.target.processmodel.user1}</user>
+				<pwd>${deployer.target.processmodel.password1}</pwd>
+				<useSSL>false</useSSL>
+				<version>${deployer.target.processmodel.version}</version>
+				<Test>false</Test>
+			</pmalias>
+			<pmalias name="${deployer.target.processmodel.alias2}">
+				<host>${deployer.target.processmodel.host2}</host>
+				<port>${deployer.target.processmodel.port2}</port>
+				<user>${deployer.target.processmodel.user2}</user>
+				<pwd>${deployer.target.processmodel.password2}</pwd>
+				<useSSL>false</useSSL>
+				<version>${deployer.target.processmodel.version}</version>
+				<Test>false</Test>
+			</pmalias>
+		</ProcessModel>
+		<!-- 
+		<RulesServer>
+			<rulesserveralias name="${deployer.target.rule.alias1}">
+				<host>${deployer.target.rule.host1}</host>
+				<port>${deployer.target.rule.port1}</port>
+				<user>${deployer.target.rule.user1}</user>
+				<pwd>${deployer.target.rule.password1}</pwd>
+				<useSSL>false</useSSL>
+				<version>${deployer.target.rule.version}</version>
+				<Test>false</Test>
+			</rulesserveralias>
+			<rulesserveralias name="${deployer.target.rule.alias2}">
+				<host>${deployer.target.rule.host2}</host>
+				<port>${deployer.target.rule.port2}</port>
+				<user>${deployer.target.rule.user2}</user>
+				<pwd>${deployer.target.rule.password2}</pwd>
+				<useSSL>false</useSSL>
+				<version>${deployer.target.rule.version}</version>
+				<Test>false</Test>
+			</rulesserveralias>
+		</RulesServer>
+		-->
+		<TargetGroup name="ISTargetGroup_${targetEnv}" type="IS" description="is target group"
+			isLogicalCluster="false">
+			<alias type="IS">${deployer.target.is.alias1}</alias>
+			<alias type="IS">${deployer.target.is.alias2}</alias>
+		</TargetGroup>
+		<TargetGroup name="BPMTargetGroup_${targetEnv}" type="ProcessModel" description="processModel target group"
+			isLogicalCluster="false">
+			<alias type="ProcessModel">${deployer.target.processmodel.alias1}</alias>
+			<alias type="ProcessModel">${deployer.target.processmodel.alias2}</alias>
+		</TargetGroup>
+		<!-- 
+		<TargetGroup description="" isLogicalCluster="false" name="RuleTargetGroup_${targetEnv}" type="RULES">
+			<alias type="RulesServer">${deployer.target.rule.alias1}</alias>
+			<alias type="RulesServer">${deployer.target.rule.alias2}</alias>
+		</TargetGroup>
+		 -->
+		<Repository>
+			<repalias name="RepoSource">
+				<type>FlatFile</type>
+				<urlOrDirectory>${deployer.fbr.location}</urlOrDirectory>
+				<Test>true</Test>
+			</repalias>
+		</Repository>
+	</Environment>
+
+	<Projects>
+		<Project description="" ignoreMissingDependencies="true"
+			name="${bda.deployer.projectName}" overwrite="true" type="Repository">
+
+			<DeploymentSet autoResolve="ignore" description=""
+				name="myDeploymentSet" srcAlias="RepoSource">
+				<!-- Add all packages here -->
+				<!-- Example for an IntegrationServer package: <Composite srcAlias="RepoSource" 
+					type="IS" displayName="Package/ZfinDebiWsAccess" name="ZfinDebiWsAccess" 
+					/> -->
+			</DeploymentSet>
+
+			<DeploymentMap description="" name="myDeploymentMap" />
+			<MapSetMapping mapName="myDeploymentMap" setName="myDeploymentSet">
+				<group type="IS">ISTargetGroup_${targetEnv}</group>
+				<group type="ProcessModel">BPMTargetGroup_${targetEnv}</group>
+				<alias type="MWS">${deployer.target.mws.alias}</alias>
+				<!-- <group type="RULES">RuleTargetGroup_${targetEnv}</group> -->
+			</MapSetMapping>
+			<DeploymentCandidate description=""
+				mapName="myDeploymentMap" name="myDeployment" />
+		</Project>
+	</Projects>
+</DeployerSpec>
