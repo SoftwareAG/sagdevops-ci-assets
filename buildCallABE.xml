@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="Build" default="buildWM" basedir=".">
+<project name="Build" default="bda.abe.buildWM" basedir=".">
         
         <property name="abeHome" value="${SAGHome}/common/AssetBuildEnvironment"/>
         
@@ -11,12 +11,12 @@
 
 
 
-	<target name="buildWM" description="build project" depends="cleanupBuild, prepareABEproperties">				
+	<target name="bda.abe.buildWM" description="build project" depends="bda.abe.cleanupBuild, bda.abe.prepareABEproperties">				
 		<echo>invoke ABE Build</echo>					
 		<ant antfile="${abeBuildfileFile}" dir="${abeHome}/${abeBuildfileDir}" target="build"/>
 	</target>
 	
-	<target name="cleanupBuild">			
+	<target name="bda.abe.cleanupBuild">			
 		<if>
 			<available file="${buildOutputDir}" type="dir"/>
 			<then>
@@ -27,7 +27,7 @@
 		</if>
 	</target>
 	
-	<target name="prepareABEproperties">			
+	<target name="bda.abe.prepareABEproperties">			
 		<if>
 			<not>
 				<available file="${abeHome}/${abeBuildfileDir}/build.properties.original" type="file"/>

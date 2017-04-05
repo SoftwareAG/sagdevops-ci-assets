@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="test" default="startTest" basedir=".">
+<project name="test" default="bda.test.startTest" basedir=".">
 
 	<property name="testSuitePackagesPath" value="${isTestDir}"/>
 
@@ -20,7 +20,7 @@
 		  <classpath refid="junitClasspath"/>
 	</taskdef>
 	
-	<target name="startTest" depends="jenkinsCheck">		
+	<target name="bda.test.startTest" depends="bda.test.jenkinsCheck">		
 		<var name="failedTestList" value=""/>
 		
                 <!-- interate over the test project and triiger all xml tests in the setup folder -->
@@ -61,19 +61,19 @@
 		</if>
 	</target>
 
-	<target name="junitInitTest">
+	<target name="bda.test.junitInitTest">
 		<echo message="Init JUnit tests for package ${testPackageName}" />
 		
 		<property name="testPackageReportsDir" value="${testPackageName}/resources/reports" />
 	</target>
 	
-	<target name="junitCleanUp">
+	<target name="bda.test.junitCleanUp">
 		<delete dir="${testPackageReportsDir}" />								
 	</target>
 	
 
 	<!--execute only if the XML Test directory exists in the test package -->
-	<target name="junitTestAndReportXML" depends="junitInitTest,junitCleanUp">
+	<target name="bda.test.junitTestAndReportXML" depends="bda.test.junitInitTest, bda.test.junitCleanUp">
 		<echo message="> Starting JUnit tests for package '${testPackageName}'"/>
 		
 		<mkdir dir="${testPackageReportsDir}" />
@@ -89,10 +89,10 @@
 				<basename property="fileBasename" file="@{testSetupFile}" suffix=".xml" />
 				<echo message="Running JUnit test '@{testSetupFile}'"/>
 				<junit printsummary="yes" haltonfailure="no" fork="true" failureproperty="test:failure" showoutput="true" dir="${testPackageName}">
-					<jvmarg value="-DwebMethods.integrationServer.name=${testISHost}" />
-					<jvmarg value="-DwebMethods.integrationServer.port=${testISPort}" />
-					<jvmarg value="-DwebMethods.integrationServer.userid=${testISUsername}" />
-					<jvmarg value="-DwebMethods.integrationServer.password=${testISPassword}" />
+					<jvmarg value="-DwebMethods.integrationServer.name=${config.test.testISHost}" />
+					<jvmarg value="-DwebMethods.integrationServer.port=${config.test.testISPort}" />
+					<jvmarg value="-DwebMethods.integrationServer.userid=${config.test.testISUsername}" />
+					<jvmarg value="-DwebMethods.integrationServer.password=${config.test.testISPassword}" />
 					<jvmarg value="-DwebMethods.test.setup.filename=@{testSetupFile}" />
 					<!--jvmarg value="-Dresources.folder=${resourcesFolder}" /-->
 					<classpath>
@@ -130,7 +130,7 @@
 
 
 	<!-- if jenkins report dir is set publicate results there-->
-	<target name="junitCopyResultsToReportsDir" depends="jenkinsCheck" if="isReportingToJenkins">
+	<target name="bda.test.junitCopyResultsToReportsDir" depends="bda.test.jenkinsCheck" if="isReportingToJenkins">
 		<echo message="Copying JUnit test results to folder '${jenkinsReportDir}'"/>
 		<copy todir="${jenkinsReportDir}">
 			<fileset dir="${current.report.dir}">
@@ -141,7 +141,7 @@
 	</target>
 	
 	<!-- will jenkins evaluate the test results -->
-	<target name="jenkinsCheck" >
+	<target name="bda.test.jenkinsCheck" >
 		<echo message="-- jenkins report dir: ${jenkinsReportDir}"/>
 		 <condition property="isReportingToJenkins">
 		 	<not>

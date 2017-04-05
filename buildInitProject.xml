@@ -13,99 +13,99 @@
 
 	
 	<!-- system properties properties -->
-	<target name="initSAGHome" unless="SAGHome">
+	<target name="bda.init.SAGHome" unless="SAGHome">
 		<fail message="System property 'SAGHome' should be defined!"/>
 	</target>
 
-	<target name="initDeployerInstallationPath" unless="deployerInstallationPath">
-		<fail message="System property 'deployerInstallationPath' should be defined!"/>
+	<target name="bda.init.DeployerInstallationPath" unless="config.deployer.deployerInstallationPath">
+		<fail message="System property 'config.deployer.deployerInstallationPath' should be defined!"/>
 	</target>
 
-	<target name="initDeployerHost" unless="deployerHost">
-		<fail message="System property 'deployerHost' should be defined!"/>
+	<target name="bda.init.DeployerHost" unless="config.deployer.deployerHost">
+		<fail message="System property 'config.deployer.deployerHost' should be defined!"/>
 	</target>
 	
-	<target name="initDeployerPort" unless="deployerPort">
-		<fail message="System property 'deployerPort' should be defined!"/>
+	<target name="bda.init.DeployerPort" unless="config.deployer.deployerPort">
+		<fail message="System property 'config.deployer.deployerPort' should be defined!"/>
 	</target>
 	
-	<target name="initDeployerUsername" unless="deployerUsername">
-		<fail message="System property 'deployerUsername' should be defined!"/>
+	<target name="bda.init.DeployerUsername" unless="config.deployer.deployerUsername">
+		<fail message="System property 'config.deployer.deployerUsername' should be defined!"/>
 	</target>
 	
-	<target name="initDeployerPassword" unless="deployerPassword">
-		<fail message="System property 'deployerPassword' should be defined!"/>
+	<target name="bda.init.DeployerPassword" unless="config.deployer.deployerPassword">
+		<fail message="System property 'config.deployer.deployerPassword' should be defined!"/>
 	</target>
 			
 	<!-- mandatory properties -->
-	<target name="initProjcetName" unless="projectName">
+	<target name="bda.init.ProjcetName" unless="projectName">
 		<fail message="Property 'projectName' should be defined!"/>
 	</target>
 		
-	<target name="initBuildOutputDir" unless="buildOutputDir">
+	<target name="bda.init.BuildOutputDir" unless="buildOutputDir">
 		<fail message="Property 'buildOutputDir' should be defined!"/>
 	</target>
 	
-	<target name="initRepositoryName" unless="repositoryName">
+	<target name="bda.init.RepositoryName" unless="repositoryName">
 		<fail message="Property 'repositoryName' should be defined!"/>
 	</target>
 	
-	<target name="initDeployerProjectDefinition" unless="deployerProjectDefinition">
+	<target name="bda.init.DeployerProjectDefinition" unless="deployerProjectDefinition">
 		<fail message="Property 'deployerProjectDefinition' should be defined!"/>
 	</target>
 
 	
 	<!-- optional properties -->
-	<target name="initISProjectsDir" unless="isProjectsDir">
+	<target name="bda.init.ISProjectsDir" unless="isProjectsDir">
 		<property name="isProjectsDir" value=""/>
 	</target>
 	
-	<target name="initISConfigDir" unless="isConfigDir">
+	<target name="bda.init.ISConfigDir" unless="isConfigDir">
 		<property name="isConfigDir" value=""/>
 	</target>
 	
-	<target name="initBPMProjectsDir" unless="bpmProjectsDir">
+	<target name="bda.init.BPMProjectsDir" unless="bpmProjectsDir">
 		<property name="bpmProjectsDir" value=""/>
 	</target>
 	
-	<target name="initMWSProjectsDir" unless="mwsProjectsDir">
+	<target name="bda.init.MWSProjectsDir" unless="mwsProjectsDir">
 		<property name="mwsProjectsDir" value=""/>
 	</target>
 	
-	<target name="initRulesProjectsDir" unless="rulesProjectsDir">
+	<target name="bda.init.RulesProjectsDir" unless="rulesProjectsDir">
 		<property name="rulesProjectsDir" value=""/>
 	</target>
 	
-	<target name="initUMProjectDir" unless="umProjectsDir">
+	<target name="bda.init.UMProjectDir" unless="umProjectsDir">
 		<property name="umProjectsDir" value=""/>
 	</target>
 	
-	<target name="initTestPackageNamePattern" unless="testPackageNamePattern">
+	<target name="bda.init.TestPackageNamePattern" unless="testPackageNamePattern">
 		<property name="testPackageNamePattern" value=""/>
 	</target>
 	
 	
-	<target name="initJenkinsReportDir" unless="jenkinsReportDir">
+	<target name="bda.init.JenkinsReportDir" unless="jenkinsReportDir">
 		<property name="jenkinsReportDir" value=""/>
 	</target>
 
 	
 	<!--Main Init targets-->
-	<target name="initSystemProperties" depends="initSAGHome,initDeployerInstallationPath,initDeployerHost,initDeployerPort,initDeployerUsername,initDeployerPassword">
+	<target name="bda.init.SystemProperties" depends="bda.init.SAGHome,bda.init.DeployerInstallationPath,bda.init.DeployerHost,bda.init.DeployerPort,bda.init.DeployerUsername,bda.init.DeployerPassword">
 	</target>
 	
-	<target name="initMandatoryProperties" depends="initProjcetName,initBuildOutputDir,initRepositoryName,initDeployerProjectDefinition">
+	<target name="bda.init.MandatoryProperties" depends="bda.init.ProjcetName,bda.init.BuildOutputDir,bda.init.RepositoryName,bda.init.DeployerProjectDefinition">
 	</target>
 	
-	<target name="initOptionalProperties" depends="initISProjectsDir,initISConfigDir,initBPMProjectsDir,initMWSProjectsDir,initRulesProjectsDir,initUMProjectDir,initTestPackageNamePattern,initJenkinsReportDir">
+	<target name="bda.init.OptionalProperties" depends="bda.init.ISProjectsDir,bda.init.ISConfigDir,bda.init.BPMProjectsDir,bda.init.MWSProjectsDir,bda.init.RulesProjectsDir,bda.init.UMProjectDir,bda.init.TestPackageNamePattern,bda.init.JenkinsReportDir">
 	</target>
 		
-	<target name="initProject" depends="initSystemProperties,initMandatoryProperties,initOptionalProperties" description="init properties needed for the project">
+	<target name="bda.init.Project" depends="bda.init.SystemProperties,bda.init.MandatoryProperties,bda.init.OptionalProperties" description="bda.init. properties needed for the project">
 		<property name="bda.logging.log4j.propertiesFile" location="./resources/log4j.properties"/>
 	        <taskdef name="log" classname="com.sag.wm.ant.tasks.is.util.TALogger" classpathref="bda.classpath" />
 
 		<antcall target="common.create_dir">
-			<param name="dir" value="${bda.tmpdir}"/>
+			<param name="dir" value="${config.tmpdir}"/>
 		</antcall>
 
 	</target>

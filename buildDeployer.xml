@@ -54,16 +54,16 @@
 	<target name="setupDeployerSpec" description="Creates the project automator xml with XSLT based on the given variables.">				
 		<xslt style="${initialXSLT}" in="${deployerProjectDefinitionTemplate}" out="${deployerProjectDefinition}">
 			<!--build/deployer server props -->
-			<param name="deployerHost" expression="${deployerHost}" />
-			<param name="deployerPort" expression="${deployerPort}" />
-			<param name="deployerUsername" expression="${deployerUsername}" />
-			<param name="deployerPassword" expression="${deployerPassword}" />
+			<param name="config.deployer.deployerHost" expression="${config.deployer.deployerHost}" />
+			<param name="config.deployer.deployerPort" expression="${config.deployer.deployerPort}" />
+			<param name="config.deployer.deployerUsername" expression="${config.deployer.deployerUsername}" />
+			<param name="config.deployer.deployerPassword" expression="${config.deployer.deployerPassword}" />
 			
 			<!--target server props -->
-			<param name="testISHost" expression="${testISHost}" />
-			<param name="testISPort" expression="${testISPort}" />
-			<param name="testISUsername" expression="${testISUsername}" />
-			<param name="testISPassword" expression="${testISPassword}" />
+			<param name="config.test.testISHost" expression="${config.test.testISHost}" />
+			<param name="config.test.testISPort" expression="${config.test.testISPort}" />
+			<param name="config.test.testISUsername" expression="${config.test.testISUsername}" />
+			<param name="config.test.testISPassword" expression="${config.test.testISPassword}" />
 			
 			<!-- general props -->
 			<param name="repoName" expression="${repositoryName}" />
@@ -80,7 +80,7 @@
 		<pathconvert refid="pathProjectdefinition" property="pathProjectdefinitionFile"/>
 		
 				
-		<exec dir="${deployerInstallationPath}"  executable="${deployerInstallationPath}/${deployerAutomatorExecutable}" failonerror="true" resultproperty="appState">		
+		<exec dir="${config.deployer.deployerInstallationPath}"  executable="${config.deployer.deployerInstallationPath}/${deployerAutomatorExecutable}" failonerror="true" resultproperty="appState">		
 			<arg value="${pathProjectdefinitionFile}" />
 		</exec>
 		
@@ -96,14 +96,14 @@
 	</target>
 	
 	<target name="triggerDeploy">
-		<exec executable="${deployerInstallationPath}/${deployerExecutable}" dir="${deployerInstallationPath}" failonerror="true" resultproperty="appState">
+		<exec executable="${config.deployer.deployerInstallationPath}/${deployerExecutable}" dir="${config.deployer.deployerInstallationPath}" failonerror="true" resultproperty="appState">
 			<arg value="--deploy"/>
 			<arg line="-project ${projectName}"/>
 			<arg line="-dc myDeployment"/>
-			<arg line="-host ${deployerHost}"/>
-			<arg line="-port ${deployerPort}"/>
-			<arg line="-user ${deployerUsername}"/>
-			<arg line="-pwd ${deployerPassword}"/>
+			<arg line="-host ${config.deployer.deployerHost}"/>
+			<arg line="-port ${config.deployer.deployerPort}"/>
+			<arg line="-user ${config.deployer.deployerUsername}"/>
+			<arg line="-pwd ${config.deployer.deployerPassword}"/>
 			<arg value="-force"/>
 		</exec>
 		

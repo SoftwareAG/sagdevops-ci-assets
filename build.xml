@@ -1,34 +1,33 @@
 <?xml version="1.0"?>
-<project name="Build and Deploy Solution" default="buildDeployTest" basedir="." >
-	<property file="${project.properties}"/>
-	<property file="System.properties"/>
-        
-	<import file="buildInitProject.xml"/>
-	<import file="buildCallABE.xml"/>
-	<import file="buildDeployer.xml"/>
-	<import file="build_Deployer.xml"/>
-	<import file="buildTest.xml"/>
-	
+<project name="Build and Deploy Solution" default="buildDeployTest" basedir=".">
+	<property file="${project.properties}" />
+	<property file="System.properties" />
 
-	<taskdef classpath="lib/ant-contrib.jar" resource="net/sf/antcontrib/antlib.xml"/>
-				
-	<target name="build" depends="initProject,buildWM">		
+	<import file="buildInitProject.xml" />
+	<import file="buildCallABE.xml" />
+	<import file="buildDeployer.xml" />
+	<import file="build_Deployer.xml" />
+	<import file="buildTest.xml" />
+
+
+	<taskdef classpath="lib/ant-contrib.jar" resource="net/sf/antcontrib/antlib.xml" />
+
+	<target name="build" depends="bda.init.Project, bda.abe.buildWM">
 		<description>Build project.</description>
 	</target>
-	
-        <target name="deployGroovy" depends="initProject,bda.deployer.startDeployer">
-                <description>Deploy project.</description>
-        </target>
 
-	
-	<target name="deploy" depends="initProject,deployWM">
+	<target name="deployGroovy" depends="bda.init.Project, bda.deployer.startDeployer">
 		<description>Deploy project.</description>
 	</target>
 
-        <target name="test" depends="initProject,startTest">
+	<target name="deploy" depends="bda.init.Project, deployWM">
+		<description>Deploy project.</description>
+	</target>
+
+	<target name="test" depends="bda.init.Project, bda.test.startTest">
 		<description>Run tests.</description>
-	</target>	
-	
+	</target>
+
 	<target name="buildDeployTest" depends="build, deploy, test">
 		<description>Build and deploy the project.</description>
 	</target>

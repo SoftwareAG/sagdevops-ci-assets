@@ -33,6 +33,7 @@ cli.with {
  u longOpt:'deployer.user', argName:'deployerUser', args:1, 'Example: Administrator.'
  s longOpt:'deployer.password', argName:'deployerPassword', args:1, 'Example: manage.'
  e longOpt:'environments', argName:'environments', args:1, 'Example: ENV.groovy.'
+ repoName longOpt:'repoName', argName:'repoName', args:1, 'Name of the Repository to create in deployer'
 
 }
 def opts = cli.parse(args)
@@ -53,6 +54,7 @@ assert opts.d
 assert opts.u
 assert opts.s
 assert opts.e
+assert opts.repoName
 
 
 def project = opts.p
@@ -63,6 +65,7 @@ def deployerHostPort = opts.d
 def deployerUser = opts.u
 def deployerPassword = opts.s
 def environments = opts.e
+def repoName = opts.repoName
 
 def outFile = new File(outputFile)
 //def writer = new FileWriter(outFile)
@@ -81,6 +84,7 @@ println "\t- Target: '${target}'"
 println "\t- Deployer host: '${deployerHostPort}'" 
 println "\t- Deployer user: '${deployerUser}'" 
 println "\t- Deployer passsword: *****" 
+println "\t- Repository name: '${repoName}'" 
 
 def configSlurper = new ConfigSlurper(target)
 configSlurper.classLoader = this.class.getClassLoader()
@@ -150,7 +154,7 @@ xml.DeployerSpec(exitOnError:'true', sourceType:'Repository') {
 				}
 			}
 			Repository {
-				repalias(name: "Repo_${project}") {
+				repalias(name: "${repoName}") {
 						type("FlatFile")
 						urlOrDirectory("${repo}")
 						Test('true')
@@ -165,7 +169,7 @@ xml.DeployerSpec(exitOnError:'true', sourceType:'Repository') {
                                 Property(name:'ignoreMissingDependencies', 'true')
                                 Property(name:'isTransactionalDeployment', 'true')
                         }
-                        DeploymentSet (autoResolve:'ignore', description: '', name: 'DeploymentSet', srcAlias:"Repo_${project}") {
+                        DeploymentSet (autoResolve:'ignore', description: '', name: 'DeploymentSet', srcAlias:"${repoName}") {
 							
 						}
                         DeploymentMap(description: '', name:'DeploymentMap')

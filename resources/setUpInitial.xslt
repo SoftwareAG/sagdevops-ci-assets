@@ -3,15 +3,15 @@
 	
 	<xsl:output method="xml" encoding="utf-8" indent="yes"/>
 	
-	<xsl:param name="deployerHost"/>
-	<xsl:param name="deployerPort"/>
-	<xsl:param name="deployerUsername"/>
-	<xsl:param name="deployerPassword"/>
+	<xsl:param name="config.deployer.deployerHost"/>
+	<xsl:param name="config.deployer.deployerPort"/>
+	<xsl:param name="config.deployer.deployerUsername"/>
+	<xsl:param name="config.deployer.deployerPassword"/>
 	
-	<xsl:param name="testISHost"/>
-	<xsl:param name="testISPort"/>
-	<xsl:param name="testISUsername"/>
-	<xsl:param name="testISPassword"/>
+	<xsl:param name="config.test.testISHost"/>
+	<xsl:param name="config.test.testISPort"/>
+	<xsl:param name="config.test.testISUsername"/>
+	<xsl:param name="config.test.testISPassword"/>
 	
 	<xsl:param name="repoName"/>
 	<xsl:param name="repoPath"/>
@@ -25,9 +25,9 @@
 	
 	<xsl:template match="DeployerSpec/DeployerServer">
 		<DeployerServer>
-			<host><xsl:value-of select="$deployerHost"/>:<xsl:value-of select="$deployerPort"/></host>
-			<user><xsl:value-of select="$deployerUsername"/></user>
-			<pwd><xsl:value-of select="$deployerPassword"/></pwd>
+			<host><xsl:value-of select="$config.deployer.deployerHost"/>:<xsl:value-of select="$config.deployer.deployerPort"/></host>
+			<user><xsl:value-of select="$config.deployer.deployerUsername"/></user>
+			<pwd><xsl:value-of select="$config.deployer.deployerPassword"/></pwd>
 		</DeployerServer>
 	</xsl:template>
 
@@ -35,10 +35,10 @@
 	    <Environment>
 			<IS>
 				<isalias name="testServer">
-					<host><xsl:value-of select="$testISHost"/></host>
-					<port><xsl:value-of select="$testISPort"/></port>
-					<user><xsl:value-of select="$testISUsername"/></user>
-					<pwd><xsl:value-of select="$testISPassword"/></pwd>
+					<host><xsl:value-of select="config.test.testISHost"/></host>
+					<port><xsl:value-of select="$config.test.testISPort"/></port>
+					<user><xsl:value-of select="$config.test.testISUsername"/></user>
+					<pwd><xsl:value-of select="$config.test.testISPassword"/></pwd>
 					<useSSL>false</useSSL>
 					<installDeployerResource>true</installDeployerResource>
 					<Test>true</Test>

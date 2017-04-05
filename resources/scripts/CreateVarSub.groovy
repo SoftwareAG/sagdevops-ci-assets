@@ -123,6 +123,8 @@ String nxml = varSubXml.bind {
 							mkp.yield p.children()
 						}
 					}
+				} else {
+					println "No varsub file exists for package ${isPackage.name}. Expected varsub at '${varSubEnvIsDir.getAbsolutePath()}/${isPackage.name}.vs.xml'"
 				}
 			}
 		} else {
