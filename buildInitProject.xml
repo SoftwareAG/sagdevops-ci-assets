@@ -46,11 +46,6 @@
 		<fail message="Property 'config.build.fbrDir' should be defined!" />
 	</target>
 
-	<target name="bda.init.DeployerProjectDefinition" unless="deployerProjectDefinition">
-		<fail message="Property 'deployerProjectDefinition' should be defined!" />
-	</target>
-
-
 	<!-- optional properties -->
 	<target name="bda.init.ISProjectsDir" unless="isProjectsDir">
 		<property name="isProjectsDir" value="" />
@@ -90,7 +85,7 @@
 	<target name="bda.init.SystemProperties" depends="bda.init.SAGHome,bda.init.DeployerInstallationPath,bda.init.DeployerHost,bda.init.DeployerPort,bda.init.DeployerUsername,bda.init.DeployerPassword">
 	</target>
 
-	<target name="bda.init.MandatoryProperties" depends="bda.init.ProjcetName,bda.init.config.fbrDir,bda.init.DeployerProjectDefinition">
+	<target name="bda.init.MandatoryProperties" depends="bda.init.ProjcetName,bda.init.config.fbrDir">
 	</target>
 
 	<target name="bda.init.OptionalProperties" depends="bda.init.ISProjectsDir,bda.init.ISConfigDir,bda.init.BPMProjectsDir,bda.init.MWSProjectsDir,bda.init.RulesProjectsDir,bda.init.UMProjectDir,bda.init.TestPackageNamePattern,bda.init.JenkinsReportDir">

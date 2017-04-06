@@ -85,6 +85,7 @@ println "\t- Deployer host: '${deployerHostPort}'"
 println "\t- Deployer user: '${deployerUser}'" 
 println "\t- Deployer passsword: *****" 
 println "\t- Repository name: '${repoName}'" 
+println "\t- Environments definition: '${environments}'" 
 
 def configSlurper = new ConfigSlurper(target)
 configSlurper.classLoader = this.class.getClassLoader()

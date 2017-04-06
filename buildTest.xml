@@ -124,9 +124,6 @@
 	</target>
 
 
-
-
-
 	<!-- if jenkins report dir is set publicate results there-->
 	<target name="bda.test.copyResultsToReportsDir" depends="bda.test.jenkinsCheck" if="isReportingToJenkins">
 		<echo message="Copying JUnit test results to folder '${jenkinsReportDir}'"/>

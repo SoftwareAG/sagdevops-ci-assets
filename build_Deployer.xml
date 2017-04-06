@@ -2,7 +2,8 @@
 
 <project default="bda.deployer.startDeployer" basedir="." name="build_Deployer">
 
-	<property name="projectAutomatorDefinition" location="${config.tmpdir}/${bda.targetEnv}_${bda.projectName}_PA_template.definition.xml" />
+	<property name="projectName" value="BDA_${bda.targetEnv}_${bda.projectName}" />
+	<property name="projectAutomatorDefinition" location="${config.tmpdir}/${projectName}_PA_template.definition.xml" />
 
 	<condition property="isWindows">
 		<os family="windows" />
@@ -32,9 +33,10 @@
 		<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpathref="bda.classpath" />
 		<taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy" classpathref="bda.classpath" />
 
-
-		<property name="bda.projectName" value="BDA_${bda.targetEnv}_${bda.deployerbda.projectName}" />
-		<log msg="Init build Deployer with project name='${bda.projectName}' and repository='${fbrRepoName}'." />
+		<log msg="Init build Deployer. Properties: with project name='${projectName}' and repository='${fbrRepoName}'." />
+		<log msg="Target Environment='${bda.targetEnv}'" />
+		<log msg="Project name='${projectName}'" />
+		<log msg="Repository='${fbrRepoName}'." />
 
 	</target>
 
@@ -114,18 +116,17 @@
 
 
 	<target name="bda.deployer.initDeployerSpecNoTemplate">
-		<property name="environments" location="${config.deployer.environmentsDefinition}" />
-		<property name="groovyScript.CreateProjectAutomatorTemplate" location="resources/scripts/CreateProjectAutomatorTemplate.groovy"/>
-		<log msg="Creating project definition file '${projectAutomatorDefinition}' using environments defined in '${environments}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'" />
+		<property name="groovyScript.CreateProjectAutomatorTemplate" location="resources/ProjectAutomator/CreateProjectAutomatorTemplate.groovy" />
+		<log msg="Creating project definition file '${projectAutomatorDefinition}' using environments defined in '${environmentsDefinition}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'" />
 		<groovy src="${groovyScript.CreateProjectAutomatorTemplate}">
 			<arg line="-r ${fbrRepoDir}" />
-			<arg line="-p ${bda.projectName}" />
+			<arg line="-p ${projectName}" />
 			<arg line="-f ${projectAutomatorDefinition}" />
 			<arg line="-t ${bda.targetEnv}" />
 			<arg line="-d ${config.deployer.deployerHost}:${config.deployer.deployerPort}" />
 			<arg line="-u ${config.deployer.deployerUsername}" />
 			<arg line="-s ${config.deployer.deployerPassword}" />
-			<arg line="-e ${environments}" />
+			<arg line="-e ${environmentsDefinition}" />
 			<arg line="-repoName ${fbrRepoName}" />
 		</groovy>
 	</target>
@@ -200,7 +201,7 @@
 					<arg value="-varsub" />
 					<arg line="-vsFile ${varsubfile.file}" />
 					<arg line="-map DeploymentMap" />
-					<arg line="-project ${bda.projectName}" />
+					<arg line="-project ${projectName}" />
 					<arg line="-host ${config.deployer.deployerHost}" />
 					<arg line="-port ${config.deployer.deployerPort}" />
 					<arg line="-user ${config.deployer.deployerUsername}" />
@@ -224,11 +225,11 @@
 	</target>
 
 	<target name="bda.deployer.deployDeployer">
-		<log msg="-- Invoking Deployer executable '${config.deployer.deployerInstallationPath}/${deployerExecutable}' with parameters: -project ${bda.projectName}, -dc myDeployment, -host ${config.deployer.deployerHost}, -port ${config.deployer.deployerPort}, -user ${config.deployer.deployerUsername}" />
+		<log msg="-- Invoking Deployer executable '${config.deployer.deployerInstallationPath}/${deployerExecutable}' with parameters: -project ${projectName}, -dc myDeployment, -host ${config.deployer.deployerHost}, -port ${config.deployer.deployerPort}, -user ${config.deployer.deployerUsername}" />
 		<property name="output" value="${config.deployer.deployerInstallationPath}/logs/CLI.log" />
 		<exec resultproperty="deployerResult" executable="${config.deployer.deployerInstallationPath}/${deployerExecutable}" dir="${config.deployer.deployerInstallationPath}" failonerror="false" output="${output}">
 			<arg value="--deploy" />
-			<arg line="-project ${bda.projectName}" />
+			<arg line="-project ${projectName}" />
 			<arg line="-dc Deployment" />
 			<arg line="-host ${config.deployer.deployerHost}" />
 			<arg line="-port ${config.deployer.deployerPort}" />
@@ -257,7 +258,7 @@
 	<target name="bda.deployer.createVarSub">
 		<log msg="Creating variable substitution for target environment ${bda.targetEnv}" />
 
-		<property name="varsubfile.file" value="${bda.projectName}.vs" />
+		<property name="varsubfile.file" value="${projectName}.vs" />
 		<!-- store temp varsub files in a special vs tmp dir -->
 		<property name="varsubTmpDir" value="${config.tmpdir}/vs/${bda.targetEnv}" />
 		<antcall target="common.create_dir">
@@ -268,12 +269,12 @@
 
 		<delete file="${varsubfile.path}" />
 
-		<property name="groovyScript.CreateVarSub" location="resources/scripts/CreateVarSub.groovy" />
-		<property name="varsubDir" location="${config.deployer.varsubDir}"/>
+		<property name="groovyScript.CreateVarSub" location="resources/vs/CreateVarSub.groovy" />
+		<property name="varsubDir" location="${config.deployer.varsubDir}" />
 		<log msg="Calling '${groovyScript.CreateVarSub}' to create varsub file" />
 		<groovy src="${groovyScript.CreateVarSub}">
 			<arg line="-a ${projectAutomatorDefinition}" />
-			<arg line="-p ${bda.projectName}" />
+			<arg line="-p ${projectName}" />
 			<arg line="-f ${varsubfile.path}" />
 			<arg line="-t ${bda.targetEnv}" />
 			<arg line="-vs ${varsubDir}" />

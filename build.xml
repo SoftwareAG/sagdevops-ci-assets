@@ -5,7 +5,6 @@
 
 	<import file="buildInitProject.xml" />
 	<import file="buildCallABE.xml" />
-	<import file="buildDeployer.xml" />
 	<import file="build_Deployer.xml" />
 	<import file="buildTest.xml" />
 	
@@ -17,13 +16,13 @@
 		<description>Build project.</description>
 	</target>
 
-	<target name="deployGroovy" depends="bda.init.Project, bda.deployer.startDeployer">
+	<target name="deploy" depends="bda.init.Project, bda.deployer.startDeployer">
 		<description>Deploy project.</description>
 	</target>
 
-	<target name="deploy" depends="bda.init.Project, deployWM">
+	<!--<target name="deploy" depends="bda.init.Project, deployWM">
 		<description>Deploy project.</description>
-	</target>
+	</target>-->
 
 	<target name="test" depends="bda.init.Project, bda.test.startTest">
 		<description>Run tests.</description>
