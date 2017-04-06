@@ -71,7 +71,7 @@
 
 	<Projects>
 		<Project description="Created: ${currentDate}"
-			ignoreMissingDependencies="true" name="${bda.deployer.projectName}"
+			ignoreMissingDependencies="true" name="${bda.deployer.bda.projectName}"
 			overwrite="true" type="Repository">
 
 			<DeploymentSet autoResolve="ignore" description=""

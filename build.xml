@@ -8,10 +8,11 @@
 	<import file="buildDeployer.xml" />
 	<import file="build_Deployer.xml" />
 	<import file="buildTest.xml" />
+	
 
-
+	
 	<taskdef classpath="lib/ant-contrib.jar" resource="net/sf/antcontrib/antlib.xml" />
-
+	
 	<target name="build" depends="bda.init.Project, bda.abe.buildWM">
 		<description>Build project.</description>
 	</target>

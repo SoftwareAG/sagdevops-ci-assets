@@ -1,8 +1,6 @@
 <?xml version="1.0"?>
 <project name="test" default="bda.test.startTest" basedir=".">
 
-	<property name="testSuitePackagesPath" value="${isTestDir}"/>
-
 	<path id="junitClasspath">
 		<fileset dir="${SAGHome}/common/lib/ext" includes="enttoolkit.jar" />
 		<fileset dir="${SAGHome}/common/lib" includes="**/gf.javax.mail.jar" />
@@ -16,33 +14,34 @@
 		<fileset dir="./lib" includes="**/*.jar" />
 	</path>
 
+	<!-- explicit taskdef is necessary if the ant-junit.jar is not in the ANT_HOME/lib dir -->
 	<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
 		  <classpath refid="junitClasspath"/>
 	</taskdef>
-	
+	<taskdef name="junitreport" classname="org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator">
+		  <classpath refid="junitClasspath"/>
+	</taskdef>
+
 	<target name="bda.test.startTest" depends="bda.test.jenkinsCheck">		
 		<var name="failedTestList" value=""/>
 		
-                <!-- interate over the test project and triiger all xml tests in the setup folder -->
-                <for param="testProject" keepgoing="true" trim="true">
+        <!-- interate over the test project and triiger all xml tests in the setup folder -->
+		<for param="testProject" keepgoing="true" trim="true">
 			<path>
-				<dirset dir="${testSuitePackagesPath}" includes="*" excludes=".*,replicate" />
+				<dirset dir="${isTestDir}" includes="*" excludes=".*,replicate" />
 			</path>
 			<sequential>
 				<trycatch reference="exception_ref">
 					<try>
                         <echo message="@{testProject}"/>
-						<antcall target="junitTestAndReportXML">
+						<antcall target="bda.test.executeTestAndReportXML">
 							<param name="testPackageName" value="@{testProject}" />
 						</antcall>
-						<!--antcall target="junitTestAndReportJava">
-							<param name="testPackageName" value="${testSuitePackagesPath}/@{testProject}" />
-						</antcall-->
 					</try>
 					<catch>
-						<echo message="JUnit test for package '@{testProject}' failed" />
-						<var name="failedTestList" value="${failedTestList}'@{packageName}', " />
 						<property name="testFail" refid="exception_ref" />
+						<echo message="JUnit test for package '@{testProject}' failed: ${testFail}" />
+						<var name="failedTestList" value="${failedTestList}'@{packageName}', " />
 					</catch>
 				</trycatch>
 			</sequential>
@@ -53,7 +52,7 @@
 			</not>
 			<then>
 				<fail unless="isReportingToJenkins" message="At least one test failed. Failed packages: ${failedTestList}" />
-
+				<log msg="At least one test failed. Failed packages: ${failedTestList}. Not failing script execution so that Jenkins can report results." level="ERROR"/>
 			</then>
 			<else>
 				<echo message="All JUnit Tests passed."/>
@@ -61,19 +60,18 @@
 		</if>
 	</target>
 
-	<target name="bda.test.junitInitTest">
-		<echo message="Init JUnit tests for package ${testPackageName}" />
-		
+	<target name="bda.test.initTestPacakge">
+		<echo message="Init JUnit tests for package ${testPackageName}" />		
 		<property name="testPackageReportsDir" value="${testPackageName}/resources/reports" />
 	</target>
 	
-	<target name="bda.test.junitCleanUp">
+	<target name="bda.test.cleanUpTestPackage">
 		<delete dir="${testPackageReportsDir}" />								
 	</target>
 	
 
 	<!--execute only if the XML Test directory exists in the test package -->
-	<target name="bda.test.junitTestAndReportXML" depends="bda.test.junitInitTest, bda.test.junitCleanUp">
+	<target name="bda.test.executeTestAndReportXML" depends="bda.test.initTestPacakge, bda.test.cleanUpTestPackage">
 		<echo message="> Starting JUnit tests for package '${testPackageName}'"/>
 		
 		<mkdir dir="${testPackageReportsDir}" />
@@ -108,7 +106,7 @@
 
 		
 		<!-- if jenkins report dir is set publicate results there-->
-		<antcall target="junitCopyResultsToReportsDir">
+		<antcall target="bda.test.copyResultsToReportsDir">
 			<param name="current.report.dir" value="${testPackageReportsDir}" />
 		</antcall>
 		
@@ -130,7 +128,7 @@
 
 
 	<!-- if jenkins report dir is set publicate results there-->
-	<target name="bda.test.junitCopyResultsToReportsDir" depends="bda.test.jenkinsCheck" if="isReportingToJenkins">
+	<target name="bda.test.copyResultsToReportsDir" depends="bda.test.jenkinsCheck" if="isReportingToJenkins">
 		<echo message="Copying JUnit test results to folder '${jenkinsReportDir}'"/>
 		<copy todir="${jenkinsReportDir}">
 			<fileset dir="${current.report.dir}">

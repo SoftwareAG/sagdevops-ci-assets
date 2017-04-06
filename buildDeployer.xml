@@ -6,7 +6,7 @@
 	<property name="deployerProjectDefinitionTemplate" value="resources/ProjectSpecificationTemplate.xml"/>
 	
 	<!-- Target filename of the Deployer Project Specification for this run -->
-	<property name="deployerProjectDefinition" value="${workspace.dir}/ProjectAutomator/${projectName}DeploymentSpec.xml"/>
+	<property name="deployerProjectDefinition" value="${workspace.dir}/ProjectAutomator/${bda.projectName}DeploymentSpec.xml"/>
 	
 	<!-- XSLT for the Deployer Project Specification - adding Repository and Project Sections -->
 	<property name="initialXSLT" value="resources/setUpInitial.xslt"/>
@@ -15,7 +15,7 @@
 	</target>
 
 	<target name="startDeployment">		
-		<echo message="Start deploying ${projectName}" />
+		<echo message="Start deploying ${bda.projectName}" />
 	</target>
 
     <!-- determine which PA and Deployer executables are used - different for Windows and Unix -->
@@ -67,8 +67,8 @@
 			
 			<!-- general props -->
 			<param name="repoName" expression="${repositoryName}" />
-			<param name="repoPath" expression="${buildOutputDir}" />
-			<param name="projectName" expression="${projectName}" />				
+			<param name="repoPath" expression="${config.build.fbrDir}" />
+			<param name="bda.projectName" expression="${bda.projectName}" />				
 		</xslt>				
 	</target>
 	
@@ -98,7 +98,7 @@
 	<target name="triggerDeploy">
 		<exec executable="${config.deployer.deployerInstallationPath}/${deployerExecutable}" dir="${config.deployer.deployerInstallationPath}" failonerror="true" resultproperty="appState">
 			<arg value="--deploy"/>
-			<arg line="-project ${projectName}"/>
+			<arg line="-project ${bda.projectName}"/>
 			<arg line="-dc myDeployment"/>
 			<arg line="-host ${config.deployer.deployerHost}"/>
 			<arg line="-port ${config.deployer.deployerPort}"/>

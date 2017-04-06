@@ -15,7 +15,7 @@
 	
 	<xsl:param name="repoName"/>
 	<xsl:param name="repoPath"/>
-	<xsl:param name="projectName"/>
+	<xsl:param name="bda.projectName"/>
 		
 	<xsl:template match="@*|node()">
 		<xsl:copy>
@@ -69,7 +69,7 @@
 			<xsl:apply-templates select="@* | *" />
 			
 			<Project description="" ignoreMissingDependencies="true" overwrite="true" type="Repository">
-			<xsl:attribute name="name"><xsl:value-of select="$projectName"/></xsl:attribute>			
+			<xsl:attribute name="name"><xsl:value-of select="$bda.projectName"/></xsl:attribute>			
 
 				<DeploymentSet autoResolve="full" description="" name="myDeploymentSet">
 				<xsl:attribute name="srcAlias"><xsl:value-of select="$repoName"/></xsl:attribute>

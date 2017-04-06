@@ -36,7 +36,7 @@
 
 	<Projects>
 		<Project description="" ignoreMissingDependencies="true"
-			name="${bda.deployer.projectName}" overwrite="true" type="Repository">
+			name="${bda.deployer.bda.projectName}" overwrite="true" type="Repository">
 
 			<DeploymentSet autoResolve="ignore" description=""
 				name="myDeploymentSet" srcAlias="RepoSource">
