@@ -28,7 +28,7 @@ Edit the _System.properties_ to correspond to your inftrastucture - config.deplo
 ### Build/CI Environment 
 * On your build server set-up the default java on PATH to be the JDK that comes with your webMethods installation ${SAG_HOME}/jvm/jvm/bin/java
 
-* On your build server install Jenkins CI Server and run it with the same user that run your webMethods processes. The CI can work also with other CI server, but for the reference implementation  we've chosen Jenkins.
+* On your build server install Jenkins CI Server v2 and run it with the same user that run your webMethods processes. The CI can work also with other CI server, but for the reference implementation  we've chosen Jenkins.
 
 * In Jenkins->Manage Jenkins->Configure System->EnvironmentVariables define the following environment variables:
 1. SAG_CI_HOME = path_to_th_sagdevops-ci-assets on the local file system.
@@ -50,7 +50,7 @@ Those pipeline definition are orchestrating all steps around the build, deploy a
 
 ## How it works
 After your pipeline job is set-up, trigger it. It will download the pipeline description automatically, then checkout the sources, build the core, deploy the code and run tests. 
-Whenever a developer checks in new IS packages and Tests those will be automatically deployed and all new tests will be executed. For this to work, the structure defined here  _https://github.com/SoftwareAG/webmethods-sample-project-layout.git_ has followed.
+Whenever a developer checks in new IS packages and Tests those will be automatically deployed and all new tests will be executed. For this to work, the structure defined here  _https://github.com/SoftwareAG/webmethods-sample-project-layout.git_ has to be adhered.
 
 ## Notice
 The wM Test Suite tests will have to be places in a directory a *setup* directory inside the test project, so that it can be picked up by the test executor.

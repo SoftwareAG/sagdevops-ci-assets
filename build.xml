@@ -5,7 +5,7 @@
 
 	<import file="buildInitProject.xml" />
 	<import file="buildCallABE.xml" />
-	<import file="build_Deployer.xml" />
+	<import file="buildDeployer.xml" />
 	<import file="buildTest.xml" />
 	
 
