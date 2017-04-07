@@ -24,7 +24,7 @@
 	</target>
 
 
-	<target name="bda.deployer.initDeployer" depends="bda.deployer.initWindows, bda.deployer.initUnix">
+	<target name="bda.deployer.initDeployer" depends="bda.deployer.cleanup, bda.deployer.initWindows, bda.deployer.initUnix">
 		<!--
 		    If antcontrib has not been included by parent script already, uncomment these lines...
 			<taskdef classpathref="bda.classpath" resource="net/sf/antcontrib/antlib.xml" />
@@ -38,9 +38,6 @@
 		<log msg="Project name='${projectName}'" />
 		<log msg="Repository='${fbrRepoName}'." />
 
-	</target>
-
-	<target name="bda.deployer.createDeployerSpec" depends="bda.deployer.initDeployerSpec, bda.deployer.parseFBR">
 	</target>
 
 	<target name="bda.deployer.parseFBR" description="Parse the file based repository directory and search for composites">
@@ -114,8 +111,7 @@
 		</groovy>
 	</target>
 
-
-	<target name="bda.deployer.initDeployerSpecNoTemplate">
+	<target name="bda.deployer.createProjectAutomatorTemplate" depends="">
 		<property name="groovyScript.CreateProjectAutomatorTemplate" location="resources/ProjectAutomator/CreateProjectAutomatorTemplate.groovy" />
 		<log msg="Creating project definition file '${projectAutomatorDefinition}' using environments defined in '${environmentsDefinition}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'" />
 		<groovy src="${groovyScript.CreateProjectAutomatorTemplate}">
@@ -131,20 +127,17 @@
 		</groovy>
 	</target>
 
-	<target name="bda.deployer.initDeployerSpec" depends="bda.deployer.cleanup, bda.deployer.initDeployerSpecNoTemplate">
-	</target>
-
 	<target name="bda.deployer.cleanup">
 		<delete file="${projectAutomatorDefinition}">
 		</delete>
 	</target>
 
-	<target name="bda.deployer.startDeployer" depends="bda.deployer.setupDeployer, bda.deployer.deployDeployer">
+	<target name="bda.deployer.startDeployer" depends="bda.deployer.setupDeployer, bda.deployer.deployDeployer" description="creates the deployer project and invokes Deployer for execution">
 
 	</target>
 
 
-	<target name="bda.deployer.setupDeployer" depends="bda.deployer.initDeployer, bda.deployer.createDeployerSpec, bda.deployer.execProjectAutomator, bda.deployer.importVarSubDeployer">
+	<target name="bda.deployer.setupDeployer" depends="bda.deployer.initDeployer, bda.deployer.createProjectAutomatorTemplate, bda.deployer.parseFBR, bda.deployer.execProjectAutomator, bda.deployer.importVarSubDeployer" description="creates the deployer project">
 
 	</target>
 
