@@ -87,6 +87,8 @@ println "\t- Deployer passsword: *****"
 println "\t- Repository name: '${repoName}'" 
 println "\t- Environments definition: '${environments}'" 
 
+println "${opts.arguments()}"
+
 def configSlurper = new ConfigSlurper(target)
 configSlurper.classLoader = this.class.getClassLoader()
 def config = configSlurper.parse(new File(environments).toURL())
@@ -104,15 +106,20 @@ xml.DeployerSpec(exitOnError:'true', sourceType:'Repository') {
 			if(config.IntegrationServers.size() > 0 ) {
             	IS {
 					config.IntegrationServers.each { name, isConfig ->
+						def integ = isConfig + config.IntegrationServer.defaults;
 						isalias(name: "${name}") {
-                            host(isConfig.host)
-                            port(isConfig.port)
-                            user(isConfig.username)
-                            pwd(isConfig.pwd)
-                            useSSL(isConfig.useSSL)
-                            version(isConfig.version)
-                            installDeployerResource(isConfig.installDeployerResource)
-                            Test(isConfig.test)
+                            host(integ.host)
+                            port(integ.port)
+                            user(integ.username)
+							if( integ.isSet('pwdHandle') ) {
+								pwdHandle(integ.pwdHandle)
+							} else {
+								pwd(integ.pwd)
+							}
+                            useSSL(integ.useSSL)
+                            version(integ.version)
+                            installDeployerResource(integ.installDeployerResource)
+                            Test(integ.test)
                    	 	}
 					}
 				}
@@ -120,14 +127,19 @@ xml.DeployerSpec(exitOnError:'true', sourceType:'Repository') {
 			if(config.ProcessModels.size() > 0 ) {
 				ProcessModel {
 					config.ProcessModels.each { name, bpmConfig ->
+						def bpm = bpmConfig + config.ProcessModel.defaults;
 						pmalias(name: "${name}") {
-							host(bpmConfig.host)
-							port(bpmConfig.port)
-							user(bpmConfig.username)
-							pwd(bpmConfig.pwd)
-							useSSL(bpmConfig.useSSL)
-							version(bpmConfig.version)
-							Test(bpmConfig.test)
+							host(bpm.host)
+							port(bpm.port)
+							user(bpm.username)
+							if( bpm.isSet('pwdHandle') ) {
+								pwdHandle(bpm.pwdHandle)
+							} else {
+								pwd(bpm.pwd)
+							}
+							useSSL(bpm.useSSL)
+							version(bpm.version)
+							Test(bpm.test)
 						}
 					}
 				}
@@ -135,21 +147,26 @@ xml.DeployerSpec(exitOnError:'true', sourceType:'Repository') {
 			if(config.MWS.size() > 0 ) {
 				MWS {
 					config.MWS.each { name, mwsConfig ->
+						def mwsConfigMerged = mwsConfig + config.MyWebmethodsServer.defaults;
 						mwsalias(name: "${name}") {
-	                            host(mwsConfig.host)
-	                            port(mwsConfig.port)
-	                            user(mwsConfig.username)
-	                            pwd(mwsConfig.pwd)
-	                            useSSL(mwsConfig.useSSL)
-	                            version(mwsConfig.version)
-	                            excludeCoreTaskEngineDependencies(mwsConfig.excludeCoreTaskEngineDependencies)
-	                            cacheTimeOut(mwsConfig.cacheTimeOut)
-	                            includeSecurityDependencies(mwsConfig.includeSecurityDependencies)
-	                            rootFolderAliases(mwsConfig.rootFolderAliases)
-	                            maximumFolderObjectCount(mwsConfig.maximumFolderObjectCount)
-	                            enableAddtionalLogging(mwsConfig.enableAddtionalLogging)
-	                            maxFolderDepth(mwsConfig.maxFolderDepth)
-	                            Test(mwsConfig.test)
+                            host(mwsConfigMerged.host)
+                            port(mwsConfigMerged.port)
+                            user(mwsConfigMerged.username)
+							if( mwsConfigMerged.isSet('pwdHandle') ) {
+								pwdHandle(mwsConfigMerged.pwdHandle)
+							} else {
+								pwd(mwsConfigMerged.pwd)
+							}
+                            useSSL(mwsConfigMerged.useSSL)
+                            version(mwsConfigMerged.version)
+                            excludeCoreTaskEngineDependencies(mwsConfigMerged.excludeCoreTaskEngineDependencies)
+                            cacheTimeOut(mwsConfigMerged.cacheTimeOut)
+                            includeSecurityDependencies(mwsConfigMerged.includeSecurityDependencies)
+                            rootFolderAliases(mwsConfigMerged.rootFolderAliases)
+                            maximumFolderObjectCount(mwsConfigMerged.maximumFolderObjectCount)
+                            enableAddtionalLogging(mwsConfigMerged.enableAddtionalLogging)
+                            maxFolderDepth(mwsConfigMerged.maxFolderDepth)
+                            Test(mwsConfigMerged.test)
 						}
 					}
 				}
