@@ -7,28 +7,32 @@
 	<import file="buildCallABE.xml" />
 	<import file="buildDeployer.xml" />
 	<import file="buildTest.xml" />
-	
+	<import file="buildRepo.xml" />
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																										
 
-	
 	<taskdef classpath="lib/ant-contrib.jar" resource="net/sf/antcontrib/antlib.xml" />
-	
-	<target name="build" depends="bda.init.Project, bda.abe.buildWM">
+
+	<target name="build" depends="bda.init.Project, bda.abe.buildWM, bda.repo.processBuildOutput">
 		<description>Build project.</description>
 	</target>
 
-	<target name="deploy" depends="bda.init.Project, bda.deployer.startDeployer">
+	<target name="deploy" depends="bda.init.Project, bda.repo.prepareFbrForDeployment, bda.deployer.startDeployer">
 		<description>Deploy project.</description>
 	</target>
-
-	<!--<target name="deploy" depends="bda.init.Project, deployWM">
-		<description>Deploy project.</description>
-	</target>-->
-
+	
+	<target name="prepareArtifactoryDownloadSpec" depends="bda.init.Project, bda.repo.prepareArtifactoryDownloadSpec">
+		<description>Preparing donwload spec.</description>
+	</target>
+	
 	<target name="test" depends="bda.init.Project, bda.test.startTest">
 		<description>Run tests.</description>
 	</target>
 
 	<target name="buildDeployTest" depends="build, deploy, test">
 		<description>Build and deploy the project.</description>
+	</target>
+	
+	<target name="_TEST_createFileSpec" depends="bda.init.Project, bda.repo.createArtifactFileSpec">
+		<description>_TEST</description>
 	</target>
 </project>

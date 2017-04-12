@@ -1,0 +1,63 @@
+2017-04-10 16:12:18,837 TRACE 	[TestAutomation]	 - [Build and Deploy Solution:common.check] Checking for the existance of the directory tmp
+2017-04-10 16:12:18,840 INFO 	[TestAutomation]	 - [Build and Deploy Solution:common.create_dir] Creating dir 'tmp'
+2017-04-10 16:12:18,843 INFO 	[TestAutomation]	 - [Build and Deploy Solution:createArtifactFileSpec] Creating project definition file '/home/waa/cce/henning_sagdevops-ci-assets/tmp/test_PA_template.definition.xml' using environments defined in '${environmentsDefinition}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'
+2017-04-10 16:12:57,523 TRACE 	[TestAutomation]	 - [Build and Deploy Solution:common.check] Checking for the existance of the directory tmp
+2017-04-10 16:12:57,525 INFO 	[TestAutomation]	 - [Build and Deploy Solution:common.create_dir] Creating dir 'tmp'
+2017-04-10 16:12:57,528 INFO 	[TestAutomation]	 - [Build and Deploy Solution:createArtifactFileSpec] Creating project definition file '/home/waa/cce/henning_sagdevops-ci-assets/tmp/test_PA_template.definition.xml' using environments defined in '${environmentsDefinition}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'
+2017-04-10 16:16:47,250 TRACE 	[TestAutomation]	 - [Build and Deploy Solution:common.check] Checking for the existance of the directory tmp
+2017-04-10 16:16:47,253 INFO 	[TestAutomation]	 - [Build and Deploy Solution:common.create_dir] Creating dir 'tmp'
+2017-04-10 16:16:47,255 INFO 	[TestAutomation]	 - [Build and Deploy Solution:createArtifactFileSpec] Creating project definition file '/home/waa/cce/henning_sagdevops-ci-assets/tmp/test_PA_template.definition.xml' using environments defined in '${environmentsDefinition}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'
+2017-04-10 16:18:10,490 TRACE 	[TestAutomation]	 - [Build and Deploy Solution:common.check] Checking for the existance of the directory tmp
+2017-04-10 16:18:10,494 INFO 	[TestAutomation]	 - [Build and Deploy Solution:common.create_dir] Creating dir 'tmp'
+2017-04-10 16:18:10,497 INFO 	[TestAutomation]	 - [Build and Deploy Solution:createArtifactFileSpec] Creating project definition file '/home/waa/cce/henning_sagdevops-ci-assets/tmp/test_PA_template.definition.xml' using environments defined in '${environmentsDefinition}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'
+2017-04-10 16:19:18,016 TRACE 	[TestAutomation]	 - [Build and Deploy Solution:common.check] Checking for the existance of the directory tmp
+2017-04-10 16:19:18,028 INFO 	[TestAutomation]	 - [Build and Deploy Solution:common.create_dir] Creating dir 'tmp'
+2017-04-10 16:19:18,031 INFO 	[TestAutomation]	 - [Build and Deploy Solution:createArtifactFileSpec] Creating project definition file '/home/waa/cce/henning_sagdevops-ci-assets/tmp/test_PA_template.definition.xml' using environments defined in '${environmentsDefinition}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'
+2017-04-10 16:20:19,056 TRACE 	[TestAutomation]	 - [Build and Deploy Solution:common.check] Checking for the existance of the directory tmp
+2017-04-10 16:20:19,059 INFO 	[TestAutomation]	 - [Build and Deploy Solution:common.create_dir] Creating dir 'tmp'
+2017-04-10 16:20:19,061 INFO 	[TestAutomation]	 - [Build and Deploy Solution:createArtifactFileSpec] Creating project definition file '/home/waa/cce/henning_sagdevops-ci-assets/tmp/test_PA_template.definition.xml' using environments defined in '${environmentsDefinition}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'
+2017-04-10 16:22:14,559 TRACE 	[TestAutomation]	 - [Build and Deploy Solution:common.check] Checking for the existance of the directory tmp
+2017-04-10 16:22:14,562 INFO 	[TestAutomation]	 - [Build and Deploy Solution:common.create_dir] Creating dir 'tmp'
+2017-04-10 16:22:14,564 INFO 	[TestAutomation]	 - [Build and Deploy Solution:createArtifactFileSpec] Creating project definition file '/home/waa/cce/henning_sagdevops-ci-assets/tmp/test_PA_template.definition.xml' using environments defined in '${environmentsDefinition}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'
+2017-04-10 16:23:41,837 TRACE 	[TestAutomation]	 - [Build and Deploy Solution:common.check] Checking for the existance of the directory tmp
+2017-04-10 16:23:41,841 INFO 	[TestAutomation]	 - [Build and Deploy Solution:common.create_dir] Creating dir 'tmp'
+2017-04-10 16:23:41,846 INFO 	[TestAutomation]	 - [Build and Deploy Solution:createArtifactFileSpec] Creating project definition file '/home/waa/cce/henning_sagdevops-ci-assets/tmp/test_PA_template.definition.xml' using environments defined in '${environmentsDefinition}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'
+2017-04-10 16:27:32,413 TRACE 	[TestAutomation]	 - [Build and Deploy Solution:common.check] Checking for the existance of the directory tmp
+2017-04-10 16:27:32,419 INFO 	[TestAutomation]	 - [Build and Deploy Solution:common.create_dir] Creating dir 'tmp'
+2017-04-10 16:27:32,424 INFO 	[TestAutomation]	 - [Build and Deploy Solution:createArtifactFileSpec] Creating project definition file '/home/waa/cce/henning_sagdevops-ci-assets/tmp/test_PA_template.definition.xml' using environments defined in '${environmentsDefinition}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'
+2017-04-10 16:28:26,809 TRACE 	[TestAutomation]	 - [Build and Deploy Solution:common.check] Checking for the existance of the directory tmp
+2017-04-10 16:28:26,812 INFO 	[TestAutomation]	 - [Build and Deploy Solution:common.create_dir] Creating dir 'tmp'
+2017-04-10 16:28:26,814 INFO 	[TestAutomation]	 - [Build and Deploy Solution:createArtifactFileSpec] Creating project definition file '/home/waa/cce/henning_sagdevops-ci-assets/tmp/test_PA_template.definition.xml' using environments defined in '${environmentsDefinition}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'
+2017-04-10 16:30:46,449 TRACE 	[TestAutomation]	 - [Build and Deploy Solution:common.check] Checking for the existance of the directory tmp
+2017-04-10 16:30:46,604 INFO 	[TestAutomation]	 - [Build and Deploy Solution:common.create_dir] Creating dir 'tmp'
+2017-04-10 16:30:46,755 INFO 	[TestAutomation]	 - [Build and Deploy Solution:createArtifactFileSpec] Creating project definition file '/home/waa/cce/henning_sagdevops-ci-assets/tmp/test_PA_template.definition.xml' using environments defined in '${environmentsDefinition}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'
+2017-04-10 16:31:48,228 TRACE 	[TestAutomation]	 - [Build and Deploy Solution:common.check] Checking for the existance of the directory tmp
+2017-04-10 16:31:48,232 INFO 	[TestAutomation]	 - [Build and Deploy Solution:common.create_dir] Creating dir 'tmp'
+2017-04-10 16:31:48,235 INFO 	[TestAutomation]	 - [Build and Deploy Solution:createArtifactFileSpec] Creating project definition file '/home/waa/cce/henning_sagdevops-ci-assets/tmp/test_PA_template.definition.xml' using environments defined in '${environmentsDefinition}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'
+2017-04-10 16:43:53,160 TRACE 	[TestAutomation]	 - [Build and Deploy Solution:common.check] Checking for the existance of the directory tmp
+2017-04-10 16:43:53,189 INFO 	[TestAutomation]	 - [Build and Deploy Solution:common.create_dir] Creating dir 'tmp'
+2017-04-10 16:43:53,190 INFO 	[TestAutomation]	 - [Build and Deploy Solution:createArtifactFileSpec] Creating project definition file '/home/waa/cce/henning_sagdevops-ci-assets/tmp/test_PA_template.definition.xml' using environments defined in '${environmentsDefinition}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'
+2017-04-10 16:44:13,133 TRACE 	[TestAutomation]	 - [Build and Deploy Solution:common.check] Checking for the existance of the directory tmp
+2017-04-10 16:44:13,135 INFO 	[TestAutomation]	 - [Build and Deploy Solution:common.create_dir] Creating dir 'tmp'
+2017-04-10 16:44:13,137 INFO 	[TestAutomation]	 - [Build and Deploy Solution:createArtifactFileSpec] Creating project definition file '/home/waa/cce/henning_sagdevops-ci-assets/tmp/test_PA_template.definition.xml' using environments defined in '${environmentsDefinition}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'
+2017-04-10 16:44:29,442 TRACE 	[TestAutomation]	 - [Build and Deploy Solution:common.check] Checking for the existance of the directory tmp
+2017-04-10 16:44:29,444 INFO 	[TestAutomation]	 - [Build and Deploy Solution:common.create_dir] Creating dir 'tmp'
+2017-04-10 16:44:29,475 INFO 	[TestAutomation]	 - [Build and Deploy Solution:createArtifactFileSpec] Creating project definition file '/home/waa/cce/henning_sagdevops-ci-assets/tmp/test_PA_template.definition.xml' using environments defined in '${environmentsDefinition}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'
+2017-04-10 16:44:46,855 TRACE 	[TestAutomation]	 - [Build and Deploy Solution:common.check] Checking for the existance of the directory tmp
+2017-04-10 16:44:46,857 INFO 	[TestAutomation]	 - [Build and Deploy Solution:common.create_dir] Creating dir 'tmp'
+2017-04-10 16:44:46,858 INFO 	[TestAutomation]	 - [Build and Deploy Solution:createArtifactFileSpec] Creating project definition file '/home/waa/cce/henning_sagdevops-ci-assets/tmp/test_PA_template.definition.xml' using environments defined in '${environmentsDefinition}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'
+2017-04-10 16:46:17,605 TRACE 	[TestAutomation]	 - [Build and Deploy Solution:common.check] Checking for the existance of the directory tmp
+2017-04-10 16:46:17,606 INFO 	[TestAutomation]	 - [Build and Deploy Solution:common.create_dir] Creating dir 'tmp'
+2017-04-10 16:46:17,608 INFO 	[TestAutomation]	 - [Build and Deploy Solution:createArtifactFileSpec] Creating project definition file '/home/waa/cce/henning_sagdevops-ci-assets/tmp/test_PA_template.definition.xml' using environments defined in '${environmentsDefinition}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'
+2017-04-10 16:46:28,529 TRACE 	[TestAutomation]	 - [Build and Deploy Solution:common.check] Checking for the existance of the directory tmp
+2017-04-10 16:46:28,531 INFO 	[TestAutomation]	 - [Build and Deploy Solution:common.create_dir] Creating dir 'tmp'
+2017-04-10 16:46:28,552 INFO 	[TestAutomation]	 - [Build and Deploy Solution:createArtifactFileSpec] Creating project definition file '/home/waa/cce/henning_sagdevops-ci-assets/tmp/test_PA_template.definition.xml' using environments defined in '${environmentsDefinition}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'
+2017-04-10 16:46:41,860 TRACE 	[TestAutomation]	 - [Build and Deploy Solution:common.check] Checking for the existance of the directory tmp
+2017-04-10 16:46:41,862 INFO 	[TestAutomation]	 - [Build and Deploy Solution:common.create_dir] Creating dir 'tmp'
+2017-04-10 16:46:41,863 INFO 	[TestAutomation]	 - [Build and Deploy Solution:createArtifactFileSpec] Creating project definition file '/home/waa/cce/henning_sagdevops-ci-assets/tmp/test_PA_template.definition.xml' using environments defined in '${environmentsDefinition}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'
+2017-04-10 16:47:28,634 TRACE 	[TestAutomation]	 - [Build and Deploy Solution:common.check] Checking for the existance of the directory tmp
+2017-04-10 16:47:28,636 INFO 	[TestAutomation]	 - [Build and Deploy Solution:common.create_dir] Creating dir 'tmp'
+2017-04-10 16:47:28,637 INFO 	[TestAutomation]	 - [Build and Deploy Solution:createArtifactFileSpec] Creating project definition file '/home/waa/cce/henning_sagdevops-ci-assets/tmp/test_PA_template.definition.xml' using environments defined in '${environmentsDefinition}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'
+2017-04-10 16:54:49,125 TRACE 	[TestAutomation]	 - [Build and Deploy Solution:common.check] Checking for the existance of the directory tmp
+2017-04-10 16:54:49,127 INFO 	[TestAutomation]	 - [Build and Deploy Solution:common.create_dir] Creating dir 'tmp'
+2017-04-10 16:54:49,129 INFO 	[TestAutomation]	 - [Build and Deploy Solution:createArtifactFileSpec] Creating project definition file '/home/waa/cce/henning_sagdevops-ci-assets/tmp/test_PA_template.definition.xml' using environments defined in '${environmentsDefinition}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'

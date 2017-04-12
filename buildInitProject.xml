@@ -42,8 +42,8 @@
 		<fail message="Property 'bda.projectName' should be defined!" />
 	</target>
 
-	<target name="bda.init.config.fbrDir" unless="config.build.fbrDir">
-		<fail message="Property 'config.build.fbrDir' should be defined!" />
+	<target name="bda.init.buildStorageDirr" unless="config.build.buildStorageDir">
+		<fail message="Property 'config.build.buildStorageDir' should be defined!" />
 	</target>
 
 	<!-- optional properties -->
@@ -85,7 +85,7 @@
 	<target name="bda.init.SystemProperties" depends="bda.init.SAGHome,bda.init.DeployerInstallationPath,bda.init.DeployerHost,bda.init.DeployerPort,bda.init.DeployerUsername,bda.init.DeployerPassword">
 	</target>
 
-	<target name="bda.init.MandatoryProperties" depends="bda.init.ProjcetName,bda.init.config.fbrDir">
+	<target name="bda.init.MandatoryProperties" depends="bda.init.ProjcetName,bda.init.buildStorageDirr">
 	</target>
 
 	<target name="bda.init.OptionalProperties" depends="bda.init.ISProjectsDir,bda.init.ISConfigDir,bda.init.BPMProjectsDir,bda.init.MWSProjectsDir,bda.init.RulesProjectsDir,bda.init.UMProjectDir,bda.init.TestPackageNamePattern,bda.init.JenkinsReportDir">
@@ -95,12 +95,15 @@
 		<property name="bda.logging.log4j.propertiesFile" location="./resources/log4j.properties" />
 		<taskdef name="log" classname="com.sag.wm.ant.tasks.is.util.TALogger" classpathref="bda.classpath" />
 
+		<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpathref="bda.classpath" />
+		<taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy" classpathref="bda.classpath" />
+
 		<antcall target="common.create_dir">
 			<param name="dir" value="${config.tmpdir}" />
 		</antcall>
 
-		<property name="fbrRepoName" value="${bda.projectName}__fbrRepo"/>
-		<property name="fbrRepoDir" location="${config.build.fbrDir}/${fbrRepoName}"/>
+		<property name="fbrRepoName" value="${bda.projectName}_fbrRepo"/>
+		<property name="buildOutputDir" location="${config.build.buildStorageDir}/${fbrRepoName}"/>
 
 	</target>
 

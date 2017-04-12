@@ -30,14 +30,11 @@
 			<taskdef classpathref="bda.classpath" resource="net/sf/antcontrib/antlib.xml" />
 			<taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="bda.classpath" />
 		-->
-		<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpathref="bda.classpath" />
-		<taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy" classpathref="bda.classpath" />
-
 		<log msg="Init build Deployer. Properties: with project name='${projectName}' and repository='${fbrRepoName}'." />
 		<log msg="Target Environment='${bda.targetEnv}'" />
 		<log msg="Project name='${projectName}'" />
-		<log msg="Repository='${fbrRepoName}'." />
-
+		<log msg="Repository Name='${fbrRepoName}'." />
+		<log msg="Repository location='${fbrRepoDir}'"/>
 	</target>
 
 	<target name="bda.deployer.parseFBR" description="Parse the file based repository directory and search for composites">
