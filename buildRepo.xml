@@ -74,10 +74,10 @@
 
 	<target name="bda.repo.createArtifactFileSpec">
 		<property name="groovyScript.CreateArtifactoryFileSpec" location="resources/scripts/ArtifactoryFileSpec.groovy" />
-		<log msg="Creating Artifactory file spec '${config.build.artifactory.fileSpecName}' for ${type}" />
+		<log msg="Creating Artifactory file spec '${bda.artifactoryFileSpecName}' for ${type}" />
 		<groovy src="${groovyScript.CreateArtifactoryFileSpec}">
 			<arg line="-outputDir ${env.WORKSPACE}/" />
-			<arg line="-fileSpecName ${type}.${config.build.artifactory.fileSpecName}" />
+			<arg line="-fileSpecName ${type}.${bda.artifactoryFileSpecName}" />
 			<arg line="-pathToFbrZip ${artifactAsZipPath}" />
 			<arg line="-org ${config.build.artifactory.path.org}" />
 			<arg line="-moduleName ${moduleName}" />
