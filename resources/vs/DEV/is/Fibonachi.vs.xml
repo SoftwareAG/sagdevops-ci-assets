@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VarSub>
+	<!-- Example vs file with minimal config, only these two, others are taken from source package as default -->
+	<Property propertyName="archivePkgOnInstall" propertyValue="false" />
+	<!-- set compilePackage to true, so that class files get generated after deployment -->
+	<Property propertyName="compilePackage" propertyValue="true" />
+</VarSub>

@@ -62,7 +62,7 @@
 			
 						 if(type == 'bpmprocess') {
 				            bpms.add([name: name, displayName: displayName])
-				        } else if (type == 'ispackage') {
+				        } else if (type == 'ispackage' || type == 'isconfiguration') {
 				            packages.add([name: name, displayName: name])
 				        } else if (type == 'war') {
 				            mws.add([name: name, displayName: displayName])
@@ -170,6 +170,7 @@
 	</condition>
 
 	<target name="bda.deployer.importVarSubDeployer" depends="bda.deployer.createVarSub" if="doVarSub" description="the entry point for the varsub implementation">
+		<!-- check if the var sub file contains at least one deployment set, i.e. the varsub is not empty -->
 		<xmltask source="${varsubfile.path}">
 			<copy path="count(//DeploementSet)" property="countDeploementSet" />
 		</xmltask>
@@ -181,8 +182,9 @@
 				</not>
 			</and>
 			<then>
-				<log msg="At least one varsub was created, copy file ${varsubfile.path} to Deployer replicate inbound dir." />
-				<copy file="${varsubfile.path}" todir="${deployer.installation.path}/../replicate/inbound" />
+				<property name="deployerReplicateInboundDir" location="${config.deployer.deployerInstallationPath}/../replicate/inbound"/>
+				<log msg="At least one varsub was created, copy file ${varsubfile.path} to Deployer replicate inbound dir at '${deployerReplicateInboundDir}'." />
+				<copy file="${varsubfile.path}" todir="${deployerReplicateInboundDir}" />
 				<log msg="-- variable substitution will be used: '${varsubfile.file}'" />
 
 				<property name="output" value="${config.deployer.deployerInstallationPath}/logs/CLI.log" />
@@ -245,7 +247,7 @@
 	</target>
 
 
-	<target name="bda.deployer.createVarSub">
+	<target name="bda.deployer.createVarSub" if="doVarSub">
 		<log msg="Creating variable substitution for target environment ${bda.targetEnv}" />
 
 		<property name="varsubfile.file" value="${projectName}.vs" />

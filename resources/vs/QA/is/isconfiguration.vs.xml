@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VarSub>
+	<Property propertyName="suspendTasksDuringDeploy"
+		propertyValue="none" />
+	<Property propertyName="activateTasksAfterDeploy"
+		propertyValue="none" />
+	<Property propertyName="enablePortsAfterDeploy" propertyValue="false" />
+	<Property propertyName="reloadCacheManagersAfterDeployment"
+		propertyValue="none" />
+	<Component
+		name="Port.SimpleTestPackage.FilePollingListener.c.\tmp\citrus\csv\import"
+		type="isport">
+		<Property propertyName="pkg" propertyValue="SimpleTestPackage" />
+		<!-- do not enable file poller after deployment -->
+		<Property propertyName="enable" propertyValue="false" />
+		<Property propertyName="hostAccessMode" propertyValue="global" />
+		<Property propertyName="hostList" propertyValue="" />
+		<!-- change monitoring dir -->
+		<Property propertyName="monitorDir" propertyValue="/my/monitoring/dir/import" />
+		<Property propertyName="workDir" propertyValue="" />
+		<Property propertyName="completionDir" propertyValue="" />
+		<Property propertyName="errorDir" propertyValue="" />
+		<Property propertyName="clusterEnabled" propertyValue="no" />
+		<Property propertyName="runUser" propertyValue="Administrator" />
+		<Property propertyName="NFSDirectories" propertyValue="no" />
+	</Component>
+	<Component name="Port.SimpleTestPackage.Regular.5111" type="isport">
+		<!-- change port to 5114 -->
+		<Property propertyName="port" propertyValue="5114" />
+		<Property propertyName="bindAddress" propertyValue="" />
+		<Property propertyName="pkg" propertyValue="SimpleTestPackage" />
+		<!-- do not enable port after deployment -->
+		<Property propertyName="enable" propertyValue="false" />
+		<Property propertyName="hostAccessMode" propertyValue="global" />
+		<Property propertyName="hostList" propertyValue="" />
+	</Component>
+</VarSub>

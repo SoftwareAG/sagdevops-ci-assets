@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VarSub>
+	<Property propertyName="activatePkgOnInstall" propertyValue="true" />
+	<Property propertyName="archivePkgOnInstall" propertyValue="true" />
+	<!-- set compilePackage to true, so that class files get generated after deployment -->
+	<Property propertyName="compilePackage" propertyValue="true" />
+	<Property propertyName="clearACLs" propertyValue="false" />
+	<Property propertyName="suspendTriggersDuringDeploy"
+		propertyValue="false" />
+	<Property propertyName="syncDocTypesToBroker" propertyValue="true" />
+	<!--  
+	Example configuration for a JDBB adpater... Disabled here because no JDBC adapter exists in SimpleTestPackage.
+	-->
+	<!-- 
+	<Component name="simpleTestPackage.adapter.connection.jdbcConnection"
+		type="artconnection">
+		<Property propertyName="art.deployment.state" propertyValue="disable" />
+		<Property propertyName="transactionType" propertyValue="LOCAL_TRANSACTION" />
+		<Property propertyName="datasourceClass"
+			propertyValue="oracle.jdbc.pool.OracleConnectionPoolDataSource" />
+		<Property propertyName="serverName" propertyValue="localhost" />
+		<Property propertyName="user" propertyValue="acme" />
+		<Property propertyName="password" propertyValue="manage" />
+		<Property propertyName="databaseName" propertyValue="XE" />
+		<Property propertyName="portNumber" propertyValue="1521" />
+		<Property propertyName="networkProtocol" propertyValue="" />
+		<Property propertyName="otherProperties" propertyValue="driverType=thin" />
+	</Component>
+	-->
+</VarSub>
