@@ -262,7 +262,6 @@
 		<delete file="${varsubfile.path}" />
 
 		<property name="groovyScript.CreateVarSub" location="resources/vs/CreateVarSub.groovy" />
-		<property name="varsubDir" location="${config.deployer.varsubDir}" />
 		<log msg="Calling '${groovyScript.CreateVarSub}' to create varsub file" />
 		<groovy src="${groovyScript.CreateVarSub}">
 			<arg line="-a ${projectAutomatorDefinition}" />
