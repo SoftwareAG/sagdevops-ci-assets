@@ -10,39 +10,37 @@
 	</condition>
 
 	<target name="bda.repo.prepareFbrForDeployment" depends="bda.repo.prepareLocalFbrForDeployment, bda.repo.prepareArtifactoryFbrForDeployment">
-		<log msg="Using fbr repository of type ${config.fbr.type}" />
+		<log msg="Using fbr repository of type '${config.fbr.type}'" />
 	</target>
 
 	<target name="bda.repo.prepareLocalFbrForDeployment" if="useLocalRepository" depends="">
-		<description>Deploy project.</description>
 		<property name="fbrRepoDir" value="${buildOutputDir}" />
 	</target>
 
-	<target name="bda.repo.prepareArtifactoryFbrForDeployment" if="useArtifactoryRepository" depends="">
-		<description>Deploy project.</description>
+	<target name="bda.repo.init">
 		<property name="moduleName" value="${bda.projectName}" />
-		<property name="baseRevision" value="${config.build.version}.${env.BUILD_NUMBER}" />
 		<property name="artifactName" value="${moduleName}-${baseRevision}.zip" />
-		<property name="artifactAsZip" location="${config.tmpdir}/${artifactName}" />
-		<property name="unzipDir" location="${config.build.buildStorageDir}/${moduleName}-${baseRevision}"/>
+		<property name="artifactAsZipPath" location="${config.tmpdir}/${artifactName}" />
+		<log msg="Init repo with parameters: moduleName='${moduleName}', artifactName='${artifactName}', artifactAsZipPath='${artifactAsZipPath}'" />
+	</target>
+
+	<target name="bda.repo.prepareArtifactoryFbrForDeployment" if="useArtifactoryRepository" depends="bda.repo.init">
+		<property name="unzipDir" location="${config.build.buildStorageDir}/${moduleName}-${baseRevision}" />
 		<antcall target="common.deldir">
-			<param name="dir" value="${unzipDir}"/>
+			<param name="dir" value="${unzipDir}" />
 		</antcall>
 		<antcall target="common.create_dir">
-			<param name="dir" value="${unzipDir}"/>
+			<param name="dir" value="${unzipDir}" />
 		</antcall>
+		<log msg="Unzipping artifact with name '${artifactName}' into directory '${unzipDir}'. Searching for zip in directory '${config.tmpdir}'." />
 		<unzip dest="${unzipDir}">
-			<fileset dir="${env.WORKSPACE}" includes="**/${artifactName}"></fileset>
+			<fileset dir="${config.tmpdir}" includes="**/${artifactName}">
+			</fileset>
 		</unzip>
 		<property name="fbrRepoDir" value="${unzipDir}" />
 	</target>
 
-	<target name="bda.repo.prepareArtifactoryDownloadSpec">
-		<property name="moduleName" value="${bda.projectName}" />
-		<property name="baseRevision" value="${config.build.version}.${env.BUILD_NUMBER}" />
-		<property name="artifactName" value="${moduleName}-${baseRevision}.zip" />
-		<property name="artifactAsZip" location="${config.tmpdir}/${artifactName}" />
-
+	<target name="bda.repo.prepareArtifactoryDownloadSpec" depends="bda.repo.init">
 		<antcall target="bda.repo.createArtifactFileSpec">
 			<param name="type" value="download" />
 		</antcall>
@@ -56,12 +54,8 @@
 		<log msg="Using local repository, no processing of build output at '${buildOutputDir}' necessary" />
 	</target>
 
-	<target name="bda.repo.processBuildOutputForArtifactory" if="useArtifactoryRepository" depends="">
+	<target name="bda.repo.processBuildOutputForArtifactory" if="useArtifactoryRepository" depends="bda.repo.init">
 		<log msg="Using Artifactory as repository, pushing contents from ${buildOutputDir} to configured Artifactory server" />
-		<property name="moduleName" value="${bda.projectName}" />
-		<property name="baseRevision" value="${config.build.version}.${env.BUILD_NUMBER}" />
-		<property name="artifactName" value="${moduleName}-${baseRevision}.zip" />
-		<property name="artifactAsZip" location="${config.tmpdir}/${artifactName}" />
 
 		<antcall target="bda.repo.zipOutputDir" />
 
@@ -71,8 +65,8 @@
 	</target>
 
 	<target name="bda.repo.zipOutputDir">
-		<log msg="Creating FBR zip ${artifactAsZip} from directory '${buildOutputDir}' " />
-		<zip destfile="${artifactAsZip}" basedir="${buildOutputDir}">
+		<log msg="Creating FBR zip ${artifactAsZipPath} from directory '${buildOutputDir}' " />
+		<zip destfile="${artifactAsZipPath}" basedir="${buildOutputDir}">
 			<fileset includes="**/*" dir="${buildOutputDir}">
 			</fileset>
 		</zip>
@@ -84,7 +78,7 @@
 		<groovy src="${groovyScript.CreateArtifactoryFileSpec}">
 			<arg line="-outputDir ${env.WORKSPACE}/" />
 			<arg line="-fileSpecName ${type}.${config.build.artifactory.fileSpecName}" />
-			<arg line="-pathToFbrZip ${artifactAsZip}" />
+			<arg line="-pathToFbrZip ${artifactAsZipPath}" />
 			<arg line="-org ${config.build.artifactory.path.org}" />
 			<arg line="-moduleName ${moduleName}" />
 			<arg line="-baseRevision ${baseRevision}" />

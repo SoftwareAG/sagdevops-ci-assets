@@ -102,7 +102,9 @@
 			<param name="dir" value="${config.tmpdir}" />
 		</antcall>
 
-		<property name="fbrRepoName" value="${bda.projectName}_fbrRepo"/>
+		<property name="baseRevision" value="${config.build.version}.${env.BUILD_NUMBER}" />
+		
+		<property name="fbrRepoName" value="${bda.projectName}_${baseRevision}_fbrRepo"/>
 		<property name="buildOutputDir" location="${config.build.buildStorageDir}/${fbrRepoName}"/>
 
 	</target>
