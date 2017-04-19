@@ -108,12 +108,12 @@ String nxml = varSubXml.bind {
 		if( varSubEnvDir.exists() ) {
 			packages.each { isPackage ->
 				// first check if there is a varsub file for this package and the given target environment
-				println "checking varsub for package ${isPackage.name}"
+				println "checking for varsub template '${isPackage.name}.vs.xml' in directory '${varSubEnvIsDir.getAbsolutePath()}'"
 				def packageVarSubFile = new File(varSubEnvIsDir, "${isPackage.name}.vs.xml")
 				if( packageVarSubFile.exists() ) {
 					def p = new XmlSlurper().parse( packageVarSubFile )
 					isTargets.each { isTarget ->
-						println "creating varsub for package ${isPackage.name} and target ${isTarget.alias}"
+						println "creating varsub for package '${isPackage.name}' and target '${isTarget.alias}'"
 						DeploementSet(
 							assetCompositeName:"${isPackage.name}",
 							deploymentSetName: 'DeploymentSet',
@@ -124,7 +124,7 @@ String nxml = varSubXml.bind {
 						}
 					}
 				} else {
-					println "No varsub file exists for package ${isPackage.name}. Expected varsub at '${varSubEnvIsDir.getAbsolutePath()}/${isPackage.name}.vs.xml'"
+					println "No varsub file exists for package '${isPackage.name}'. Expected varsub at '${varSubEnvIsDir.getAbsolutePath()}/${isPackage.name}.vs.xml'"
 				}
 			}
 		} else {

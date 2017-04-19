@@ -183,7 +183,7 @@
 			</and>
 			<then>
 				<property name="deployerReplicateInboundDir" location="${config.deployer.deployerInstallationPath}/../replicate/inbound"/>
-				<log msg="At least one varsub was created, copy file ${varsubfile.path} to Deployer replicate inbound dir at '${deployerReplicateInboundDir}'." />
+				<log msg="At least one varsub was created, copy file '${varsubfile.path}' to Deployer replicate inbound dir at '${deployerReplicateInboundDir}'." />
 				<copy file="${varsubfile.path}" todir="${deployerReplicateInboundDir}" />
 				<log msg="-- variable substitution will be used: '${varsubfile.file}'" />
 
@@ -199,7 +199,7 @@
 					<arg line="-user ${config.deployer.deployerUsername}" />
 					<arg line="-pwd ${config.deployer.deployerPassword}" />
 				</exec>
-				<log msg="Importing the varsub file ${varsubfile.file} restulted in return code ${importVarsubReturnCode}" />
+				<log msg="Importing the varsub file '${varsubfile.file}' restulted in return code ${importVarsubReturnCode}. See logs at '${output}'." />
 				<if>
 					<equals arg1="${importVarsubReturnCode}" arg2="8" />
 					<then>
@@ -248,7 +248,7 @@
 
 
 	<target name="bda.deployer.createVarSub" if="doVarSub">
-		<log msg="Creating variable substitution for target environment ${bda.targetEnv}" />
+		<log msg="Creating variable substitution for target environment '${bda.targetEnv}'" />
 
 		<property name="varsubfile.file" value="${projectName}.vs" />
 		<!-- store temp varsub files in a special vs tmp dir -->
