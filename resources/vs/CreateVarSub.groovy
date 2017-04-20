@@ -71,10 +71,7 @@ assert varSubDir.exists() : "varSubDir for path '${varSubDirPath}' does not exis
 if( !varSubEnvDir.exists()) 
 	println "varSubDir for environment '${target}' does not exist. Expected directory at: '${varSubDir.getAbsolutePath()}/${target}'. No variable substitution will be done..."
 
-def outFile = new File(outputFile)
-//def writer = new FileWriter(outFile)
-PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
-def xml = new MarkupBuilder(writer)
+PrintWriter outputFileWriter = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
 def varSubXml = new StreamingMarkupBuilder()
 def packages = []
 def bpms = []
@@ -101,7 +98,7 @@ Environment.IS.'*'.findAll {true}.each { isalias ->
 		isTargets.add([alias: isalias.@name])
 	}
 }
-
+// now create a new varsub file for all composites and all environments
 String nxml = varSubXml.bind {
 	Root {
 		def varSubEnvIsDir = new File(varSubEnvDir, "is")
@@ -132,7 +129,7 @@ String nxml = varSubXml.bind {
 		}
 	  }
 }
-println XmlUtil.serialize( nxml, writer )
+println XmlUtil.serialize( nxml, outputFileWriter )
 
-writer.close()
+outputFileWriter.close()
 println "created varsub file '${outputFile}'"

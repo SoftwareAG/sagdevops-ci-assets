@@ -19,6 +19,11 @@
 	<target name="deploy" depends="bda.init.Project, bda.repo.prepareFbrForDeployment, bda.deployer.startDeployer">
 		<description>Deploy project.</description>
 	</target>
+
+	<target name="extractVarSubTemplates" depends="bda.init.Project">
+		<description>Extract varsub.</description>
+		<ant antfile="buildDeployer_Varsub.xml" target="bda.deployer.varsub.generateVarSubTemplates" inheritrefs="true"/>
+	</target>
 	
 	<target name="prepareArtifactoryDownloadSpec" depends="bda.init.Project, bda.repo.prepareArtifactoryDownloadSpec">
 		<description>Preparing donwload spec.</description>

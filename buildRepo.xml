@@ -2,15 +2,15 @@
 <project name="Repo" basedir=".">
 
 	<condition property="useLocalRepository">
-		<equals arg1="${config.fbr.type}" arg2="local" />
+		<equals arg1="${config.build.fbr.type}" arg2="local" />
 	</condition>
 
 	<condition property="useArtifactoryRepository">
-		<equals arg1="${config.fbr.type}" arg2="artifactory" />
+		<equals arg1="${config.build.fbr.type}" arg2="artifactory" />
 	</condition>
 
 	<target name="bda.repo.prepareFbrForDeployment" depends="bda.repo.prepareLocalFbrForDeployment, bda.repo.prepareArtifactoryFbrForDeployment">
-		<log msg="Using fbr repository of type '${config.fbr.type}'" />
+		<log msg="Using fbr repository of type '${config.build.fbr.type}'" />
 	</target>
 
 	<target name="bda.repo.prepareLocalFbrForDeployment" if="useLocalRepository" depends="">

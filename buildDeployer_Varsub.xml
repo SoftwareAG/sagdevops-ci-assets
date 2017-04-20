@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+
+<project default="bda.deployer.varsub.generateVarSubTemplates" basedir="." name="build_DeployerVarsub">
+
+	<property name="projectAutomatorDefinition" location="${config.tmpdir}/${projectName}_PA_template.definition.xml" />
+	<property name="varsubDir" location="${bda.varsubDir}"/>
+
+	<condition property="isWindows">
+		<os family="windows" />
+	</condition>
+
+	<condition property="isUnix">
+		<os family="unix" />
+	</condition>
+
+	<target name="bda.deployer.initWindows" if="isWindows">
+		<property name="deployerExecutable" value="Deployer.bat" />
+		<property name="deployerAutomatorExecutable" value="projectautomator.bat" />
+	</target>
+
+	<target name="bda.deployer.initUnix" if="isUnix">
+		<property name="deployerExecutable" value="Deployer.sh" />
+		<property name="deployerAutomatorExecutable" value="projectautomatorUnix.sh" />
+	</target>
+
+	<target name="bda.deployer.varsub.init" depends="bda.deployer.initWindows, bda.deployer.initUnix">
+		
+	</target>
+	
+	<target name="bda.deployer.varsub.generateVarSubTemplates" depends="bda.deployer.varsub.init" description="Export varsub file from Deployer and extract varsub templates from it">
+		<fail message="Required parameters missing">
+			<condition>
+				<not>
+					<and>
+						<isset property="bda.projectName"/>
+						<isset property="bda.deploymentMapName"/>
+						<isset property="bda.targetEnv"/>
+						<isset property="varsubDir"/>
+					</and>
+				</not>
+			</condition>
+		</fail>
+		
+		<property name="deployerReplicateOutboundDir" location="${config.deployer.deployerInstallationPath}/../replicate/outbound"/>
+		<property name="varSubFilename" location="${deployerReplicateOutboundDir}/${bda.projectName}_${bda.deploymentMapName}.vs"/>
+		
+		<antcall target="bda.deployer.varsub.exportVarSubDeployer"/>
+		<antcall target="bda.deployer.varsub.extractVarSubTemplates"/>
+	</target>
+	
+	<target name="bda.deployer.varsub.exportVarSubDeployer" depends="" >
+		<log msg="Extracting variable substitution for project ${bda.projectName} and deployment map ${deploymentMapName}" />
+		<!-- prepare by deleting old varub file in Deployer replicate/outbound dir -->
+		<delete file="${varSubFilename}"></delete>
+		<property name="output" value="${config.deployer.deployerInstallationPath}/logs/CLI.log" />
+		<exec executable="${config.deployer.deployerInstallationPath}/${deployerExecutable}" dir="${config.deployer.deployerInstallationPath}" output="${output}" resultproperty="exportVarsubReturnCode" failonerror="false">
+			<arg value="--export" />
+			<arg line="-map ${bda.deploymentMapName}" />
+			<arg line="-project ${bda.projectName}" />
+			<arg value="-varsub" />
+			<arg line="-host ${config.deployer.deployerHost}" />
+			<arg line="-port ${config.deployer.deployerPort}" />
+			<arg line="-user ${config.deployer.deployerUsername}" />
+			<arg line="-pwd ${config.deployer.deployerPassword}" />
+		</exec>
+		<log msg="Exporting the varsub file '${varSubFilename}' restulted in return code ${exportVarsubReturnCode}. See logs at '${output}'." />
+		<if>
+			<and>
+				<equals arg1="${exportVarsubReturnCode}" arg2="0" />
+				<available file="${varSubFilename}"/>				
+			</and>
+			<then>
+				<log msg="-- Exported variable substitution will be used: '${varSubFilename}'" />			
+			</then>
+			<else>
+				<loadfile property="CLI.log" srcFile="${output}" />
+				<log msg="Deployer varsub export either did not create expected output file ${varSubFilename}, or the export returned an error. Output of file '${output}'" level="ERROR" />
+				<log msg="${CLI.log}" level="ERROR" />
+				<fail message="Error when importing the varsub file ${varSubFilename}." />
+			</else>
+		</if>
+	</target>
+
+	<target name="bda.deployer.varsub.extractVarSubTemplates">
+		<log msg="Extracting variable substitution for target environment '${bda.targetEnv}' and varsub file '${varSubFilename}'" />
+		<log msg="Storing resulting varsub files in directory '${varsubDir}'."/>
+
+		<property name="groovyScript.ExtractVarSub" location="resources/vs/ExtractVarSub.groovy" />
+		<log msg="Calling '${groovyScript.ExtractVarSub}' to create varsub file" />
+		<groovy src="${groovyScript.ExtractVarSub}">
+			<arg line="-varsubFilePath ${varSubFilename}" />
+			<arg line="-varsubDirPath ${varsubDir}" />
+			<arg line="-target ${bda.targetEnv}" />
+		</groovy>
+
+	</target>
+</project>
