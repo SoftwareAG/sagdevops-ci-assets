@@ -1,6 +1,16 @@
 <?xml version="1.0"?>
 
 <project default="bda.deployer.varsub.generateVarSubTemplates" basedir="." name="build_DeployerVarsub">
+	
+	<description>
+		This build file provides a utility with which variable substitution templates can be created.
+		For this, a variable substitution file is extracted from Deployer and the variable substitution templates are extracted from it dynamically.
+		Provide the following parameters:
+			- bda.projectName: The name of the Deployer project
+			- bda.deploymentMapName: The name of the deployment map in the Deployer project from which to extract the variable substitution file
+			- bda.targetEnv: The target environment for which to create the variable substitution templates, e.g. DEV, TEST, QA or PROD
+			- bda.varsubDir: The directory where to store the generated varsub templates. 
+	</description>
 
 	<property name="projectAutomatorDefinition" location="${config.tmpdir}/${projectName}_PA_template.definition.xml" />
 	<property name="varsubDir" location="${bda.varsubDir}"/>
