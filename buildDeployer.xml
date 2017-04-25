@@ -37,77 +37,6 @@
 		<log msg="Repository location='${fbrRepoDir}'"/>
 	</target>
 
-	<target name="bda.deployer.parseFBR" description="Parse the file based repository directory and search for composites">
-		<log msg="Using FBR: ${fbrRepoDir}" />
-		<groovy>
-			import groovy.xml.DOMBuilder
-	    	import groovy.xml.dom.DOMCategory
-			// we only support packages, processes and MWS projects currently...
-			def packages = []
-			def bpms = []
-			def mws = []
-	
-			new File(properties.'fbrRepoDir').eachDirRecurse() { dir ->
-			    dir.eachFileMatch(~/.*.acdl/) { file ->			
-					def doc  = groovy.xml.DOMBuilder.parse(new FileReader(file))
-			    	def asset_composite = doc.documentElement
-			    	use (DOMCategory) {
-						def implementation_generic = asset_composite.'implementation.generic'
-						def type=implementation_generic.'@type'[0]
-						def displayName = asset_composite.'@displayName'
-					    def name = asset_composite.'@name'
-			
-					
-				    	println "found acdl ${file} of type=${type} with name=${name} and displayName=${displayName}"
-			
-						 if(type == 'bpmprocess') {
-				            bpms.add([name: name, displayName: displayName])
-				        } else if (type == 'ispackage' || type == 'isconfiguration') {
-				            packages.add([name: name, displayName: name])
-				        } else if (type == 'war') {
-				            mws.add([name: name, displayName: displayName])
-				        } else if (type == 'pdp') {
-							mws.add([name: name, displayName: displayName])
-				        } else if (type == 'cdp') {
-							mws.add([name: name, displayName: displayName])
-						} 
-					}
-				}
-			}
-			
-			def xmlFile = properties.'projectAutomatorDefinition'
-			def repoName = properties.'fbrRepoName'
-		    println "parsing xml project definition file '${xmlFile}' in order to add ACDLs from FBR to it"
-			def xml = new XmlParser().parse(xmlFile)
-			
-			def deploymentSet = xml.Projects.Project.DeploymentSet[0]
-			if (!packages.empty) {								
-				packages.each() {
-					def newComposite = new Node(null, 'Composite', [name:"${it.name}", displayName:"${it.name}", srcAlias:"${repoName}", type:'IS'])
-					//def newComposite = new Node(null, 'Composite', [name:"${it.name}", srcAlias:"${repoName}", type:'IS'])
-					deploymentSet.append(newComposite)
-				}
-			}
-			if (!bpms.empty) {
-				bpms.each() {
-						def newComposite = new Node(null, 'Composite', [displayName:"${it.displayName}", name:"${it.name}", srcAlias:"${repoName}", type:'BPM'])
-						deploymentSet.append(newComposite)
-				}
-			}
-			if (!mws.empty) {
-				mws.each() {
-					def newComposite = new Node(null, 'Composite', [displayName:"${it.displayName}", name:"${it.name}", srcAlias:"${repoName}", type:'MWS'])
-					deploymentSet.append(newComposite)
-				}			
-			}	
-			def output = properties.'projectAutomatorDefinition'
-			XmlNodePrinter np = new XmlNodePrinter(new PrintWriter(new FileWriter(output)))
-			np.preserveWhitespace = true
-			np.print(xml)
-			println "Finished adding composites to project automator template '${output}'"
-		</groovy>
-	</target>
-
 	<target name="bda.deployer.createProjectAutomatorTemplate" depends="">
 		<property name="groovyScript.CreateProjectAutomatorTemplate" location="resources/ProjectAutomator/CreateProjectAutomatorTemplate.groovy" />
 		<log msg="Creating project definition file '${projectAutomatorDefinition}' using environments defined in '${environmentsDefinition}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'" />
@@ -121,6 +50,7 @@
 			<arg line="-s ${config.deployer.deployerPassword}" />
 			<arg line="-e ${environmentsDefinition}" />
 			<arg line="-repoName ${fbrRepoName}" />
+			<arg line="-splitDeploymentSets true" />
 		</groovy>
 	</target>
 
@@ -129,12 +59,12 @@
 		</delete>
 	</target>
 
-	<target name="bda.deployer.startDeployer" depends="bda.deployer.setupDeployer, bda.deployer.deployDeployer" description="creates the deployer project and invokes Deployer for execution">
+	<target name="bda.deployer.startDeployer" depends="bda.deployer.setupDeployer, bda.deployer.extractDeploymentCandidates" description="creates the deployer project and invokes Deployer for execution">
 
 	</target>
 
 
-	<target name="bda.deployer.setupDeployer" depends="bda.deployer.initDeployer, bda.deployer.createProjectAutomatorTemplate, bda.deployer.parseFBR, bda.deployer.execProjectAutomator, bda.deployer.importVarSubDeployer" description="creates the deployer project">
+	<target name="bda.deployer.setupDeployer" depends="bda.deployer.initDeployer, bda.deployer.createProjectAutomatorTemplate, bda.deployer.execProjectAutomator, bda.deployer.importVarSubDeployer" description="creates the deployer project">
 
 	</target>
 
@@ -216,13 +146,29 @@
 		</if>
 	</target>
 
+	<target name="bda.deployer.extractDeploymentCandidates">
+		<log msg="Extracting deployment candidates from project automator template '${projectAutomatorDefinition}'"/>
+		<path id="path.projectdefinition">
+			<pathelement location="${projectAutomatorDefinition}" />
+		</path>
+		<pathconvert refid="path.projectdefinition" property="path.projectdefinition.file">
+		</pathconvert>
+		<log msg="Extracting deployment candidates from project automator template '${path.projectdefinition.file}'"/>
+		<xmltask source="${path.projectdefinition.file}">
+			<call path="//DeploymentCandidate" target="bda.deployer.deployDeployer" buffer="candidates">
+			  <param name="deploymentCandidate" path="@name"/>
+			</call>
+		</xmltask>
+	</target>
+	
 	<target name="bda.deployer.deployDeployer">
-		<log msg="-- Invoking Deployer executable '${config.deployer.deployerInstallationPath}/${deployerExecutable}' with parameters: -project ${projectName}, -dc myDeployment, -host ${config.deployer.deployerHost}, -port ${config.deployer.deployerPort}, -user ${config.deployer.deployerUsername}" />
+		<log msg="-- Invoking Deployer executable '${config.deployer.deployerInstallationPath}/${deployerExecutable}' with parameters: -project ${projectName}, -dc myDeployment, -host ${config.deployer.deployerHost}, -port ${config.deployer.deployerPort}, -user ${config.deployer.deployerUsername}, -dc ${deploymentCandidate}" />
+		
 		<property name="output" value="${config.deployer.deployerInstallationPath}/logs/CLI.log" />
 		<exec resultproperty="deployerResult" executable="${config.deployer.deployerInstallationPath}/${deployerExecutable}" dir="${config.deployer.deployerInstallationPath}" failonerror="false" output="${output}">
 			<arg value="--deploy" />
 			<arg line="-project ${projectName}" />
-			<arg line="-dc Deployment" />
+			<arg line="-dc ${deploymentCandidate}" />
 			<arg line="-host ${config.deployer.deployerHost}" />
 			<arg line="-port ${config.deployer.deployerPort}" />
 			<arg line="-user ${config.deployer.deployerUsername}" />

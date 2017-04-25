@@ -37,7 +37,7 @@
 		<description>Build and deploy the project.</description>
 	</target>
 	
-	<target name="_TEST_createFileSpec" depends="bda.init.Project, bda.repo.createArtifactFileSpec">
+	<target name="_TEST_extractDeploymentCandidates" depends="bda.init.Project, bda.deployer.extractDeploymentCandidates">
 		<description>_TEST</description>
 	</target>
 </project>
