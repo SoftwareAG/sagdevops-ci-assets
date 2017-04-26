@@ -1,46 +1,41 @@
 <?xml version="1.0"?>
-<project name="Build" default="buildWM" basedir=".">
-        
-        <property name="abeHome" value="${SAGHome}/common/AssetBuildEnvironment"/>
-        
-        <property name="abeBuildfileDir" value="master_build"/>
+<project name="Build" default="bda.abe.buildWM" basedir=".">
 
-        <property name="abeBuildfileFile" value="build.xml"/>
-
-	<property name="abeBuildPropertiesReference" value="master_build_Reference/build.properties"/>
+	<property name="abeHome" value="${SAGHome}/common/AssetBuildEnvironment" />
+	<property name="abeBuildfileDir" value="master_build" />
+	<property name="abeBuildfileFile" value="build.xml" />
+	<property name="abeBuildPropertiesReference" value="master_build_Reference/build.properties" />
 
 
-
-	<target name="buildWM" description="build project" depends="cleanupBuild, prepareABEproperties">				
-		<echo>invoke ABE Build</echo>					
-		<ant antfile="${abeBuildfileFile}" dir="${abeHome}/${abeBuildfileDir}" target="build"/>
+	<target name="bda.abe.buildWM" description="build project" depends="bda.abe.cleanupBuild, bda.abe.prepareABEproperties">
+		<echo>invoke ABE Build</echo>
+		<ant antfile="${abeBuildfileFile}" dir="${abeHome}/${abeBuildfileDir}" target="build" />
 	</target>
-	
-	<target name="cleanupBuild">			
+
+	<target name="bda.abe.cleanupBuild">
 		<if>
-			<available file="${buildOutputDir}" type="dir"/>
+			<available file="${fbrRepoDir}" type="dir" />
 			<then>
 				<delete includeemptydirs="true">
-					<fileset dir="${buildOutputDir}" includes="**/*"/>
-				</delete>	
+					<fileset dir="${fbrRepoDir}" includes="**/*" />
+				</delete>
 			</then>
 		</if>
 	</target>
-	
-	<target name="prepareABEproperties">			
+
+	<target name="bda.abe.prepareABEproperties">
 		<if>
 			<not>
-				<available file="${abeHome}/${abeBuildfileDir}/build.properties.original" type="file"/>
+				<available file="${abeHome}/${abeBuildfileDir}/build.properties.original" type="file" />
 			</not>
 			<then>
 				<!-- back up the original if not back up is being made -->
-				<move file="${abeHome}/${abeBuildfileDir}/build.properties" tofile="${abeHome}/${abeBuildfileDir}/build.properties.original"/>
+				<move file="${abeHome}/${abeBuildfileDir}/build.properties" tofile="${abeHome}/${abeBuildfileDir}/build.properties.original" />
 			</then>
 		</if>
-				
+
 		<!-- move build.properties from SVN to the target ABE folder -->
-		<copy file="${abeBuildPropertiesReference}" tofile="${abeHome}/${abeBuildfileDir}/build.properties" overwrite="true"/>		
+		<copy file="${abeBuildPropertiesReference}" tofile="${abeHome}/${abeBuildfileDir}/build.properties" overwrite="true" />
 	</target>
-	
-	
+
 </project>
