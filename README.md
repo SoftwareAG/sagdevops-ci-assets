@@ -28,6 +28,7 @@ Edit the _System.properties_ to correspond to your infrastructure:
 * __config.tmpdir__: Points to a tempory directory where assets are stored for the deployment process. **Note**: take care to clean this directory up regularly!
 * __config.build.buildStorageDir__: Where to store the file based repositories created by the Asset Build Environment
 * __config.deployer.doVarSub__: Defines whether to do variable substitution (using the Variable Substitution Repository, see below)
+* __config.deployer.projectNamePrefix__: Defines the Deployer Project Name prefix. Can either be static, e.g. "BDA", or it can be dynamic, e.g. "Jenkins_${env.BUILD_NUMBE}"
 
 
 ### Build/CI Environment
