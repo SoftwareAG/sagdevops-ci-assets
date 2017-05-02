@@ -54,7 +54,8 @@ Whenever a developer checks in new IS packages and Tests those will be automatic
 
 ## Notice
 The wM Test Suite tests will have to be places in a directory a *setup* directory inside the test project, so that it can be picked up by the test executor.
-
+_____________
+Contact us at [TECHcommunity](mailto:technologycommunity@softwareag.com?subject=Github/SoftwareAG) if you have any questions.
 
 
 
