@@ -1,28 +1,34 @@
 <?xml version="1.0"?>
 <project name="test" default="bda.test.startTest" basedir=".">
 
-	<path id="junitClasspath">
+	<path id="junit.classpath">
+		<!-- jars for invoking IS services -->
 		<fileset dir="${SAGHome}/common/lib/ext" includes="enttoolkit.jar" />
 		<fileset dir="${SAGHome}/common/lib" includes="**/gf.javax.mail.jar" />
 		<fileset dir="${SAGHome}/common/lib" includes="wm-isclient.jar" />
 		<fileset dir="${SAGHome}/IntegrationServer/lib" includes="wm-isserver.jar" />
-		<fileset dir="./lib" includes="httpunit.jar" />
-		<fileset dir="./lib" includes="junit*.jar" />
-		<fileset dir="./lib" includes="xmlunit*.jar" />
+		<fileset dir="${config.build.abeHome}/ant/lib/" includes="ant-junit.jar"/>
+		<!-- jars for WmTestSuite -->
 		<fileset dir="./lib" includes="serviceInterceptor.jar" />
-		<fileset dir="./lib" includes="*junit.jar" />
-		<fileset dir="./lib" includes="**/*.jar" />
+		<fileset dir="./lib" includes="serviceMockClient.jar" />
+		<fileset dir="./lib" includes="xmlunit*.jar" />
+		<fileset dir="./lib" includes="httpunit.jar" />
+		<fileset dir="${SAGHome}/common/runtime/bundles/platform/eclipse/plugins" includes="org.junit_4*.jar" />		
 	</path>
 
 	<!-- explicit taskdef is necessary if the ant-junit.jar is not in the ANT_HOME/lib dir -->
-	<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
-		  <classpath refid="junitClasspath"/>
-	</taskdef>
-	<taskdef name="junitreport" classname="org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator">
-		  <classpath refid="junitClasspath"/>
-	</taskdef>
 
-	<target name="bda.test.startTest" depends="bda.test.jenkinsCheck">		
+	<target name="bda.test.init">
+		<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
+			  <classpath refid="junit.classpath"/>
+		</taskdef>
+		<taskdef name="junitreport" classname="org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator">
+			  <classpath refid="junit.classpath"/>
+		</taskdef>
+	</target>
+	
+
+	<target name="bda.test.startTest" depends="bda.test.init, bda.test.jenkinsCheck">		
 		<var name="failedTestList" value=""/>
 		
         <!-- interate over the test project and triiger all xml tests in the setup folder -->
@@ -33,7 +39,7 @@
 			<sequential>
 				<trycatch reference="exception_ref">
 					<try>
-                        <echo message="@{testProject}"/>
+                        <echo message="Running tests for package '@{testProject}'"/>
 						<antcall target="bda.test.executeTestAndReportXMLForNodes">
 							<param name="testPackageName" value="@{testProject}" />
 						</antcall>
@@ -94,7 +100,7 @@
 					<jvmarg value="-DwebMethods.test.setup.filename=@{testSetupFile}" />
 					<!--jvmarg value="-Dresources.folder=${resourcesFolder}" /-->
 					<classpath>
-						<path refid="junitClasspath" />
+						<path refid="junit.classpath" />
 					</classpath>
 					<formatter type="xml" />
 					<test name="com.wm.ps.test.WmTestSuite" outfile="TEST-${fileBasename}" haltonerror="false" haltonfailure="false" todir="${testPackageReportsDir}" />

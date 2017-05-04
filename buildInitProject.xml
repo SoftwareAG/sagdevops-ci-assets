@@ -94,7 +94,8 @@
 	<target name="bda.init.Project" depends="bda.init.SystemProperties,bda.init.MandatoryProperties,bda.init.OptionalProperties" description="bda.init. properties needed for the project">
 		<property name="bda.logging.log4j.propertiesFile" location="./resources/log4j.properties" />
 		<taskdef name="log" classname="com.sag.wm.ant.tasks.is.util.TALogger" classpathref="bda.classpath" />
-
+		<!--<taskdef classpath="lib/ant-contrib.jar" resource="net/sf/antcontrib/antlib.xml" />-->
+		<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="bda.classpath" />
 		<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpathref="bda.classpath" />
 		<taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy" classpathref="bda.classpath" />
 

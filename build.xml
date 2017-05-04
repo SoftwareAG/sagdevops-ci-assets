@@ -8,9 +8,6 @@
 	<import file="buildDeployer.xml" />
 	<import file="buildTest.xml" />
 	<import file="buildRepo.xml" />
-																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																										
-
-	<taskdef classpath="lib/ant-contrib.jar" resource="net/sf/antcontrib/antlib.xml" />
 
 	<target name="build" depends="bda.init.Project, bda.abe.buildWM, bda.repo.processBuildOutput">
 		<description>Build project.</description>
@@ -37,7 +34,7 @@
 		<description>Build and deploy the project.</description>
 	</target>
 	
-	<target name="_TEST_extractDeploymentCandidates" depends="bda.init.Project, bda.deployer.extractDeploymentCandidates">
+	<target name="_TEST_startTest" depends="bda.init.Project, bda.test.startTest">
 		<description>_TEST</description>
 	</target>
 </project>
