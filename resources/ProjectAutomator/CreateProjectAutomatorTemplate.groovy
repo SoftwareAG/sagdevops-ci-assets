@@ -1,26 +1,25 @@
 #!/opt/bpa/groovy-2.4.3/bin/groovy
 package com.softwaerag.gcs.wx.bdas.projectAutomator
 
-@Grapes([
-	@Grab(group='commons-logging', module='commons-logging', version='1.2'),
-	@Grab(group='org.springframework', module='spring-core', version='4.3.5.RELEASE'),
-	@Grab(group='org.apache.httpcomponents', module='httpcore', version='4.3.3'),
-	@Grab(group='org.codehaus.groovy.modules.http-builder', module='http-builder', version='0.5.0'),
-	@Grab(group='org.apache.ant', module='ant', version='1.9.8'),
-	@Grab(group='org.apache.ant', module='ant-launcher', version='1.9.8'),
-	@Grab(group='org.apache.ivy', module='ivy', version='2.4.0')
-
-]
-)
-import org.apache.http.entity.FileEntity
-
-import groovy.lang.Grab
-import groovy.lang.Grapes
-import groovy.swing.SwingBuilder
-import groovyx.net.http.ContentType
-import groovyx.net.http.Method
+//@Grapes([
+//	@Grab(group='commons-logging', module='commons-logging', version='1.2'),
+//	@Grab(group='org.springframework', module='spring-core', version='4.3.5.RELEASE'),
+//	@Grab(group='org.apache.httpcomponents', module='httpcore', version='4.3.3'),
+//	@Grab(group='org.codehaus.groovy.modules.http-builder', module='http-builder', version='0.5.0'),
+//	@Grab(group='org.apache.ant', module='ant', version='1.9.8'),
+//	@Grab(group='org.apache.ant', module='ant-launcher', version='1.9.8'),
+//	@Grab(group='org.apache.ivy', module='ivy', version='2.4.0')
+//
+//]
+//)
+//import org.apache.http.entity.FileEntity
+//
+//import groovy.lang.Grab
+//import groovy.lang.Grapes
+//import groovy.swing.SwingBuilder
+//import groovyx.net.http.ContentType
+//import groovyx.net.http.Method
 import groovy.xml.dom.DOMCategory
-
 import groovy.xml.MarkupBuilder
 import groovy.xml.StreamingMarkupBuilder
 import groovy.xml.XmlUtil
@@ -82,7 +81,7 @@ bpms = []
 mws = []
 tn = []
 
-println "Creating Project Automator templates with the following properties:"
+println "> Creating Project Automator templates with the following properties:"
 println "\t- Project: '${project}'"
 println "\t- Repository: '${repo}'"
 println "\t- Output File: '${outputFile}'"

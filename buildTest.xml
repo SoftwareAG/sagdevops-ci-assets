@@ -9,10 +9,10 @@
 		<fileset dir="${SAGHome}/IntegrationServer/lib" includes="wm-isserver.jar" />
 		<fileset dir="${config.build.abeHome}/ant/lib/" includes="ant-junit.jar"/>
 		<!-- jars for WmTestSuite -->
-		<fileset dir="./lib" includes="serviceInterceptor.jar" />
-		<fileset dir="./lib" includes="serviceMockClient.jar" />
-		<fileset dir="./lib" includes="xmlunit*.jar" />
-		<fileset dir="./lib" includes="httpunit.jar" />
+		<fileset dir="./lib/wmtestsuite" includes="serviceInterceptor.jar" />
+		<fileset dir="./lib/wmtestsuite" includes="serviceMockClient.jar" />
+		<fileset dir="./lib/wmtestsuite" includes="xmlunit*.jar" />
+		<fileset dir="./lib/wmtestsuite" includes="httpunit.jar" />
 		<fileset dir="${SAGHome}/common/runtime/bundles/platform/eclipse/plugins" includes="org.junit_4*.jar" />		
 	</path>
 

@@ -1,27 +1,6 @@
 #!/opt/bpa/groovy-2.4.3/bin/groovy
 package com.softwaerag.gcs.wx.bdas.build.artifactory
 
-@Grapes([
-	@Grab(group='org.apache.ant', module='ant', version='1.9.8'),
-	@Grab(group='org.apache.ant', module='ant-launcher', version='1.9.8'),
-	@Grab(group='org.apache.ivy', module='ivy', version='2.4.0'),
-    @Grab(group='org.codehaus.groovy', module='groovy-json', version='2.4.7')
-]
-)
-
-import groovy.xml.MarkupBuilder
-import groovy.lang.Grab
-import groovy.lang.Grapes
-import groovy.json.JsonBuilder
-import groovy.json.JsonOutput
-import groovy.json.StreamingJsonBuilder
-/**
- * 
-		pattern "${pathToFbrZip}"
-		target "${org}/${moduleName}/${baseRevision}/fbrs/${moduleName}-${baseRevision}.zip"
- * @author waa
- *
- */
 
 def cli = new CliBuilder (usage:'artifactoryFileSpec.groovy -outputDir OUTPUT_DIR')
 cli.with {

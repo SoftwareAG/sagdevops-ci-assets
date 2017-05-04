@@ -76,8 +76,11 @@
 		</pathconvert>
 
 		<property name="output" value="${config.deployer.deployerInstallationPath}/logs/CLI.log" />
-
-		<exec resultproperty="paResult" failonerror="false" dir="${config.deployer.deployerInstallationPath}" executable="${config.deployer.deployerInstallationPath}/${deployerAutomatorExecutable}" output="${output}">
+		<property name="paExec" value="${config.deployer.deployerInstallationPath}/${deployerAutomatorExecutable}"/>
+		
+		<log msg="Executing ProjectAutomator '${paExec}' with input file '${path.projectdefinition.file}'. Writing output to '${output}'"/>
+		
+		<exec resultproperty="paResult" failonerror="false" dir="${config.deployer.deployerInstallationPath}" executable="${paExec}" output="${output}">
 			<arg value="${path.projectdefinition.file}" />
 		</exec>
 

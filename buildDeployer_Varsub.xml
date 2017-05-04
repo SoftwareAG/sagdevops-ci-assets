@@ -96,7 +96,7 @@
 		<log msg="Storing resulting varsub files in directory '${varsubDir}'."/>
 
 		<property name="groovyScript.ExtractVarSub" location="resources/vs/ExtractVarSub.groovy" />
-		<log msg="Calling '${groovyScript.ExtractVarSub}' to create varsub file" />
+		<log msg="Calling '${groovyScript.ExtractVarSub}' to create varsub template files" />
 		<groovy src="${groovyScript.ExtractVarSub}">
 			<arg line="-varsubFilePath ${varSubFilename}" />
 			<arg line="-varsubDirPath ${varsubDir}" />
