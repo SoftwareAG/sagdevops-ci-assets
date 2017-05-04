@@ -26,6 +26,10 @@
 		<description>Preparing donwload spec.</description>
 	</target>
 	
+	<target name="prepareArtifactoryUploadSpec" depends="bda.init.Project, bda.repo.processBuildOutputForArtifactory">
+		<description>Preparing donwload spec.</description>
+	</target>
+	
 	<target name="test" depends="bda.init.Project, bda.test.startTest">
 		<description>Run tests.</description>
 	</target>

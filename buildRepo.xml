@@ -72,7 +72,7 @@
 		</zip>
 	</target>
 
-	<target name="bda.repo.createArtifactFileSpec">
+	<target name="bda.repo.createArtifactFileSpec" if="bda.artifactoryFileSpecName">
 		<property name="groovyScript.CreateArtifactoryFileSpec" location="resources/scripts/ArtifactoryFileSpec.groovy" />
 		<log msg="Creating Artifactory file spec '${bda.artifactoryFileSpecName}' for ${type}" />
 		<groovy src="${groovyScript.CreateArtifactoryFileSpec}">
