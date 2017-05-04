@@ -39,14 +39,14 @@
 			<sequential>
 				<trycatch reference="exception_ref">
 					<try>
-                        <echo message="Running tests for package '@{testProject}'"/>
+                        <log msg="Running tests for package '@{testProject}'"/>
 						<antcall target="bda.test.executeTestAndReportXMLForNodes">
 							<param name="testPackageName" value="@{testProject}" />
 						</antcall>
 					</try>
 					<catch>
 						<property name="testFail" refid="exception_ref" />
-						<echo message="JUnit test for package '@{testProject}' failed: ${testFail}" />
+						<log msg="JUnit test for package '@{testProject}' failed: ${testFail}" />
 						<var name="failedTestList" value="${failedTestList}'@{packageName}', " />
 					</catch>
 				</trycatch>
@@ -61,13 +61,13 @@
 				<log msg="At least one test failed. Failed packages: ${failedTestList}. Not failing script execution so that Jenkins can report results." level="ERROR"/>
 			</then>
 			<else>
-				<echo message="All JUnit Tests passed."/>
+				<log msg="All JUnit Tests passed."/>
 			</else>
 		</if>
 	</target>
 
 	<target name="bda.test.initTestPacakge">
-		<echo message="Init JUnit tests for package ${testPackageName}" />		
+		<log msg="Init JUnit tests for package ${testPackageName}" />		
 		<property name="testPackageReportsDir" value="${testPackageName}/resources/reports" />
 	</target>
 	
@@ -78,7 +78,7 @@
 
 	<!--execute only if the XML Test directory exists in the test package -->
 	<target name="bda.test.executeTestAndReportXML" depends="bda.test.initTestPacakge, bda.test.cleanUpTestPackage">
-		<echo message="> Starting JUnit tests for package '${testPackageName}' on server '${user}:****@${host}:${port}'"/>
+		<log msg="> Starting JUnit tests for package '${testPackageName}' on server '${user}:****@${host}:${port}'"/>
 		
 		<mkdir dir="${testPackageReportsDir}" />
 
@@ -91,7 +91,7 @@
 			</path>
 			<sequential>
 				<basename property="fileBasename" file="@{testSetupFile}" suffix=".xml" />
-				<echo message="Running JUnit test '@{testSetupFile}'"/>
+				<log msg="Running JUnit test '@{testSetupFile}'"/>
 				<junit printsummary="yes" haltonfailure="no" fork="true" failureproperty="test:failure" showoutput="true" dir="${testPackageName}">
 					<jvmarg value="-DwebMethods.integrationServer.name=${host}" />
 					<jvmarg value="-DwebMethods.integrationServer.port=${port}" />
@@ -132,7 +132,7 @@
 
 	<!-- if jenkins report dir is set publicate results there-->
 	<target name="bda.test.copyResultsToReportsDir" depends="bda.test.jenkinsCheck" if="isReportingToJenkins">
-		<echo message="Copying JUnit test results to folder '${jenkinsReportDir}'"/>
+		<log msg="Copying JUnit test results to folder '${jenkinsReportDir}'"/>
 		<copy todir="${jenkinsReportDir}">
 			<fileset dir="${current.report.dir}">
 				<include name="*.*" />
@@ -143,7 +143,7 @@
 	
 	<!-- will jenkins evaluate the test results -->
 	<target name="bda.test.jenkinsCheck" >
-		<echo message="-- jenkins report dir: ${jenkinsReportDir}"/>
+		<log msg="-- jenkins report dir: ${jenkinsReportDir}"/>
 		 <condition property="isReportingToJenkins">
 		 	<not>
             	<equals arg1="${jenkinsReportDir}" arg2="" trim="true"/>

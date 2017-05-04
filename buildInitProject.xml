@@ -7,7 +7,7 @@
 		<fileset dir="${SAGHome}/IntegrationServer/lib" includes="wm-isserver.jar" />
 		<fileset dir="${SAGHome}/IntegrationServer/lib/jars" includes="**/*.jar" />
 		<fileset dir="./lib/groovy" includes="*.jar" />
-		<fileset dir="./lib" includes="TestAutomation.jar" />
+		<fileset dir="./lib" includes="bda-utils.jar" />
 		<fileset dir="./lib" includes="xmltask-1.16.jar" />
 	</path>
 
@@ -95,7 +95,7 @@
 
 	<target name="bda.init.Project" depends="bda.init.SystemProperties,bda.init.MandatoryProperties,bda.init.OptionalProperties" description="bda.init. properties needed for the project">
 		<property name="bda.logging.log4j.propertiesFile" location="./resources/log4j.properties" />
-		<taskdef name="log" classname="com.sag.wm.ant.tasks.is.util.TALogger" classpathref="bda.classpath" />
+		<taskdef name="log" classname="com.softwareag.wx.bda.utils.ant.BDALogger" classpathref="bda.classpath" />
 		<!--<taskdef classpath="lib/ant-contrib.jar" resource="net/sf/antcontrib/antlib.xml" />-->
 		<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="bda.classpath" />
 		<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpathref="bda.classpath" />

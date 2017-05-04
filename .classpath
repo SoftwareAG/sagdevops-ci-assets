@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="/home/waa/sag/cc/common/AssetBuildEnvironment/master_build/lib/ant-contrib.jar"/>
 	<classpathentry kind="lib" path="/home/waa/sag/cc/common/AssetBuildEnvironment/ant/lib/ant-junit.jar"/>
 	<classpathentry kind="lib" path="lib/groovy/ant-launcher-1.8.4.jar"/>
@@ -19,5 +20,9 @@
 	<classpathentry kind="lib" path="lib/wmtestsuite/serviceMockClient.jar"/>
 	<classpathentry kind="lib" path="lib/wmtestsuite/xmlunit1.0.jar"/>
 	<classpathentry kind="lib" path="lib/groovy/commons-cli-1.2.jar"/>
+	<classpathentry kind="var" path="WEBMETHODS_COMMON_LIB_EXT/log4j.jar"/>
+	<classpathentry kind="var" path="IS_MAIL"/>
+	<classpathentry kind="var" path="IS_SERVER"/>
+	<classpathentry kind="var" path="WEBMETHODS_COMMON_LIB/wm-isclient.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
