@@ -1,0 +1,17 @@
+<ivysettings>
+    <properties file="build.properties" />
+    <settings defaultResolver="local-chain"/>
+    <resolvers>
+        <ibiblio name="ibiblio-maven2" m2compatible="true"/>
+        <ibiblio name="java-net-maven2" root="http://download.java.net/maven/2/" m2compatible="true" />
+        <ibiblio name="maven" root="https://maven.atlassian.com/3rdparty/" m2compatible="true" />
+        <chain name="local-chain">
+            <resolver ref="maven"/>
+            <resolver ref="ibiblio-maven2"/>
+            <resolver ref="java-net-maven2"/>
+        </chain>
+    </resolvers>
+    <modules>
+      <module organisation="com.oopsconsultancy" resolver="maven"/>
+    </modules>
+</ivysettings>

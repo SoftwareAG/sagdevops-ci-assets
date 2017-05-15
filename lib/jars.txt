@@ -1,0 +1,10 @@
+WmTestSuite jars
+- !!! httpunit.jar --> used by WmTestSuite  --> only part of Designer --> stays in lib dir for now
+- !!! xmlunit1.0.jar --> used by WmTestSuite --> only part of Designer --> stays in lib dir for now
+- serviceInterceptor.jar --> WmTestSuite
+- serviceMockClient.jar --> WmTestSuite
+
+TaskDef Jars
+- bda-utils --> custom logger --> sources included, build script resources/BDA/build_compile.xml
+
+

@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-<antlib>
-
-	<taskdef name="log" classname="com.softwareag.wx.bda.utils.ant.BDALogger" />
-</antlib>

@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<project name="Build and Deploy Solution" default="" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+
+	<property name="ivy.jar.file" value="${lib.dir}/ivy.jar" />
+
+	<path id="ivy.lib.path">
+		<fileset dir="${lib.dir}" includes="ivy.jar" />
+	</path>
+
+	<target name="download-ivy" unless="skip.download">
+		<property name="ivy.install.version" value="2.4.0" />
+		<property name="ivy.downloadUrl" value="https://repo1.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar"/>
+		<echo message="installing ivy... Download from '${ivy.downloadUrl}'" />
+		<get src="${ivy.downloadUrl}" dest="${ivy.jar.file}" usetimestamp="true" />
+	</target>
+
+	<target name="install-ivy" depends="download-ivy" description="--> install ivy">
+		<path id="ivy.lib.path">
+			<fileset dir="${lib.dir}" includes="*.jar" />
+		</path>
+		<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path" />
+	</target>
+
+	<target name="getDependentJars" depends="install-ivy">
+		<property name="ivysettings.xml" value="resources/ivy/ivysettings.xml"/>
+		<property name="ivy.xml" value="resources/ivy/ivy.xml"/>
+		<echo message="Suing ivy.settings '${ivysettings.xml}' and ivy.xml '${ivy.xml}' to resolve dependeant jars from public repositories..."/>
+		<ivy:settings file="${ivysettings.xml}" id="ivy.settings" />
+		<ivy:resolve file="${ivy.xml}" settingsRef="ivy.settings" />
+	</target>
+
+	<target name="bda.dependencies.fileset" depends="getDependentJars" description="downloads ivy jar, then resolves all necessary jars by using the resources/ivy.ivy.xml dependency declaration">
+		<ivy:cachefileset setid="dependencies.fileset" settingsRef="ivy.settings"/>
+	</target>
+</project>
