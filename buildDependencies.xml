@@ -3,10 +3,6 @@
 
 	<property name="ivy.jar.file" value="${lib.dir}/ivy.jar" />
 
-	<path id="ivy.lib.path">
-		<fileset dir="${lib.dir}" includes="ivy.jar" />
-	</path>
-
 	<target name="bda.dependencies.downloadIvy" unless="skip.download">
 		<property name="ivy.install.version" value="2.4.0" />
 		<property name="ivy.downloadUrl" value="https://repo1.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar"/>
@@ -16,7 +12,7 @@
 
 	<target name="bda.dependencies.installIvy" depends="bda.dependencies.downloadIvy" description="--> install ivy">
 		<path id="ivy.lib.path">
-			<fileset dir="${lib.dir}" includes="*.jar" />
+			<fileset dir="${lib.dir}" includes="ivy.jar" />
 		</path>
 		<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path" />
 	</target>
