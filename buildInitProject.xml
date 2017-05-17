@@ -2,9 +2,9 @@
 <project name="ProjectInitializer" default="" basedir=".">
 
 	<property file="System.properties" />
-	<property name="lib.dir" value="./lib"/>
-	
-	<import file="buildDependencies.xml"/>
+	<property name="lib.dir" value="./lib" />
+
+	<import file="buildDependencies.xml" />
 
 
 	<!-- system properties properties -->
@@ -46,9 +46,6 @@
 		<property name="isProjectsDir" value="" />
 	</target>
 
-	<target name="bda.init.ISConfigDir" unless="isConfigDir">
-		<property name="isConfigDir" value="" />
-	</target>
 
 	<target name="bda.init.BPMProjectsDir" unless="bpmProjectsDir">
 		<property name="bpmProjectsDir" value="" />
@@ -83,7 +80,7 @@
 	<target name="bda.init.MandatoryProperties" depends="bda.init.ProjcetName,bda.init.buildStorageDirr">
 	</target>
 
-	<target name="bda.init.OptionalProperties" depends="bda.init.ISProjectsDir,bda.init.ISConfigDir,bda.init.BPMProjectsDir,bda.init.MWSProjectsDir,bda.init.RulesProjectsDir,bda.init.UMProjectDir,bda.init.TestPackageNamePattern,bda.init.JenkinsReportDir">
+	<target name="bda.init.OptionalProperties" depends="bda.init.ISProjectsDir, bda.init.BPMProjectsDir,bda.init.MWSProjectsDir,bda.init.RulesProjectsDir,bda.init.UMProjectDir,bda.init.TestPackageNamePattern,bda.init.JenkinsReportDir">
 	</target>
 
 	<target name="bda.init.Project" depends="bda.init.classpath, bda.init.SystemProperties, bda.init.MandatoryProperties, bda.init.OptionalProperties" description="bda.init. properties needed for the project">
@@ -102,15 +99,15 @@
 		<!-- build.version is for ABE, see "master_build_Reference/build.properties" -->
 		<property name="build.version" value="${bda.projectName}_${config.build.version}" />
 		<!-- build_number is for ABE, see "${SAG_HOME}/common/AssetBuildEnvironment/build.number" -->
-		<property name="build_number" value="${env.BUILD_NUMBER}"/>
-		
-		<property name="fbrRepoName" value="${bda.projectName}_${baseRevision}_fbrRepo"/>
-		<property name="buildOutputDir" location="${config.build.buildStorageDir}/${fbrRepoName}"/>
+		<property name="build_number" value="${env.BUILD_NUMBER}" />
+
+		<property name="fbrRepoName" value="${bda.projectName}_${baseRevision}_fbrRepo" />
+		<property name="buildOutputDir" location="${config.build.buildStorageDir}/${fbrRepoName}" />
 
 	</target>
-	
+
 	<target name="bda.init.classpath" depends="bda.dependencies.fileset">
-		<echo message="Setting up classpath of local jars and ivy dependencies..."/>
+		<echo message="Setting up classpath of local jars and ivy dependencies..." />
 		<path id="bda.classpath">
 			<fileset dir="${SAGHome}/common/lib" includes="**/*.jar" />
 			<fileset dir="${SAGHome}/common/lib/ext" includes="**/*.jar" />
@@ -121,7 +118,7 @@
 			<fileset dir="${lib.dir}" includes="xmltask-1.16.jar" />
 			-->
 			<fileset dir="${lib.dir}" includes="bda-utils.jar" />
-			<fileset refid="dependencies.fileset"/>
+			<fileset refid="dependencies.fileset" />
 		</path>
 	</target>
 
