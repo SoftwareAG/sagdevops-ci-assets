@@ -109,15 +109,11 @@
 	<target name="bda.init.classpath" depends="bda.dependencies.fileset">
 		<echo message="Setting up classpath of local jars and ivy dependencies..." />
 		<path id="bda.classpath">
-			<fileset dir="${SAGHome}/common/lib" includes="**/*.jar" />
-			<fileset dir="${SAGHome}/common/lib/ext" includes="**/*.jar" />
-			<fileset dir="${SAGHome}/IntegrationServer/lib" includes="wm-isserver.jar" />
-			<fileset dir="${SAGHome}/IntegrationServer/lib/jars" includes="**/*.jar" />
 			<!-- load custom ant tasks -->
 			<fileset dir="${lib.dir}" includes="bda-utils.jar" />
 			<!-- include all user defined jars which are in the lib/ext dir --> 
 			<fileset dir="${lib.dir}/ext" includes="*.jar" />
-			<!-- reference other external/non-SAG jars --> 
+			<!-- reference other external/non-SAG and local SAG jars with ivy --> 
 			<fileset refid="dependencies.fileset" />
 		</path>
 	</target>

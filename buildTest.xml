@@ -11,8 +11,7 @@
 		<!-- jars for WmTestSuite -->
 		<fileset dir="./lib/wmtestsuite" includes="serviceInterceptor.jar" />
 		<fileset dir="./lib/wmtestsuite" includes="serviceMockClient.jar" />
-		<fileset dir="./lib/wmtestsuite" includes="xmlunit*.jar" />
-		<fileset dir="./lib/wmtestsuite" includes="httpunit.jar" />
+		<!-- JUnit jar -->
 		<fileset dir="${SAGHome}/common/runtime/bundles/platform/eclipse/plugins" includes="org.junit_4*.jar" />		
 	</path>
 
@@ -40,7 +39,8 @@
 				<trycatch reference="exception_ref">
 					<try>
                         <log msg="Running tests for package '@{testProject}'"/>
-						<antcall target="bda.test.executeTestAndReportXMLForNodes">
+						<!-- necessary to inheritAll and inheritRefs because of bda.classpath path reference -->
+						<antcall target="bda.test.executeTestAndReportXMLForNodes" inheritall="true" inheritrefs="true">
 							<param name="testPackageName" value="@{testProject}" />
 						</antcall>
 					</try>
@@ -101,6 +101,7 @@
 					<!--jvmarg value="-Dresources.folder=${resourcesFolder}" /-->
 					<classpath>
 						<path refid="junit.classpath" />
+						<path refid="bda.classpath" />
 					</classpath>
 					<formatter type="xml" />
 					<test name="com.wm.ps.test.WmTestSuite" outfile="TEST-${fileBasename}" haltonerror="false" haltonfailure="false" todir="${testPackageReportsDir}" />
@@ -165,6 +166,9 @@
 		
 					def ac = project.createTask("antcall");
 					ac.setTarget("bda.test.executeTestAndReportXML");
+					// necessary to inheritAll and inheritRefs because of bda.classpath path reference
+					ac.setInheritAll(true)
+					ac.setInheritRefs(true)			
 		            def acparam1 = ac.createParam();
                     acparam1.setName("host");
                     acparam1.setValue(host);

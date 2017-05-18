@@ -1,10 +1,9 @@
 WmTestSuite jars
-- !!! httpunit.jar --> used by WmTestSuite  --> only part of Designer --> stays in lib dir for now
-- !!! xmlunit1.0.jar --> used by WmTestSuite --> only part of Designer --> stays in lib dir for now
-- serviceInterceptor.jar --> WmTestSuite
-- serviceMockClient.jar --> WmTestSuite
+- wmtestsuite/serviceInterceptor.jar --> WmTestSuite 9.12
+- wmtestsuite/serviceMockClient.jar --> WmTestSuite 9.12
 
 TaskDef Jars
 - bda-utils --> custom logger --> sources included, build script resources/BDA/build_compile.xml
 
-
+All other jars are provided by Ivy, see resources/ivy/ivy.xml.
+If Ivy is not used, place necessary jars in "lib/ext" folder. Use "bda.dependencies.util.downloadJarsToLibFolder" target to download jars locally into lib/ext folder.

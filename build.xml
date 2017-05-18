@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="Build and Deploy Solution" default="buildDeployTest" basedir=".">
+<project name="BDA" default="buildDeployTest" basedir=".">
 	<property file="${project.properties}" />
 	<property file="System.properties" />
 
@@ -19,17 +19,17 @@
 
 	<target name="extractVarSubTemplates" depends="bda.init.Project">
 		<description>Extract varsub.</description>
-		<ant antfile="buildDeployer_Varsub.xml" target="bda.deployer.varsub.generateVarSubTemplates" inheritrefs="true"/>
+		<ant antfile="buildDeployer_Varsub.xml" target="bda.deployer.varsub.generateVarSubTemplates" inheritrefs="true" />
 	</target>
-	
+
 	<target name="prepareArtifactoryDownloadSpec" depends="bda.init.Project, bda.repo.prepareArtifactoryDownloadSpec">
 		<description>Preparing donwload spec.</description>
 	</target>
-	
+
 	<target name="prepareArtifactoryUploadSpec" depends="bda.init.Project, bda.repo.processBuildOutputForArtifactory">
 		<description>Preparing donwload spec.</description>
 	</target>
-	
+
 	<target name="test" depends="bda.init.Project, bda.test.startTest">
 		<description>Run tests.</description>
 	</target>
@@ -37,8 +37,11 @@
 	<target name="buildDeployTest" depends="build, deploy, test">
 		<description>Build and deploy the project.</description>
 	</target>
-	
+
 	<target name="_TEST_startTest" depends="bda.init.Project, bda.test.startTest">
 		<description>_TEST</description>
 	</target>
+
+
+
 </project>

@@ -46,4 +46,9 @@
 	<target name="bda.dependencies.fileset" depends="bda.dependencies.fileset.ivy, bda.dependencies.fileset.local" description="Either downloads ivy jar, then resolves all necessary jars by using the resources/ivy.ivy.xml dependency declaration, or use locally stored jars">
 		<echo>Referencing jars as defined by property 'config.libs.resolve=${config.libs.resolve}'</echo>
 	</target>
+	
+
+	<target name="bda.dependencies.util.downloadJarsToLibFolder" depends="bda.dependencies.fileset.ivy" description="Download all jars defined in the ivy.xml to the local lib/ext folder. Create util target in build.xml which depends on bda.init.Project and this target.">
+		<ivy:retrieve pattern="${lib.dir}/ext/[artifact]-[type]-[revision].[ext]" type="jar"/>
+	</target>
 </project>
