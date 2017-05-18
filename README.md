@@ -29,6 +29,9 @@ Edit the _System.properties_ to correspond to your infrastructure:
 * __config.build.buildStorageDir__: Where to store the file based repositories created by the Asset Build Environment
 * __config.deployer.doVarSub__: Defines whether to do variable substitution (using the Variable Substitution Repository, see below)
 * __config.deployer.projectNamePrefix__: Defines the Deployer Project Name prefix. Can either be static, e.g. "BDA", or it can be dynamic, e.g. "Jenkins_${env.BUILD_NUMBE}"
+* __config.libs.resolve__: 
+	* Set to "**remote**" if dependent jars should be downloaded from remote maven repositories with Apache Ivy. See "[resources/ivy/ivy.xml](resources/ivy/ivy.xml)" for list of jars. See "[resources/ivy/ivysettings.xml](resources/ivy/ivysettings.xml)" for list of repositories from which jars are downloaded. **Note**: Software AG jars are referenced with a filesystem resolver pointing to the respective local installation.
+	* Set to "**local**" if no internet connection is available and place necessary jars (see "[resources/ivy/ivy.xml](resources/ivy/ivy.xml)" for list) into folder "**lib/ext**". 
 
 
 ### Build/CI Environment

@@ -42,6 +42,10 @@
 		<description>_TEST</description>
 	</target>
 
-
+	<!--
+	<target name="_getJarsToLocal" depends="bda.init.Project, bda.dependencies.util.downloadJarsToLibFolder">
+		<description>Get jars from remote repo with ivy and then retrieve into local lib/ext folder</description>
+	</target>
+	-->
 
 </project>

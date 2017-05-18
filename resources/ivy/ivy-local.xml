@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+	<info module="BDA" organisation="com.softwareag.wx.bda" />
+	<dependencies>
+		<!-- SAG local jars (type=sag-jar) -->
+		<!-- + ant contrib tasks -->
+		<dependency org="sag.common.lib.ext" name="ant-contrib-1.0b3" rev="1.0b3">
+			<artifact name="ant-contrib-1.0b3" type="sag-jar" ext="jar" />
+		</dependency>
+		<!-- + IntegrationServer core classes -->
+		<dependency org="sag.is.lib" name="wm-isserver" rev="9.12">
+			<artifact name="wm-isserver" type="sag-jar" ext="jar" />
+		</dependency>
+	</dependencies>
+</ivy-module>
