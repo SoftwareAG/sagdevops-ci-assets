@@ -1,4 +1,4 @@
 /tmp
 /logs/
 /bin/
-/lib/ivy.jar
+/lib/**/ivy*.jar

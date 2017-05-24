@@ -33,15 +33,20 @@
 	</target>
 
 	<!-- mandatory properties -->
-	<target name="bda.init.ProjcetName" unless="bda.projectName">
-		<fail message="Property 'bda.projectName' should be defined!" />
-	</target>
-
-	<target name="bda.init.buildStorageDirr" unless="config.build.buildStorageDir">
+	<target name="bda.init.buildStorageDir" unless="config.build.buildStorageDir">
 		<fail message="Property 'config.build.buildStorageDir' should be defined!" />
 	</target>
 
+	<target name="bda.init.TargetEnv" unless="bda.targetEnv">
+		<fail message="Set property 'bda.targetEnv' to define a target environment, e.g. DEV, TEST or PROD. Must be defined in EVN.groovy file." />
+	</target>
+
 	<!-- optional properties -->
+	<target name="bda.init.ProjectName" unless="bda.projectName">
+		<echo message="Setting project name to config.project.projectName='${config.project.projectName}'."/>
+		<property name="bda.projectName" value="${config.project.projectName}"/>
+	</target>
+			
 	<target name="bda.init.ISProjectsDir" unless="isProjectsDir">
 		<property name="isProjectsDir" value="" />
 	</target>
@@ -72,15 +77,30 @@
 		<property name="jenkinsReportDir" value="" />
 	</target>
 
+	<target name="bda.init.BuildNumber.internal" unless="env.BUILD_NUMBER">
+		<property file="build.number" />
+		<propertyfile file="build.number">
+			<entry key="build_number" type="int" operation="+" value="1" />
+		</propertyfile>
+		<echo message="Setting build.number to value as defined in properties file 'build.number'."/>
+		<property name="build.number" value="${build_number}" />
+	</target>
+	<target name="bda.init.BuildNumber.external" if="env.BUILD_NUMBER">
+		<echo message="Setting build.number to env.BUILD_NUMBER=${env.BUILD_NUMBER}"/>
+		<property name="build.number" value="${env.BUILD_NUMBER}" />
+	</target>
+	<target name="bda.init.BuildNumber" depends="bda.init.BuildNumber.internal, bda.init.BuildNumber.external">
+		<echo message="Setting build.number to '${build.number}'"/>
+	</target>
 
 	<!--Main Init targets-->
 	<target name="bda.init.SystemProperties" depends="bda.init.SAGHome,bda.init.DeployerInstallationPath,bda.init.DeployerHost,bda.init.DeployerPort,bda.init.DeployerUsername,bda.init.DeployerPassword">
 	</target>
 
-	<target name="bda.init.MandatoryProperties" depends="bda.init.ProjcetName,bda.init.buildStorageDirr">
+	<target name="bda.init.MandatoryProperties" depends="bda.init.ProjectName,bda.init.buildStorageDir,bda.init.TargetEnv">
 	</target>
 
-	<target name="bda.init.OptionalProperties" depends="bda.init.ISProjectsDir, bda.init.BPMProjectsDir,bda.init.MWSProjectsDir,bda.init.RulesProjectsDir,bda.init.UMProjectDir,bda.init.TestPackageNamePattern,bda.init.JenkinsReportDir">
+	<target name="bda.init.OptionalProperties" depends="bda.init.BuildNumber, bda.init.ISProjectsDir, bda.init.BPMProjectsDir,bda.init.MWSProjectsDir,bda.init.RulesProjectsDir,bda.init.UMProjectDir,bda.init.TestPackageNamePattern,bda.init.JenkinsReportDir">
 	</target>
 
 	<target name="bda.init.Project" depends="bda.init.classpath, bda.init.SystemProperties, bda.init.MandatoryProperties, bda.init.OptionalProperties" description="bda.init. properties needed for the project">
@@ -95,11 +115,11 @@
 			<param name="dir" value="${config.tmpdir}" />
 		</antcall>
 
-		<property name="baseRevision" value="${config.build.version}.${env.BUILD_NUMBER}" />
+		<property name="baseRevision" value="${config.build.version}.${build_number}" />
 		<!-- build.version is for ABE, see "master_build_Reference/build.properties" -->
 		<property name="build.version" value="${bda.projectName}_${config.build.version}" />
 		<!-- build_number is for ABE, see "${SAG_HOME}/common/AssetBuildEnvironment/build.number" -->
-		<property name="build_number" value="${env.BUILD_NUMBER}" />
+		<property name="build_number" value="${build.number}" />
 
 		<property name="fbrRepoName" value="${bda.projectName}_${baseRevision}_fbrRepo" />
 		<property name="buildOutputDir" location="${config.build.buildStorageDir}/${fbrRepoName}" />
@@ -111,9 +131,9 @@
 		<path id="bda.classpath">
 			<!-- load custom ant tasks -->
 			<fileset dir="${lib.dir}" includes="bda-utils.jar" />
-			<!-- include all user defined jars which are in the lib/ext dir --> 
+			<!-- include all user defined jars which are in the lib/ext dir -->
 			<fileset dir="${lib.dir}/ext" includes="*.jar" />
-			<!-- reference other external/non-SAG and local SAG jars with ivy --> 
+			<!-- reference other external/non-SAG and local SAG jars with ivy -->
 			<fileset refid="dependencies.fileset" />
 		</path>
 	</target>

@@ -2,9 +2,6 @@
 
 <project default="bda.deployer.startDeployer" basedir="." name="build_Deployer">
 
-	<property name="projectName" value="${config.deployer.projectNamePrefix}_${bda.targetEnv}_${bda.projectName}" />
-	<property name="projectAutomatorDefinition" location="${config.tmpdir}/${projectName}_PA_template.definition.xml" />
-
 	<condition property="isWindows">
 		<os family="windows" />
 	</condition>
@@ -30,6 +27,9 @@
 			<taskdef classpathref="bda.classpath" resource="net/sf/antcontrib/antlib.xml" />
 			<taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="bda.classpath" />
 		-->
+		<property name="projectName" value="${config.deployer.projectNamePrefix}_${bda.targetEnv}_${bda.projectName}" />
+		<property name="projectAutomatorDefinition" location="${config.tmpdir}/${projectName}_PA_template.definition.xml" />
+
 		<log msg="Init build Deployer. Properties: with project name='${projectName}' and repository='${fbrRepoName}'." />
 		<log msg="Target Environment='${bda.targetEnv}'" />
 		<log msg="Project name='${projectName}'" />
