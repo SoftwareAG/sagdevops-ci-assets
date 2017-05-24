@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<project basedir="." name="build_Quiesce_Deployment_Mode">
+
+	<!--
+		This build file suspends broker/messaging and jms triggers on the file system.
+		This build is intended to be used in your build and deploy process.
+		Run the targets in here after checking out your sources from VCS.
+		The targets in here will manipulate the node.ndf files in your source dirctory
+		and suspend the tiriggers, so that with the deployment the triggers are not
+		enabled automatically.
+	-->
+
+	<target name="bda.quiesce.deployment.start" depends="bda.quiesce.deployment.suspendTriggers">
+		<log msg="Suspended triggers" />
+	</target>
+
+	<condition property="suspendTriggersInSource">
+		<equals arg1="${config.build.suspendTriggersInSource}" arg2="true" />
+	</condition>
+
+	<target name="bda.quiesce.deployment.suspendTriggers" if="suspendTriggersInSource">
+		<property name="groovyScript.SuspendTriggersSource" location="resources/quiesce/SuspendTriggersSource.groovy" />
+		<log msg="Suspending trigger using groovy script '${groovyScript.SuspendTriggersSource}" />
+		<groovy src="${groovyScript.SuspendTriggersSource}">
+			<arg line="-pathToIsPackageSource ${isProjectsDir}/" />
+			<arg line="-triggerType all" />
+		</groovy>
+	</target>
+
+</project>

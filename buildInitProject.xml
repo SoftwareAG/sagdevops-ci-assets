@@ -121,7 +121,8 @@
 		<!-- build_number is for ABE, see "${SAG_HOME}/common/AssetBuildEnvironment/build.number" -->
 		<property name="build_number" value="${build.number}" />
 
-		<property name="fbrRepoName" value="${bda.projectName}_${baseRevision}_fbrRepo" />
+		<property name="fbrRepoName" value="${bda.projectName}_fbrRepo" />
+		<!--<property name="fbrRepoName" value="${bda.projectName}_${baseRevision}_fbrRepo" />-->
 		<property name="buildOutputDir" location="${config.build.buildStorageDir}/${fbrRepoName}" />
 
 	</target>

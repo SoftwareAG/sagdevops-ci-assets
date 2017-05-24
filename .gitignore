@@ -2,3 +2,4 @@
 /logs/
 /bin/
 /lib/**/ivy*.jar
+.settings/org.eclipse.jdt.groovy.core.prefs

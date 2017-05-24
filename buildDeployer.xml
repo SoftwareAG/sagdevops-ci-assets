@@ -128,6 +128,7 @@
 				<log msg="At least one varsub was created, copy file '${varsubfile.path}' to Deployer replicate inbound dir at '${deployerReplicateInboundDir}'." />
 				<copy file="${varsubfile.path}" todir="${deployerReplicateInboundDir}" />
 				<basename property="varsubfile.file" file="${varsubfile.path}" />
+				<!-- the name of the vs.xml file is also the name of the map for which it should be imported -->
 				<propertyregex property="mapName" input="${varsubfile.file}" regexp="(.*)\.vs\.xml" select="\1" casesensitive="false" />
 
 				<log msg="-- Import Varsub parameters: -vsFile ${varsubfile.file}, -map ${mapName}, -project ${projectName}" />
