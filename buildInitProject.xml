@@ -38,7 +38,7 @@
 	</target>
 
 	<target name="bda.init.TargetEnv" unless="bda.targetEnv">
-		<fail message="Set property 'bda.targetEnv' to define a target environment, e.g. DEV, TEST or PROD. Must be defined in EVN.groovy file." />
+		<fail message="Set property 'bda.targetEnv' to define a target environment, e.g. DEV, TEST or PROD. Must be defined in ENV.groovy file." />
 	</target>
 
 	<!-- optional properties -->
