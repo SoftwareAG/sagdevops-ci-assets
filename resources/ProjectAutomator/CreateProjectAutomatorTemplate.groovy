@@ -24,10 +24,10 @@ cli.with {
 def opts = cli.parse(args)
 org.codehaus.groovy.ant.Groovy
 if(!opts) return
-if(opts.help) {
-	cli.usage()
-	return
-}
+	if(opts.help) {
+		cli.usage()
+		return
+	}
 
 assert opts
 assert opts.r

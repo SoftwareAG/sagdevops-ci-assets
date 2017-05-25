@@ -115,7 +115,7 @@
 			<param name="dir" value="${config.tmpdir}" />
 		</antcall>
 
-		<property name="baseRevision" value="${config.build.version}.${build_number}" />
+		<property name="baseRevision" value="${config.build.version}.${build.number}" />
 		<!-- build.version is for ABE, see "master_build_Reference/build.properties" -->
 		<property name="build.version" value="${bda.projectName}_${config.build.version}" />
 		<!-- build_number is for ABE, see "${SAG_HOME}/common/AssetBuildEnvironment/build.number" -->
