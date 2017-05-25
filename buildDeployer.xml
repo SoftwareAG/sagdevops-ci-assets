@@ -40,15 +40,16 @@
 	<target name="bda.deployer.createProjectAutomatorTemplate" depends="">
 		<property name="groovyScript.CreateProjectAutomatorTemplate" location="resources/ProjectAutomator/CreateProjectAutomatorTemplate.groovy" />
 		<log msg="Creating project definition file '${projectAutomatorDefinition}' using environments defined in '${environmentsDefinition}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'" />
+		<log msg="-repoName ${fbrRepoName}"/>
 		<groovy src="${groovyScript.CreateProjectAutomatorTemplate}">
-			<arg line="-r ${fbrRepoDir}" />
-			<arg line="-p ${projectName}" />
-			<arg line="-f ${projectAutomatorDefinition}" />
+			<arg line="-r '${fbrRepoDir}'" />
+			<arg line="-p '${projectName}'" />
+			<arg line="-f '${projectAutomatorDefinition}'" />
 			<arg line="-t ${bda.targetEnv}" />
 			<arg line="-d ${config.deployer.deployerHost}:${config.deployer.deployerPort}" />
 			<arg line="-u ${config.deployer.deployerUsername}" />
 			<arg line="-s ${config.deployer.deployerPassword}" />
-			<arg line="-e ${environmentsDefinition}" />
+			<arg line="-e '${environmentsDefinition}'" />
 			<arg line="-repoName ${fbrRepoName}" />
 			<arg line="-splitDeploymentSets ${config.deployer.splitDelpoymentSets}" />
 		</groovy>
@@ -137,7 +138,7 @@
 				<exec executable="${config.deployer.deployerInstallationPath}/${deployerExecutable}" dir="${config.deployer.deployerInstallationPath}" output="${output}" resultproperty="importVarsubReturnCode" failonerror="false">
 					<arg value="--import" />
 					<arg value="-varsub" />
-					<arg line="-vsFile ${varsubfile.file}" />
+					<arg line="-vsFile '${varsubfile.file}'" />
 					<arg line="-map ${mapName}" />
 					<arg line="-project ${projectName}" />
 					<arg line="-host ${config.deployer.deployerHost}" />
@@ -222,11 +223,11 @@
 		<property name="groovyScript.CreateVarSub" location="resources/vs/CreateVarSub.groovy" />
 		<log msg="Calling '${groovyScript.CreateVarSub}' to create varsub file" />
 		<groovy src="${groovyScript.CreateVarSub}">
-			<arg line="-a ${projectAutomatorDefinition}" />
+			<arg line="-a '${projectAutomatorDefinition}'" />
 			<arg line="-p ${projectName}" />
 			<arg line="-t ${bda.targetEnv}" />
-			<arg line="-vs ${varsubDir}" />
-			<arg line="-o ${varsubTmpDir}" />
+			<arg line="-vs '${varsubDir}'" />
+			<arg line="-o '${varsubTmpDir}'" />
 		</groovy>
 
 	</target>

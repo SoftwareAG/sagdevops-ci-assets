@@ -30,15 +30,6 @@ if(!opts) return
 	}
 
 assert opts
-assert opts.r
-assert opts.p
-assert opts.f
-assert opts.t
-assert opts.d
-assert opts.u
-assert opts.s
-assert opts.e
-assert opts.repoName
 
 project = opts.p
 def repo = opts.r
@@ -51,6 +42,30 @@ def environments = opts.e
 repoName = opts.repoName
 splitDeploymentSets = new Boolean(opts.splitDeploymentSets)
 
+println "> Creating Project Automator templates with the following properties:"
+println "\t- Project: '${project}'"
+println "\t- Repository: '${repo}'"
+println "\t- Output File: '${outputFile}'"
+println "\t- Target: '${target}'"
+println "\t- Deployer host: '${deployerHostPort}'"
+println "\t- Deployer user: '${deployerUser}'"
+println "\t- Deployer passsword: *****"
+println "\t- Environments definition: '${environments}'"
+println "\t- Repository name: '${repoName}'"
+println "\t- SplitDeploymentSets: '${splitDeploymentSets}'"
+
+assert project
+assert repo
+assert outputFile
+assert target
+assert deployerHostPort
+assert deployerUser
+assert deployerPassword
+assert environments
+assert repoName
+
+//println "${opts.arguments()}"
+
 def outFile = new File(outputFile)
 //def writer = new FileWriter(outFile)
 PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
@@ -62,19 +77,6 @@ bpms = []
 mws = []
 tn = []
 
-println "> Creating Project Automator templates with the following properties:"
-println "\t- Project: '${project}'"
-println "\t- Repository: '${repo}'"
-println "\t- Output File: '${outputFile}'"
-println "\t- Target: '${target}'"
-println "\t- Deployer host: '${deployerHostPort}'"
-println "\t- Deployer user: '${deployerUser}'"
-println "\t- Deployer passsword: *****"
-println "\t- Repository name: '${repoName}'"
-println "\t- Environments definition: '${environments}'"
-println "\t- SplitDeploymentSets: '${splitDeploymentSets}'"
-
-println "${opts.arguments()}"
 
 def configSlurper = new ConfigSlurper(target)
 configSlurper.classLoader = this.class.getClassLoader()
