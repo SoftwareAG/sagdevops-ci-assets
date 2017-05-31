@@ -13,8 +13,8 @@
 		<fileset dir="./lib/wmtestsuite" includes="serviceMockClient.jar" />
 		<!-- JUnit jar 
 		<fileset dir="${SAGHome}/common/runtime/agent/repository/plugins" includes="org.junit_4*.jar" />
-		-->
 		<fileset dir="${SAGHome}/common/runtime/bundles/platform/eclipse/plugins" includes="org.junit_4*.jar" />
+		-->
 	</path>
 
 	<!-- explicit taskdef is necessary if the ant-junit.jar is not in the ANT_HOME/lib dir -->
@@ -22,9 +22,11 @@
 	<target name="bda.test.init">
 		<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
 			<classpath refid="junit.classpath" />
+			<classpath refid="bda.classpath" />
 		</taskdef>
 		<taskdef name="junitreport" classname="org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator">
 			<classpath refid="junit.classpath" />
+			<classpath refid="bda.classpath" />
 		</taskdef>
 	</target>
 

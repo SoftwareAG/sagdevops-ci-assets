@@ -1,17 +1,6 @@
 <?xml version="1.0"?>
 <project name="BDA.ISCCR" default="bda.test.isccr" basedir=".">
 
-	<!-- explicit taskdef is necessary if the ant-junit.jar is not in the ANT_HOME/lib dir -->
-	<target name="bda.isccr.init">
-		<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
-			<classpath refid="junit.classpath" />
-		</taskdef>
-		<taskdef name="junitreport" classname="org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator">
-			<classpath refid="junit.classpath" />
-		</taskdef>
-	</target>
-
-
 	<path id="isccr.classpath">
 		<fileset dir="${config.isscr.home}/lib">
 			<include name="**/*.jar" />
