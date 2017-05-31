@@ -38,7 +38,7 @@
 								<xsl:attribute name="classname"><xsl:value-of
 									select="Service/text()" /></xsl:attribute>
 								<xsl:attribute name="name"><xsl:value-of
-									select="Service/text()" /></xsl:attribute>
+									select="$currentCheck/@name" /></xsl:attribute>
 								<xsl:if test="@passed!='true'">
 									<failure>
 										<xsl:attribute name="message"><xsl:value-of
@@ -53,8 +53,6 @@
 								<Service>Fibonachi.services:getFibunachiNumber</Service> <Value>count(//MAPINVOKE[starts-with(@SERVICE,'wm.vcs')])=0</Value> 
 								</Test> -->
 						</xsl:for-each>
-    <system-out>str1234</system-out>
-    <system-err>str1234</system-err>
 					</testsuite>
 				</xsl:if>
 			</xsl:for-each>

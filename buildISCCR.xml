@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="BDA.ISCCR" default="bda.test.isccr" basedir=".">
+<project name="BDA.ISCCR" default="bda.test.isccr.reviewPackages" basedir=".">
 
 	<path id="isccr.classpath">
 		<fileset dir="${config.isscr.home}/lib">
@@ -7,25 +7,21 @@
 		</fileset>
 	</path>
 
-	<target name="bda.test.isccr">
+	<target name="bda.test.isccr.enabled">
+		<condition property="isccrEnabled">
+			<equals arg1="${config.isccr.enable}" arg2="true"/>
+		</condition>
+		<log msg="ISCCR is enabled: ${isccrEnabled}"/>
+	</target>
+	
+	<target name="bda.test.isccr.init" if="isccrEnabled" depends="bda.test.isccr.enabled">
 		<log msg="Init IntegrationServer Continuous Code Review" />
 
-		<property name="tmpDirIsccr" value="${config.tmpdir}/isccr" />
+		<property name="tmpDirIsccr" location="${config.tmpdir}/isccr" />
 		<antcall target="common.create_dir">
 			<param name="dir" value="${tmpDirIsccr}" />
 			<param name="overwrite" value="true" />
 		</antcall>
-	</target>
-
-	<target name="bda.test.isccr.reviewPackages_old" depends="bda.test.isccr">
-		<foreach target="bda.test.isccr.reviewPackage" param="packagePath" inheritall="true">
-			<path>
-				<dirset dir="${isProjectsDir}">
-					<include name="*" />
-				</dirset>
-			</path>
-		</foreach>
-
 	</target>
 
 	<target name="bda.test.isccr.isPackage">
@@ -34,7 +30,7 @@
 		<log msg="Checking if package dir ${nsPath} exists: ${isPackage}" />
 	</target>
 
-	<target name="bda.test.isccr.reviewPackages" depends="bda.test.isccr">
+	<target name="bda.test.isccr.reviewPackages" if="isccrEnabled" depends="bda.test.isccr.init">
 		<log msg="Executing ISCCR for IS packages in directory '${isProjectsDir}'." />
 		<var name="failedTestList" value="" />
 		<!-- interate over the test project and triiger all xml tests in the setup folder -->
@@ -110,7 +106,7 @@
 
 	<!-- if jenkins report dir is set publicate results there-->
 	<target name="bda.test.isccr.copyResultsToReportsDir">
-		<log msg="Copying JUnit test results from folder '${current.report.dir}' to folder '${bda.reportDir}'" />
+		<log msg="Copying ISCCR test results from folder '${current.report.dir}' to folder '${bda.reportDir}'" />
 		<copy todir="${bda.reportDir}">
 			<fileset dir="${current.report.dir}">
 				<include name="*_CodeReviewReport.html" />

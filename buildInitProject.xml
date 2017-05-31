@@ -72,7 +72,8 @@
 	</target>
 	
 	<target name="bda.init.ReportDirProperty" unless="bda.reportDir">
-		<property name="bda.reportDir" value="${config.tmpdir}/report" />
+		<property name="bda.reportDir" value="${config.test.reportDir}" />
+		<log msg="'bda.reportDir' not set externally, setting to '${bda.reportDir}'."/>
 	</target>
 	
 	<target name="bda.init.ReportDir" depends="bda.init.ReportDirProperty">
