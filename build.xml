@@ -35,6 +35,10 @@
 		<description>Run tests.</description>
 	</target>
 
+	<target name="staticCodeAnalysis" depends="bda.init.Project, bda.test.isccr.reviewPackages">
+		<description>Run static code analysis.</description>
+	</target>
+	
 	<target name="buildDeployTest" depends="build, deploy, test">
 		<description>Build and deploy the project.</description>
 	</target>
