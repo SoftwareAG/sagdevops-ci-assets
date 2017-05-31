@@ -2,9 +2,6 @@
 
 <project default="bda.deployer.startDeployer" basedir="." name="build_Deployer">
 
-	<property name="projectName" value="${config.deployer.projectNamePrefix}_${bda.targetEnv}_${bda.projectName}" />
-	<property name="projectAutomatorDefinition" location="${config.tmpdir}/${projectName}_PA_template.definition.xml" />
-
 	<condition property="isWindows">
 		<os family="windows" />
 	</condition>
@@ -30,6 +27,9 @@
 			<taskdef classpathref="bda.classpath" resource="net/sf/antcontrib/antlib.xml" />
 			<taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="bda.classpath" />
 		-->
+		<property name="projectName" value="${config.deployer.projectNamePrefix}_${bda.targetEnv}_${bda.projectName}" />
+		<property name="projectAutomatorDefinition" location="${config.tmpdir}/${projectName}_PA_template.definition.xml" />
+
 		<log msg="Init build Deployer. Properties: with project name='${projectName}' and repository='${fbrRepoName}'." />
 		<log msg="Target Environment='${bda.targetEnv}'" />
 		<log msg="Project name='${projectName}'" />
@@ -40,15 +40,16 @@
 	<target name="bda.deployer.createProjectAutomatorTemplate" depends="">
 		<property name="groovyScript.CreateProjectAutomatorTemplate" location="resources/ProjectAutomator/CreateProjectAutomatorTemplate.groovy" />
 		<log msg="Creating project definition file '${projectAutomatorDefinition}' using environments defined in '${environmentsDefinition}'. Groovy script: '${groovyScript.CreateProjectAutomatorTemplate}'" />
+		<log msg="-repoName ${fbrRepoName}"/>
 		<groovy src="${groovyScript.CreateProjectAutomatorTemplate}">
-			<arg line="-r ${fbrRepoDir}" />
-			<arg line="-p ${projectName}" />
-			<arg line="-f ${projectAutomatorDefinition}" />
+			<arg line="-r '${fbrRepoDir}'" />
+			<arg line="-p '${projectName}'" />
+			<arg line="-f '${projectAutomatorDefinition}'" />
 			<arg line="-t ${bda.targetEnv}" />
 			<arg line="-d ${config.deployer.deployerHost}:${config.deployer.deployerPort}" />
 			<arg line="-u ${config.deployer.deployerUsername}" />
 			<arg line="-s ${config.deployer.deployerPassword}" />
-			<arg line="-e ${environmentsDefinition}" />
+			<arg line="-e '${environmentsDefinition}'" />
 			<arg line="-repoName ${fbrRepoName}" />
 			<arg line="-splitDeploymentSets ${config.deployer.splitDelpoymentSets}" />
 		</groovy>
@@ -128,6 +129,7 @@
 				<log msg="At least one varsub was created, copy file '${varsubfile.path}' to Deployer replicate inbound dir at '${deployerReplicateInboundDir}'." />
 				<copy file="${varsubfile.path}" todir="${deployerReplicateInboundDir}" />
 				<basename property="varsubfile.file" file="${varsubfile.path}" />
+				<!-- the name of the vs.xml file is also the name of the map for which it should be imported -->
 				<propertyregex property="mapName" input="${varsubfile.file}" regexp="(.*)\.vs\.xml" select="\1" casesensitive="false" />
 
 				<log msg="-- Import Varsub parameters: -vsFile ${varsubfile.file}, -map ${mapName}, -project ${projectName}" />
@@ -136,7 +138,7 @@
 				<exec executable="${config.deployer.deployerInstallationPath}/${deployerExecutable}" dir="${config.deployer.deployerInstallationPath}" output="${output}" resultproperty="importVarsubReturnCode" failonerror="false">
 					<arg value="--import" />
 					<arg value="-varsub" />
-					<arg line="-vsFile ${varsubfile.file}" />
+					<arg line="-vsFile '${varsubfile.file}'" />
 					<arg line="-map ${mapName}" />
 					<arg line="-project ${projectName}" />
 					<arg line="-host ${config.deployer.deployerHost}" />
@@ -221,11 +223,11 @@
 		<property name="groovyScript.CreateVarSub" location="resources/vs/CreateVarSub.groovy" />
 		<log msg="Calling '${groovyScript.CreateVarSub}' to create varsub file" />
 		<groovy src="${groovyScript.CreateVarSub}">
-			<arg line="-a ${projectAutomatorDefinition}" />
+			<arg line="-a '${projectAutomatorDefinition}'" />
 			<arg line="-p ${projectName}" />
 			<arg line="-t ${bda.targetEnv}" />
-			<arg line="-vs ${varsubDir}" />
-			<arg line="-o ${varsubTmpDir}" />
+			<arg line="-vs '${varsubDir}'" />
+			<arg line="-o '${varsubTmpDir}'" />
 		</groovy>
 
 	</target>

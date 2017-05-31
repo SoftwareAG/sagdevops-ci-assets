@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <project name="Build" default="bda.abe.buildWM" basedir=".">
 
+	<import file="build_QuiesceDeployment.xml" />
+
 	<!--
 	<property name="abeHome" value="${SAGHome}/common/AssetBuildEnvironment" />
 	<property name="abeHome" value="${config.build.abeHome}" />	
@@ -9,8 +11,7 @@
 	<property name="abeBuildfileFile" value="build.xml" />
 	<property name="abeBuildPropertiesReference" value="master_build_Reference/build.properties" />
 
-
-	<target name="bda.abe.buildWM" description="build project" depends="bda.abe.cleanupBuild, bda.abe.prepareABEproperties">
+	<target name="bda.abe.buildWM" description="build project" depends="bda.abe.cleanupBuild, bda.abe.prepareABEproperties, bda.abe.prepareSources">
 		<echo>invoke ABE Build</echo>
 		<ant antfile="${abeBuildfileFile}" dir="${config.build.abeHome}/${abeBuildfileDir}" target="build" />
 	</target>
@@ -39,6 +40,10 @@
 
 		<!-- move build.properties from SVN to the target ABE folder -->
 		<copy file="${abeBuildPropertiesReference}" tofile="${config.build.abeHome}/${abeBuildfileDir}/build.properties" overwrite="true" />
+	</target>
+
+	<target name="bda.abe.prepareSources" depends="bda.quiesce.deployment.start">
+
 	</target>
 
 </project>

@@ -1,30 +1,13 @@
 #!/opt/bpa/groovy-2.4.3/bin/groovy
 package com.softwaerag.gcs.wx.bdas.projectAutomator
 
-//@Grapes([
-//	@Grab(group='commons-logging', module='commons-logging', version='1.2'),
-//	@Grab(group='org.springframework', module='spring-core', version='4.3.5.RELEASE'),
-//	@Grab(group='org.apache.httpcomponents', module='httpcore', version='4.3.3'),
-//	@Grab(group='org.codehaus.groovy.modules.http-builder', module='http-builder', version='0.5.0'),
-//	@Grab(group='org.apache.ant', module='ant', version='1.9.8'),
-//	@Grab(group='org.apache.ant', module='ant-launcher', version='1.9.8'),
-//	@Grab(group='org.apache.ivy', module='ivy', version='2.4.0')
-//
-//]
-//)
-//import org.apache.http.entity.FileEntity
-//
-//import groovy.lang.Grab
-//import groovy.lang.Grapes
-//import groovy.swing.SwingBuilder
-//import groovyx.net.http.ContentType
-//import groovyx.net.http.Method
 import groovy.xml.dom.DOMCategory
 import groovy.xml.MarkupBuilder
 import groovy.xml.StreamingMarkupBuilder
 import groovy.xml.XmlUtil
 
-def cli = new CliBuilder (usage:'createdeployerproject.groovy -r REPOSITORY_PATH -f OUTPUTFILE -p PROJECT -t TARGETSUFFIX')
+def cli = new CliBuilder (usage:'createdeployerproject.groovy [options]')
+// command line argument line example: -r c:\Users\Administrator\github\henning-sagdevops-ci-assets\tmp\fbr\Henning-local-sagdevops-ci-assets_fbrRepo -f out.xml -p BDA_TEST_Henning-local-sagdevops-ci-assets -t TEST -d localhost:5555 -u Administrator -s manage -e c:\Users\Administrator\github\henning-webmethods-sample-project-layout\ENV.groovy -repoName repoName -splitDeploymentSets false
 cli.with {
 	h longOpt:'help', 'Usage information'
 	r longOpt:'repository',argName:'repository', args:1, 'Path to ABE file based repository'
@@ -46,18 +29,7 @@ if(!opts) return
 		return
 	}
 
-
 assert opts
-assert opts.r
-assert opts.p
-assert opts.f
-assert opts.t
-assert opts.d
-assert opts.u
-assert opts.s
-assert opts.e
-assert opts.repoName
-
 
 project = opts.p
 def repo = opts.r
@@ -70,6 +42,30 @@ def environments = opts.e
 repoName = opts.repoName
 splitDeploymentSets = new Boolean(opts.splitDeploymentSets)
 
+println "> Creating Project Automator templates with the following properties:"
+println "\t- Project: '${project}'"
+println "\t- Repository: '${repo}'"
+println "\t- Output File: '${outputFile}'"
+println "\t- Target: '${target}'"
+println "\t- Deployer host: '${deployerHostPort}'"
+println "\t- Deployer user: '${deployerUser}'"
+println "\t- Deployer passsword: *****"
+println "\t- Environments definition: '${environments}'"
+println "\t- Repository name: '${repoName}'"
+println "\t- SplitDeploymentSets: '${splitDeploymentSets}'"
+
+assert project
+assert repo
+assert outputFile
+assert target
+assert deployerHostPort
+assert deployerUser
+assert deployerPassword
+assert environments
+assert repoName
+
+//println "${opts.arguments()}"
+
 def outFile = new File(outputFile)
 //def writer = new FileWriter(outFile)
 PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
@@ -81,19 +77,6 @@ bpms = []
 mws = []
 tn = []
 
-println "> Creating Project Automator templates with the following properties:"
-println "\t- Project: '${project}'"
-println "\t- Repository: '${repo}'"
-println "\t- Output File: '${outputFile}'"
-println "\t- Target: '${target}'"
-println "\t- Deployer host: '${deployerHostPort}'"
-println "\t- Deployer user: '${deployerUser}'"
-println "\t- Deployer passsword: *****"
-println "\t- Repository name: '${repoName}'"
-println "\t- Environments definition: '${environments}'"
-println "\t- SplitDeploymentSets: '${splitDeploymentSets}'"
-
-println "${opts.arguments()}"
 
 def configSlurper = new ConfigSlurper(target)
 configSlurper.classLoader = this.class.getClassLoader()
@@ -102,8 +85,11 @@ config = configSlurper.parse(new File(environments).toURL())
 
 // first parse the file-based repository
 
+def repoDir = new File(repo)
+assert repoDir.exists() : "Repository directory '${repo}' does not exist"
+
 // we only support packages, processes and MWS projects currently...
-new File(repo).eachDirRecurse() { dir ->
+repoDir.eachDirRecurse() { dir ->
 	dir.eachFileMatch(~/.*.acdl/) { file ->
 		def doc  = groovy.xml.DOMBuilder.parse(new FileReader(file))
 		def asset_composite = doc.documentElement
@@ -143,7 +129,7 @@ def createISOnlyDeploymentMapSetMappingAndDeploymentCandidate(splitDeploymentSet
 				config.IntegrationServers.keySet().each {
 					def isAliasName = it.toString()
 					DeploymentMap(description:"Deployment Map for IS DeploymentSet to IS node ${isAliasName}", name:"IS_DeploymentMap_${isAliasName}")
-				}				
+				}
 				config.IntegrationServers.keySet().each {
 					def isAliasName = it.toString()
 					MapSetMapping(mapName: "IS_DeploymentMap_${isAliasName}", setName: "IS_DeploymentSet_${isAliasName}") {
@@ -278,7 +264,13 @@ def nxml = xml.bind() {
 			if(config.IntegrationServers.size() > 0 ) {
 				IS {
 					config.IntegrationServers.each { name, isConfig ->
-						def integ = isConfig + config.IntegrationServer.defaults;
+						/*
+						 * Merge explicit values in isConfig (ConfigSlurfer ConfigObject) with default
+						 * values in config.IntegrationServer.defaults (hashmap), then merge again
+						 * with explicit values (isConfig), so that default values do not replace
+						 * explicit values, but only append
+						 */
+						def integ = isConfig + config.IntegrationServer.defaults + isConfig;
 						isalias(name: "${target}_${name}") {
 							host(integ.host)
 							port(integ.port)
@@ -299,7 +291,7 @@ def nxml = xml.bind() {
 			if(config.ProcessModels.size() > 0 ) {
 				ProcessModel {
 					config.ProcessModels.each { name, bpmConfig ->
-						def bpm = bpmConfig + config.ProcessModel.defaults;
+						def bpm = bpmConfig + config.ProcessModel.defaults + bpmConfig
 						pmalias(name: "${target}_${name}") {
 							host(bpm.host)
 							port(bpm.port)
@@ -319,7 +311,7 @@ def nxml = xml.bind() {
 			if(config.MWS.size() > 0 ) {
 				MWS {
 					config.MWS.each { name, mwsConfig ->
-						def mwsConfigMerged = mwsConfig + config.MyWebmethodsServer.defaults;
+						def mwsConfigMerged = mwsConfig + config.MyWebmethodsServer.defaults + mwsConfig
 						mwsalias(name: "${target}_${name}") {
 							host(mwsConfigMerged.host)
 							port(mwsConfigMerged.port)

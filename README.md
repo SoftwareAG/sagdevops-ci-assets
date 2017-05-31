@@ -27,7 +27,6 @@ Edit the _System.properties_ to correspond to your infrastructure:
 * __config.deployer.*__: Configuration parameters which specify your Deployer installation and Deployer server
 * __config.tmpdir__: Points to a tempory directory where assets are stored for the deployment process. **Note**: take care to clean this directory up regularly!
 * __config.build.buildStorageDir__: Where to store the file based repositories created by the Asset Build Environment
-* __config.deployer.doVarSub__: Defines whether to do variable substitution (using the Variable Substitution Repository, see below)
 * __config.deployer.projectNamePrefix__: Defines the Deployer Project Name prefix. Can either be static, e.g. "BDA", or it can be dynamic, e.g. "Jenkins_${env.BUILD_NUMBE}"
 * __config.libs.resolve__: 
 	* Set to "**remote**" if dependent jars should be downloaded from remote maven repositories with Apache Ivy. See "[resources/ivy/ivy-remote.xml](resources/ivy/ivy-remote.xml)" for list of jars. See "[resources/ivy/ivysettings-remote.xml](resources/ivy/ivysettings-remote.xml)" for list of repositories from which jars are downloaded. **Note**: Software AG jars are referenced with a filesystem resolver pointing to the respective local installation.
@@ -39,7 +38,7 @@ Edit the _System.properties_ to correspond to your infrastructure:
 Setup your build server in the following way:
  
 * Add the default java to your PATH variable. Use the JDK that comes with your webMethods installation ${SAG_HOME}/jvm/jvm/bin/java
-* Install Jenkins CI Server v2 ([https://jenkins.io/](https://jenkins.io/)) and run it with the same user that run your webMethods processes. The CI can work also with other CI server, but for the reference implementation  we've chosen Jenkins.
+* Install Jenkins CI Server v2 ([https://jenkins.io/](https://jenkins.io/)) and run it with the same user that run your webMethods processes. This webMethods CI framework can work also with other CI servers, but for the reference implementation we've chosen Jenkins 2 with native Pipeline support.
 
 Setup your Jenkins server in the following way:
 

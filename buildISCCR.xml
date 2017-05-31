@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+<project name="BDA.ISCCR" default="bda.test.isccr.reviewPackages" basedir=".">
+
+	<path id="isccr.classpath">
+		<fileset dir="${config.isscr.home}/lib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<target name="bda.test.isccr.enabled">
+		<condition property="isccrEnabled">
+			<equals arg1="${config.isccr.enable}" arg2="true"/>
+		</condition>
+		<log msg="ISCCR is enabled: ${isccrEnabled}"/>
+	</target>
+	
+	<target name="bda.test.isccr.init" if="isccrEnabled" depends="bda.test.isccr.enabled">
+		<log msg="Init IntegrationServer Continuous Code Review" />
+
+		<property name="tmpDirIsccr" location="${config.tmpdir}/isccr" />
+		<antcall target="common.create_dir">
+			<param name="dir" value="${tmpDirIsccr}" />
+			<param name="overwrite" value="true" />
+		</antcall>
+	</target>
+
+	<target name="bda.test.isccr.isPackage">
+		<property name="nsPath" location="${packagePath}/ns" />
+		<available file="${nsPath}" type="dir" property="isPackage" />
+		<log msg="Checking if package dir ${nsPath} exists: ${isPackage}" />
+	</target>
+
+	<target name="bda.test.isccr.reviewPackages" if="isccrEnabled" depends="bda.test.isccr.init">
+		<log msg="Executing ISCCR for IS packages in directory '${isProjectsDir}'." />
+		<var name="failedTestList" value="" />
+		<!-- interate over the test project and triiger all xml tests in the setup folder -->
+		<for param="packagePath" keepgoing="true" trim="true">
+			<path>
+				<dirset dir="${isProjectsDir}">
+					<include name="*" />
+				</dirset>
+			</path>
+			<sequential>
+				<trycatch reference="exception_ref">
+					<try>
+						<log msg="Running isccr tests for package '@{packagePath}'" />
+						<!-- necessary to inheritAll and inheritRefs because of bda.classpath path reference -->
+						<antcall target="bda.test.isccr.reviewPackage" inheritall="true" inheritrefs="true">
+							<param name="packagePath" value="@{packagePath}" />
+						</antcall>
+					</try>
+					<catch>
+						<property name="testFail" refid="exception_ref" />
+						<log msg="ISCCR test for package '@{packagePath}' failed: ${testFail}" />
+						<var name="failedTestList" value="${failedTestList}'@{packagePath}', " />
+					</catch>
+				</trycatch>
+			</sequential>
+		</for>
+		<if>
+			<not>
+				<equals arg1="${failedTestList}" arg2="" trim="true" />
+			</not>
+			<then>
+				<log msg="At least one ISCRR test failed. Failed packages: ${failedTestList}." />
+				<if>
+					<equals arg1="${config.test.failBuildOnTestError}" arg2="true" />
+					<then>
+						<fail message="At least one ISCRR test failed. Failed packages: ${failedTestList}" />
+					</then>
+				</if>
+			</then>
+			<else>
+				<log msg="All ISCCR Tests passed." />
+			</else>
+		</if>
+	</target>
+
+	<target name="bda.test.isccr.reviewPackage" if="isPackage" depends="bda.test.isccr.isPackage">
+		<basename file="${packagePath}" property="packageNameTest" />
+		<log msg="Doing static code analysis for IS package '${packageNameTest}' located at '${packagePath}'" />
+		<!--jvm="c:/SoftwareAG98/jvm/jvm/bin/java.exe"-->
+		<!-- bda.checkout.dir.isPackages -->
+		<property name="reportStylesheet" location="resources/isccr/unitReport.xslt" />
+		<property name="outputDir" location="${tmpDirIsccr}" />
+		<property name="optionsFile" location="resources/isccr/config_bda.xml" />
+		<log msg="Using report stylesheet '${reportStylesheet}'. Storing in '${outputDir}'." />
+
+		<java classname="com.softwareag.gcs.wm.codereview.CodeReview" fork="true" classpathref="isccr.classpath" failonerror="false" errorproperty="test:failure">
+			<jvmarg value="-Dcode.review.options=${optionsFile}" />
+			<jvmarg value="-Dcode.review.pkgprefix=${packageNameTest}" />
+			<jvmarg value="-Dcode.review.pkgname=${packageNameTest}" />
+			<jvmarg value="-Dcode.review.directory=${isProjectsDir}" />
+			<jvmarg value="-Dcode.review.output.directory=${outputDir}" />
+			<jvmarg value="-Dcode.review.xsltReportFile=${reportStylesheet}" />
+		</java>
+
+		<!-- if jenkins report dir is set publicate results there-->
+		<antcall target="bda.test.isccr.copyResultsToReportsDir">
+			<param name="current.report.dir" value="${tmpDirIsccr}" />
+		</antcall>
+
+		<fail if="test:failure" message="ISCCR test failure, see report" />
+
+	</target>
+
+	<!-- if jenkins report dir is set publicate results there-->
+	<target name="bda.test.isccr.copyResultsToReportsDir">
+		<log msg="Copying ISCCR test results from folder '${current.report.dir}' to folder '${bda.reportDir}'" />
+		<copy todir="${bda.reportDir}">
+			<fileset dir="${current.report.dir}">
+				<include name="*_CodeReviewReport.html" />
+			</fileset>
+			<mapper type="glob" from="*.html" to="TEST-*.xml" />
+		</copy>
+	</target>
+
+</project>

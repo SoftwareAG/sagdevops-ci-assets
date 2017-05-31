@@ -7,6 +7,7 @@
 	<import file="buildCallABE.xml" />
 	<import file="buildDeployer.xml" />
 	<import file="buildTest.xml" />
+	<import file="buildISCCR.xml" />
 	<import file="buildRepo.xml" />
 
 	<target name="build" depends="bda.init.Project, bda.abe.buildWM, bda.repo.processBuildOutput">
@@ -34,11 +35,15 @@
 		<description>Run tests.</description>
 	</target>
 
+	<target name="staticCodeAnalysis" depends="bda.init.Project, bda.test.isccr.reviewPackages">
+		<description>Run static code analysis.</description>
+	</target>
+	
 	<target name="buildDeployTest" depends="build, deploy, test">
 		<description>Build and deploy the project.</description>
 	</target>
 
-	<target name="_TEST_startTest" depends="bda.init.Project, bda.test.startTest">
+	<target name="_TEST_startTest" depends="bda.init.Project, bda.test.isccr.reviewPackages, test">
 		<description>_TEST</description>
 	</target>
 

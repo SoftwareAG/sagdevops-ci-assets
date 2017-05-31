@@ -1,4 +1,7 @@
 /tmp
 /logs/
 /bin/
-/lib/ivy.jar
+/lib/**/ivy*.jar
+.settings/org.eclipse.jdt.groovy.core.prefs
+ISCCR.log
+build.number
