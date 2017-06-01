@@ -84,7 +84,8 @@
 		<property name="reportStylesheet" location="resources/isccr/unitReport.xslt" />
 		<property name="outputDir" location="${tmpDirIsccr}" />
 		<property name="optionsFile" location="resources/isccr/config_bda.xml" />
-		<log msg="Using report stylesheet '${reportStylesheet}'. Storing in '${outputDir}'." />
+		
+		<log msg="Using ISCCR installed at '${config.isscr.home}'. Using report stylesheet '${reportStylesheet}'. Storing in '${outputDir}'." />
 
 		<java classname="com.softwareag.gcs.wm.codereview.CodeReview" fork="true" classpathref="isccr.classpath" failonerror="false" errorproperty="test:failure">
 			<jvmarg value="-Dcode.review.options=${optionsFile}" />
@@ -100,7 +101,7 @@
 			<param name="current.report.dir" value="${tmpDirIsccr}" />
 		</antcall>
 
-		<fail if="test:failure" message="ISCCR test failure, see report" />
+		<fail if="test:failure" message="ISCCR test failure, see report: ${test:failure}" />
 
 	</target>
 
