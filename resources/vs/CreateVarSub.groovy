@@ -118,7 +118,8 @@ deploymentMaps.each {  mapName, targetServers ->
 					def vsTemplateFile = new File(varSubEnvDirs[targetServerType], "${assetCompositeName}.vs.xml")
 					if( vsTemplateFile.exists() ) {
 						def p = new XmlSlurper().parse( vsTemplateFile )
-						DeploementSet(
+						def deploymentSetNodeName = p.name()
+						"$deploymentSetNodeName"(
 								assetCompositeName: assetCompositeName,
 								deploymentSetName: deploymentSetName,
 								serverAliasName: compositeSrcAlias,

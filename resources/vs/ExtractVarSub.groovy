@@ -54,8 +54,10 @@ assert varsubFile.exists() : "Varsubfile '${varsubFile}' does not exist"
 def varsubFileXml = new XmlSlurper().parse(varsubFile)
 
 // parse the varsub file and get all IS composites
-varsubFileXml.'**'.findAll{ it.name() == 'DeploementSet' && it.@targetServerType == 'IS'}.each { ISDeploementSet ->
+varsubFileXml.'**'.findAll{ (it.name() == 'DeploymentSet' || it.name() == 'DepoeymentSet') && it.@targetServerType == 'IS'}.each { ISDeploementSet ->
+//varsubFileXml.'**'.findAll{ it.name() == 'DeploymentSet' && it.@targetServerType == 'IS'}.each { ISDeploementSet ->
 	def assetName = "" + ISDeploementSet.@assetCompositeName
+	def deploymentSetName = ISDeploementSet.name()
 	println "Found varsub for IS package '${assetName}'"
 	// create a new XML with a StreamingMarkupBuilder, which will store the varsub for this IS package
 	def varSubXml = new StreamingMarkupBuilder()
@@ -74,7 +76,7 @@ varsubFileXml.'**'.findAll{ it.name() == 'DeploementSet' && it.@targetServerType
 	PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
 	// create the varsub xml using the StreamingMarkupBuilder
 	String nxml = varSubXml.bind {
-		VarSub {
+		"$deploymentSetName" {
 			// add the string representation of the current deployment set to the varsub file
 			// note: "ISDeploementSet.children().toString()" returns a valid xml string
 			mkp.yield ISDeploementSet.children()

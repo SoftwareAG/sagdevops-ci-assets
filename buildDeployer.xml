@@ -115,7 +115,8 @@
 	<target name="bda.deployer.importVarSubDeployer" depends="" if="doVarSub" description="the entry point for the varsub implementation">
 		<!-- check if the var sub file contains at least one deployment set, i.e. the varsub is not empty -->
 		<xmltask source="${varsubfile.path}">
-			<copy path="count(//DeploementSet)" property="countDeploementSet" />
+			<!-- count the child nodes of Root. We do not know if they are name DeploymentSet or DeploementSet --> 
+			<copy path="count(/Root/child::node())" property="countDeploementSet" />
 		</xmltask>
 		<if>
 			<and>
