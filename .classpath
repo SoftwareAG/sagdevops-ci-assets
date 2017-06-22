@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="con" path="GROOVY_DSL_SUPPORT"/>
+	<classpathentry kind="lib" path="lib/wmtestsuite/serviceInterceptor.jar"/>
+	<classpathentry kind="lib" path="lib/wmtestsuite/serviceMockClient.jar"/>
+	<classpathentry kind="var" path="WEBMETHODS_COMMON_LIB_EXT/log4j.jar"/>
+	<classpathentry kind="var" path="IS_MAIL"/>
+	<classpathentry kind="var" path="IS_SERVER"/>
+	<classpathentry kind="var" path="WEBMETHODS_COMMON_LIB/wm-isclient.jar"/>
+	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?project=henning_sagdevops-ci-assets&amp;ivyXmlPath=resources%2Fivy%2Fivy-remote.xml&amp;confs=*&amp;ivySettingsPath=resources%2Fivy%2Fivysettings-remote.xml&amp;loadSettingsOnDemand=false&amp;ivyUserDir=c%3A%5CUsers%5CAdministrator%5C.ivy%5C&amp;propertyFiles=resources%2Fivy%2Fivy.properties"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

@@ -1,0 +1,41 @@
+<project name="BDA_CompileUtils" default="build" basedir="../../">
+	<description>
+		This project is for the compilation of helper/util classes for the BDA project.
+	</description>
+	
+	<property name="wm.home" location="/home/waa/sag/cc"/>
+	
+	<!-- set global properties for this build -->
+	<property name="src.dir" location="src" />
+	<property name="build.dir" location="build" />
+	<property name="lib.dir" location="lib" />
+	<property name="wm.common.lib.ext.dir" location="${wm.home}/common/lib/ext" />
+	<path id="build.classpath">
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${wm.common.lib.ext.dir}">
+			<include name="log4j*.jar" />
+		</fileset>
+	</path>
+	
+	<property name="bda.name" value="bda-utils" />
+	<property name="bda.builddir" location="${build.dir}/${bda.name}" />
+	<property name="bda.builddir.classes" location="${bda.builddir}/classes" />
+	<property name="bda.jarname" value="${bda.name}.jar" />
+
+	<target name="build" depends="cleanup">
+		<mkdir dir="${bda.builddir.classes}" />
+		<javac srcdir="${src.dir}" destdir="${bda.builddir.classes}" classpathref="build.classpath" debug="on">
+		</javac>
+		<copy todir="${bda.builddir.classes}/com/softwareag/wx/bda/utils/ant" file="${src.dir}/com/softwareag/wx/bda/utils/ant/bdaAntlib.xml" />
+		<jar destfile="${bda.builddir}/${bda.jarname}" basedir="${bda.builddir.classes}" />
+		<copy file="${bda.builddir}/${bda.jarname}" todir="lib/" />
+	</target>
+	
+	<target name="cleanup">
+		<delete dir="${bda.builddir}"/>
+	</target>
+
+	
+</project>

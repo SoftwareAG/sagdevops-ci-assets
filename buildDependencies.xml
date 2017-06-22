@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<project name="Build and Deploy Solution" default="" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+
+	<property name="ivy.install.version" value="2.4.0" />
+	<property name="ivy.jar.name" value="ivy-jar-${ivy.install.version}.jar"/>
+	<property name="ivy.jar.file" location="${lib.dir}/ext/${ivy.jar.name}" />
+	<property name="ivysettings.xml" location="resources/ivy/ivysettings-${config.libs.resolve}.xml" />
+	<property name="ivy.xml" location="resources/ivy/ivy-${config.libs.resolve}.xml" />
+
+	<condition property="skip.download">
+		<equals arg1="${config.libs.resolve}" arg2="local"/>
+	</condition>
+	
+	<target name="bda.dependencies.downloadIvy" unless="skip.download">
+		<property name="ivy.downloadUrl" value="https://repo1.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar" />
+		<echo message="installing ivy... Download from '${ivy.downloadUrl}', storing jar in '${ivy.jar.file}'." />
+		<get src="${ivy.downloadUrl}" dest="${ivy.jar.file}" usetimestamp="true" />
+	</target>
+
+	<target name="bda.dependencies.installIvy" depends="bda.dependencies.downloadIvy">
+		<description>Download and store ivy.jar locally</description>
+		<path id="ivy.lib.path">
+			<fileset dir="${lib.dir}/ext" includes="${ivy.jar.name}" />
+		</path>
+		<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path" />
+	</target>
+
+	<target name="bda.dependencies.getJars" depends="bda.dependencies.installIvy">
+		<echo message="Using ivy.settings '${ivysettings.xml}' and ivy.xml '${ivy.xml}' to resolve dependeant jars from public repositories..." />
+		<ivy:settings file="${ivysettings.xml}" id="ivy.settings" />
+		<ivy:resolve file="${ivy.xml}" settingsRef="ivy.settings" />
+	</target>
+
+
+	<target name="bda.dependencies.fileset" depends="bda.dependencies.getJars" description="Either downloads ivy jar, then resolves all necessary jars by using the resources/ivy.ivy.xml dependency declaration, or use locally stored jars">
+		<description>downloads ivy jar, then resolves all necessary jars by using the resources/ivy.ivy.xml dependency declaration</description>
+		<echo>Using ivy to download necessary jars as specified in the '${ivy.xml}' file.</echo>
+		<ivy:cachefileset setid="dependencies.fileset" settingsRef="ivy.settings" />
+	</target>
+
+
+	<target name="bda.dependencies.util.downloadJarsToLibFolder" depends="bda.dependencies.getJars" description="Download all jars defined in the ivy.xml to the local lib/ext folder. Create util target in build.xml which depends on bda.init.Project and this target.">
+		<ivy:retrieve pattern="${lib.dir}/ext/[artifact]-[type]-[revision].[ext]" type="jar" />
+	</target>
+</project>

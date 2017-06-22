@@ -1,0 +1,1 @@
+Place any external jars necessary for your build into this directory... All jars in this directory will be added to the global classpath "bda.classpath".

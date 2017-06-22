@@ -1,95 +1,194 @@
 <?xml version="1.0"?>
-<project name="ProjectInitializer" default="" basedir="." >
-	
+<project name="ProjectInitializer" default="" basedir=".">
+
+	<property file="System.properties" />
+	<property name="lib.dir" value="./lib" />
+
+	<import file="buildDependencies.xml" />
+
+
 	<!-- system properties properties -->
-	<target name="initSAGHome" unless="SAGHome">
-		<fail message="System property 'SAGHome' should be defined!"/>
+	<target name="bda.init.SAGHome" unless="SAGHome">
+		<fail message="System property 'SAGHome' should be defined!" />
 	</target>
 
-	<target name="initDeployerInstallationPath" unless="deployerInstallationPath">
-		<fail message="System property 'deployerInstallationPath' should be defined!"/>
+	<target name="bda.init.DeployerInstallationPath" unless="config.deployer.deployerInstallationPath">
+		<fail message="System property 'config.deployer.deployerInstallationPath' should be defined!" />
 	</target>
 
-	<target name="initDeployerHost" unless="deployerHost">
-		<fail message="System property 'deployerHost' should be defined!"/>
+	<target name="bda.init.DeployerHost" unless="config.deployer.deployerHost">
+		<fail message="System property 'config.deployer.deployerHost' should be defined!" />
 	</target>
-	
-	<target name="initDeployerPort" unless="deployerPort">
-		<fail message="System property 'deployerPort' should be defined!"/>
+
+	<target name="bda.init.DeployerPort" unless="config.deployer.deployerPort">
+		<fail message="System property 'config.deployer.deployerPort' should be defined!" />
 	</target>
-	
-	<target name="initDeployerUsername" unless="deployerUsername">
-		<fail message="System property 'deployerUsername' should be defined!"/>
+
+	<target name="bda.init.DeployerUsername" unless="config.deployer.deployerUsername">
+		<fail message="System property 'config.deployer.deployerUsername' should be defined!" />
 	</target>
-	
-	<target name="initDeployerPassword" unless="deployerPassword">
-		<fail message="System property 'deployerPassword' should be defined!"/>
+
+	<target name="bda.init.DeployerPassword" unless="config.deployer.deployerPassword">
+		<fail message="System property 'config.deployer.deployerPassword' should be defined!" />
+	</target>
+
+	<!-- mandatory properties -->
+	<target name="bda.init.buildStorageDir" unless="config.build.buildStorageDir">
+		<fail message="Property 'config.build.buildStorageDir' should be defined!" />
+	</target>
+
+	<target name="bda.init.TargetEnv" unless="bda.targetEnv">
+		<fail message="Set property 'bda.targetEnv' to define a target environment, e.g. DEV, TEST or PROD. Must be defined in ENV.groovy file." />
+	</target>
+
+	<!-- optional properties -->
+	<target name="bda.init.ProjectName" unless="bda.projectName">
+		<echo message="Setting project name to config.project.projectName='${config.project.projectName}'."/>
+		<property name="bda.projectName" value="${config.project.projectName}"/>
 	</target>
 			
-	<!-- mandatory properties -->
-	<target name="initProjcetName" unless="projectName">
-		<fail message="Property 'projectName' should be defined!"/>
-	</target>
-		
-	<target name="initBuildOutputDir" unless="buildOutputDir">
-		<fail message="Property 'buildOutputDir' should be defined!"/>
-	</target>
-	
-	<target name="initRepositoryName" unless="repositoryName">
-		<fail message="Property 'repositoryName' should be defined!"/>
-	</target>
-	
-	<target name="initDeployerProjectDefinition" unless="deployerProjectDefinition">
-		<fail message="Property 'deployerProjectDefinition' should be defined!"/>
+	<target name="bda.init.ISProjectsDir" unless="isProjectsDir">
+		<property name="isProjectsDir" value="" />
 	</target>
 
-	
-	<!-- optional properties -->
-	<target name="initISProjectsDir" unless="isProjectsDir">
-		<property name="isProjectsDir" value=""/>
-	</target>
-	
-	<target name="initISConfigDir" unless="isConfigDir">
-		<property name="isConfigDir" value=""/>
-	</target>
-	
-	<target name="initBPMProjectsDir" unless="bpmProjectsDir">
-		<property name="bpmProjectsDir" value=""/>
-	</target>
-	
-	<target name="initMWSProjectsDir" unless="mwsProjectsDir">
-		<property name="mwsProjectsDir" value=""/>
-	</target>
-	
-	<target name="initRulesProjectsDir" unless="rulesProjectsDir">
-		<property name="rulesProjectsDir" value=""/>
-	</target>
-	
-	<target name="initUMProjectDir" unless="umProjectsDir">
-		<property name="umProjectsDir" value=""/>
-	</target>
-	
-	<target name="initTestPackageNamePattern" unless="testPackageNamePattern">
-		<property name="testPackageNamePattern" value=""/>
-	</target>
-	
-	
-	<target name="initJenkinsReportDir" unless="jenkinsReportDir">
-		<property name="jenkinsReportDir" value=""/>
+	<target name="bda.init.BPMProjectsDir" unless="bpmProjectsDir">
+		<property name="bpmProjectsDir" value="" />
 	</target>
 
+	<target name="bda.init.MWSProjectsDir" unless="mwsProjectsDir">
+		<property name="mwsProjectsDir" value="" />
+	</target>
+
+	<target name="bda.init.RulesProjectsDir" unless="rulesProjectsDir">
+		<property name="rulesProjectsDir" value="" />
+	</target>
+
+	<target name="bda.init.UMProjectDir" unless="umProjectsDir">
+		<property name="umProjectsDir" value="" />
+	</target>
+
+	<target name="bda.init.TestPackageNamePattern" unless="testPackageNamePattern">
+		<property name="testPackageNamePattern" value="" />
+	</target>
 	
+	<target name="bda.init.ReportDirProperty" unless="bda.reportDir">
+		<property name="bda.reportDir" value="${config.test.reportDir}" />
+		<log msg="'bda.reportDir' not set externally, setting to '${bda.reportDir}'."/>
+	</target>
+	
+	<target name="bda.init.ReportDir" depends="bda.init.ReportDirProperty">
+		<antcall target="common.create_dir">
+			<param name="dir" value="${bda.reportDir}" />
+			<param name="overwrite" value="true" />
+		</antcall>
+	</target>
+
+	<target name="bda.init.BuildNumber.internal" unless="env.BUILD_NUMBER">
+		<property file="build.number" />
+		<propertyfile file="build.number">
+			<entry key="build_number" type="int" operation="+" value="1" />
+		</propertyfile>
+		<echo message="Setting build.number to value as defined in properties file 'build.number'."/>
+		<property name="build.number" value="${build_number}" />
+	</target>
+	<target name="bda.init.BuildNumber.external" if="env.BUILD_NUMBER">
+		<echo message="Setting build.number to env.BUILD_NUMBER=${env.BUILD_NUMBER}"/>
+		<property name="build.number" value="${env.BUILD_NUMBER}" />
+	</target>
+	<target name="bda.init.BuildNumber" depends="bda.init.BuildNumber.internal, bda.init.BuildNumber.external">
+		<echo message="Setting build.number to '${build.number}'"/>
+	</target>
+
 	<!--Main Init targets-->
-	<target name="initSystemProperties" depends="initSAGHome,initDeployerInstallationPath,initDeployerHost,initDeployerPort,initDeployerUsername,initDeployerPassword">
+	<target name="bda.init.SystemProperties" depends="bda.init.SAGHome,bda.init.DeployerInstallationPath,bda.init.DeployerHost,bda.init.DeployerPort,bda.init.DeployerUsername,bda.init.DeployerPassword">
+	</target>
+
+	<target name="bda.init.MandatoryProperties" depends="bda.init.ProjectName,bda.init.buildStorageDir,bda.init.TargetEnv">
+	</target>
+
+	<target name="bda.init.OptionalProperties" depends="bda.init.ReportDir, bda.init.BuildNumber, bda.init.ISProjectsDir, bda.init.BPMProjectsDir,bda.init.MWSProjectsDir,bda.init.RulesProjectsDir,bda.init.UMProjectDir,bda.init.TestPackageNamePattern">
 	</target>
 	
-	<target name="initMandatoryProperties" depends="initProjcetName,initBuildOutputDir,initRepositoryName,initDeployerProjectDefinition">
-	</target>
+	<target name="bda.init.taskdefs">
+	<property name="bda.logging.log4j.propertiesFile" location="./resources/log4j.properties" />
+		<taskdef name="log" classname="com.softwareag.wx.bda.utils.ant.BDALogger" classpathref="bda.classpath" />
+		<!--<taskdef classpath="lib/ant-contrib.jar" resource="net/sf/antcontrib/antlib.xml" />-->
+		<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="bda.classpath" />
+		<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpathref="bda.classpath" />
+		<taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy" classpathref="bda.classpath" />
 	
-	<target name="initOptionalProperties" depends="initISProjectsDir,initISConfigDir,initBPMProjectsDir,initMWSProjectsDir,initRulesProjectsDir,initUMProjectDir,initTestPackageNamePattern,initJenkinsReportDir">
 	</target>
+
+	<target name="bda.init.Project" depends="bda.init.classpath, bda.init.taskdefs, bda.init.SystemProperties, bda.init.MandatoryProperties, bda.init.OptionalProperties" description="bda.init. properties needed for the project">
 		
-	<target name="initProject" depends="initSystemProperties,initMandatoryProperties,initOptionalProperties" description="init properties needed for the project">
+		<antcall target="common.create_dir">
+			<param name="dir" value="${config.tmpdir}" />
+		</antcall>
+
+		<property name="baseRevision" value="${config.build.version}.${build.number}" />
+		<!-- build.version is for ABE, see "master_build_Reference/build.properties" -->
+		<property name="build.version" value="${bda.projectName}_${config.build.version}" />
+		<!-- build_number is for ABE, see "${SAG_HOME}/common/AssetBuildEnvironment/build.number" -->
+		<property name="build_number" value="${build.number}" />
+
+		<property name="fbrRepoName" value="${bda.projectName}_fbrRepo" />
+		<!--<property name="fbrRepoName" value="${bda.projectName}_${baseRevision}_fbrRepo" />-->
+		<property name="buildOutputDir" location="${config.build.buildStorageDir}/${fbrRepoName}" />
+
 	</target>
-	
+
+	<target name="bda.init.classpath" depends="bda.dependencies.fileset">
+		<echo message="Setting up classpath of local jars and ivy dependencies..." />
+		<path id="bda.classpath">
+			<!-- load custom ant tasks -->
+			<fileset dir="${lib.dir}" includes="bda-utils.jar" />
+			<!-- include all user defined jars which are in the lib/ext dir -->
+			<fileset dir="${lib.dir}/ext" includes="*.jar" />
+			<!-- reference other external/non-SAG and local SAG jars with ivy -->
+			<fileset refid="dependencies.fileset" />
+		</path>
+	</target>
+
+	<target name="common.create_dir" depends="common.check">
+		<if>
+			<equals arg1="${overwrite}" arg2="true" />
+			<then>
+				<antcall target="common.deldir">
+					<param name="dir" value="${dir}" />
+				</antcall>
+			</then>
+		</if>
+		<log level="INFO" msg="Creating dir '${dir}'" />
+		<mkdir dir="${dir}" />
+	</target>
+
+
+	<target name="common.check">
+		<log msg="Checking for the existance of the directory ${dir}" level="DEBUG" />
+		<condition property="direxists">
+			<available file="${dir}" type="dir" />
+		</condition>
+	</target>
+
+	<target name="common.deldir" depends="common.check" if="direxists">
+		<log msg="Deleting the directory ${dir}" level="TRACE" />
+		<delete dir="${dir}" />
+	</target>
+
+
+	<target name="common.checkos">
+		<condition property="testrunner.cmd" value="${soapUI.home}/bin/testrunner.bat">
+			<os family="windows" />
+		</condition>
+		<condition property="testrunner.cmd" value="${soapUI.home}/bin/testrunner.sh">
+			<os family="unix" />
+		</condition>
+	</target>
+
+	<target name="common.createLogDir">
+		<!-- create the common log dir -->
+		<mkdir dir="${bda.logging.dir}" />
+	</target>
+
+
 </project>

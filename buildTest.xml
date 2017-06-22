@@ -1,83 +1,99 @@
 <?xml version="1.0"?>
-<project name="test" default="startTest" basedir=".">
+<project name="BDA.WmTestSuite" default="bda.test.startTest" basedir=".">
 
-	<property name="testSuitePackagesPath" value="${isTestDir}"/>
-
-	<path id="junitClasspath">
+	<path id="junit.classpath">
+		<!-- jars for invoking IS services -->
 		<fileset dir="${SAGHome}/common/lib/ext" includes="enttoolkit.jar" />
 		<fileset dir="${SAGHome}/common/lib" includes="**/gf.javax.mail.jar" />
 		<fileset dir="${SAGHome}/common/lib" includes="wm-isclient.jar" />
 		<fileset dir="${SAGHome}/IntegrationServer/lib" includes="wm-isserver.jar" />
-		<fileset dir="./lib" includes="httpunit.jar" />
-		<fileset dir="./lib" includes="junit*.jar" />
-		<fileset dir="./lib" includes="xmlunit*.jar" />
-		<fileset dir="./lib" includes="serviceInterceptor.jar" />
-		<fileset dir="./lib" includes="serviceMockClient.jar" />
+		<fileset dir="${config.build.abeHome}/ant/lib/" includes="ant-junit.jar" />
+		<!-- jars for WmTestSuite -->
+		<fileset dir="./lib/wmtestsuite" includes="serviceInterceptor.jar" />
+		<fileset dir="./lib/wmtestsuite" includes="serviceMockClient.jar" />
+		<!-- JUnit jar 
+		<fileset dir="${SAGHome}/common/runtime/agent/repository/plugins" includes="org.junit_4*.jar" />
+		<fileset dir="${SAGHome}/common/runtime/bundles/platform/eclipse/plugins" includes="org.junit_4*.jar" />
+		-->
 	</path>
-	
-	<target name="startTest" depends="jenkinsCheck">		
-		<var name="failedTestList" value=""/>
-		
-                <!-- interate over the test project and triiger all xml tests in the setup folder -->
-                <for param="testProject" keepgoing="true" trim="true">
+
+	<!-- explicit taskdef is necessary if the ant-junit.jar is not in the ANT_HOME/lib dir -->
+
+	<target name="bda.test.init">
+		<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
+			<classpath refid="junit.classpath" />
+			<classpath refid="bda.classpath" />
+		</taskdef>
+		<taskdef name="junitreport" classname="org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator">
+			<classpath refid="junit.classpath" />
+			<classpath refid="bda.classpath" />
+		</taskdef>
+	</target>
+
+
+	<target name="bda.test.startTest" depends="bda.test.init">
+		<var name="failedTestList" value="" />
+
+		<!-- interate over the test project and triiger all xml tests in the setup folder -->
+		<for param="testProject" keepgoing="true" trim="true">
 			<path>
-				<dirset dir="${testSuitePackagesPath}" includes="*" excludes=".*,replicate" />
+				<dirset dir="${isTestDir}" includes="*" excludes=".*,replicate" />
 			</path>
 			<sequential>
 				<trycatch reference="exception_ref">
 					<try>
-                        <echo message="@{testProject}"/>
-						<antcall target="junitTestAndReportXML">
+						<log msg="Running tests for package '@{testProject}'" />
+						<!-- necessary to inheritAll and inheritRefs because of bda.classpath path reference -->
+						<antcall target="bda.test.executeTestAndReportXMLForNodes" inheritall="true" inheritrefs="true">
 							<param name="testPackageName" value="@{testProject}" />
 						</antcall>
-						<!--antcall target="junitTestAndReportJava">
-							<param name="testPackageName" value="${testSuitePackagesPath}/@{testProject}" />
-						</antcall-->
 					</try>
 					<catch>
-						<echo message="JUnit test for package '@{testProject}' failed" />
-						<var name="failedTestList" value="${failedTestList}'@{packageName}', " />
 						<property name="testFail" refid="exception_ref" />
+						<basename property="packageName" file="@{testProject}" />
+						<log msg="JUnit test for package '${packageName}' failed: ${testFail}" />
+						<var name="failedTestList" value="${failedTestList}'${packageName}', " />
 					</catch>
 				</trycatch>
 			</sequential>
 		</for>
-
-
-
-		
 		<if>
 			<not>
 				<equals arg1="${failedTestList}" arg2="" trim="true" />
 			</not>
 			<then>
-				<fail unless="isReportingToJenkins" message="At least one test failed. Failed packages: ${failedTestList}" />
+				<log msg="At least one JUnit test failed. Failed packages: ${failedTestList}."/>
+				<if>
+					<equals arg1="${config.test.failBuildOnTestError}" arg2="true" />
+					<then>
+						<fail message="At least one JUnit test failed. Failed packages: ${failedTestList}" />
+					</then>
+				</if>
 			</then>
 			<else>
-				<echo message="All JUnit Tests passed."/>
+				<log msg="All JUnit Tests passed." />
 			</else>
 		</if>
 	</target>
 
-	<target name="junitInitTest">
-		<echo message="Init JUnit tests for package ${testPackageName}" />
-		
+	<target name="bda.test.initTestPacakge">
+		<log msg="Init JUnit tests for package ${testPackageName}" />
 		<property name="testPackageReportsDir" value="${testPackageName}/resources/reports" />
 	</target>
-	
-	<target name="junitCleanUp">
-		<delete dir="${testPackageReportsDir}" />								
+
+	<target name="bda.test.cleanUpTestPackage">
+		<delete dir="${testPackageReportsDir}" />
 	</target>
-	
+
 
 	<!--execute only if the XML Test directory exists in the test package -->
-	<target name="junitTestAndReportXML" depends="junitInitTest,junitCleanUp">
-		<echo message="Starting JUnit tests for package '${testPackageName}'"/>
-		
+	<target name="bda.test.executeTestAndReportXML" depends="bda.test.initTestPacakge, bda.test.cleanUpTestPackage">
+		<log msg="> Starting JUnit tests for package '${testPackageName}' on server '${user}:****@${host}:${port}'" />
+
 		<mkdir dir="${testPackageReportsDir}" />
 
 		<property name="resourcesFolder" value="${testPackageName}/resources" />
-		
+
 		<for param="testSetupFile" keepgoing="true">
 			<path>
 				<!--fileset dir="${testPackageXmlDir}" includes="*.xml" /-->
@@ -85,66 +101,83 @@
 			</path>
 			<sequential>
 				<basename property="fileBasename" file="@{testSetupFile}" suffix=".xml" />
-				<echo message="Running JUnit test '@{testSetupFile}'"/>
+				<log msg="Running JUnit test '@{testSetupFile}'" />
 				<junit printsummary="yes" haltonfailure="no" fork="true" failureproperty="test:failure" showoutput="true" dir="${testPackageName}">
-					<jvmarg value="-DwebMethods.integrationServer.name=${testISHost}" />
-					<jvmarg value="-DwebMethods.integrationServer.port=${testISPort}" />
-					<jvmarg value="-DwebMethods.integrationServer.userid=${testISUsername}" />
-					<jvmarg value="-DwebMethods.integrationServer.password=${testISPassword}" />
+					<jvmarg value="-DwebMethods.integrationServer.name=${host}" />
+					<jvmarg value="-DwebMethods.integrationServer.port=${port}" />
+					<jvmarg value="-DwebMethods.integrationServer.userid=${user}" />
+					<jvmarg value="-DwebMethods.integrationServer.password=${pwd}" />
 					<jvmarg value="-DwebMethods.test.setup.filename=@{testSetupFile}" />
 					<!--jvmarg value="-Dresources.folder=${resourcesFolder}" /-->
 					<classpath>
-						<path refid="junitClasspath" />
+						<path refid="junit.classpath" />
+						<path refid="bda.classpath" />
 					</classpath>
 					<formatter type="xml" />
 					<test name="com.wm.ps.test.WmTestSuite" outfile="TEST-${fileBasename}" haltonerror="false" haltonfailure="false" todir="${testPackageReportsDir}" />
 				</junit>
-				<replaceregexp file="${testPackageReportsDir}/TEST-${fileBasename}.xml" match=" name=&quot;com.wm.ps.test.WmTestSuite&quot; " replace=" name=&quot;com.wm.ps.test.WmTestSuite [${fileBasename}]&quot; " />												
+				<replaceregexp file="${testPackageReportsDir}/TEST-${fileBasename}.xml" match=" name=&quot;com.wm.ps.test.WmTestSuite&quot; " replace=" name=&quot;com.wm.ps.test.WmTestSuite [${fileBasename}]&quot; " />
 				<var name="fileBasename" unset="true" />
 			</sequential>
 		</for>
 
-		
 		<!-- if jenkins report dir is set publicate results there-->
-		<antcall target="junitCopyResultsToReportsDir">
+		<antcall target="bda.test.copyResultsToReportsDir">
 			<param name="current.report.dir" value="${testPackageReportsDir}" />
 		</antcall>
-		
-		
-		<!-- create HTML report of the test results -->
-		<junitreport todir="${testPackageReportsDir}">
-			<fileset dir="${testPackageReportsDir}">
-				<include name="TEST-*.xml" />
-				<exclude name="TESTS-TestSuites.xml" />
-			</fileset>
-			<report format="frames" todir="${testPackageReportsDir}/html" />
-		</junitreport>
 
 		<fail if="test:failure">Unit test failure</fail>
 	</target>
 
 
-
-
-
 	<!-- if jenkins report dir is set publicate results there-->
-	<target name="junitCopyResultsToReportsDir" depends="jenkinsCheck" if="isReportingToJenkins">
-		<echo message="Copying JUnit test results to folder '${jenkinsReportDir}'"/>
-		<copy todir="${jenkinsReportDir}">
+	<target name="bda.test.copyResultsToReportsDir" depends="">
+		<log msg="Copying JUnit test results from folder '${current.report.dir}' to folder '${bda.reportDir}'" />
+		<copy todir="${bda.reportDir}">
 			<fileset dir="${current.report.dir}">
 				<include name="*.*" />
-				<exclude name="TESTS-TestSuites.xml"/>
+				<exclude name="TESTS-TestSuites.xml" />
 			</fileset>
 		</copy>
 	</target>
-	
-	<!-- will jenkins evaluate the test results -->
-	<target name="jenkinsCheck" >
-		 <condition property="isReportingToJenkins">
-		 	<not>
-            	<equals arg1="${jenkinsReportDir}" arg2="" trim="true"/>
-	 		</not>	
-	     </condition>
+
+
+	<target name="bda.test.executeTestAndReportXMLForNodes">
+		<groovy>
+			def configSlurper = new ConfigSlurper(properties.'bda.targetEnv')
+			configSlurper.classLoader = this.class.getClassLoader()
+			def config = configSlurper.parse(new File(properties.'environmentsDefinition').toURL())
+			if(config.IntegrationServers.size() > 0 ) {
+				config.IntegrationServers.each { name, isConfig ->
+					def host = isConfig.host
+                    def port = isConfig.port
+					def user = isConfig.username
+					def pwd = isConfig.pwd
+		
+					def ac = project.createTask("antcall");
+					ac.setTarget("bda.test.executeTestAndReportXML");
+					// necessary to inheritAll and inheritRefs because of bda.classpath path reference
+					ac.setInheritAll(true)
+					ac.setInheritRefs(true)			
+		            def acparam1 = ac.createParam();
+                    acparam1.setName("host");
+                    acparam1.setValue(host);
+                    def acparam2 = ac.createParam();
+                    acparam2.setName("port");
+                    acparam2.setValue(port);
+					def acparam3 = ac.createParam();
+                    acparam3.setName("user");
+                    acparam3.setValue(user);
+		            def acparam4 = ac.createParam();
+		            acparam4.setName("pwd");
+		            acparam4.setValue(pwd);
+		            def acparam5 = ac.createParam();
+		            acparam5.setName("testPackageName");
+		            acparam5.setValue(properties.'testPackageName');
+		            ac.execute();
+				}
+			}
+		</groovy>
 	</target>
-	
+
 </project>

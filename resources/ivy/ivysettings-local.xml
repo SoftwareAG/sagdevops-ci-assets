@@ -1,0 +1,16 @@
+<ivysettings>
+    <properties file="build.properties" />
+    <!-- <settings defaultResolver="local-chain"/>-->
+    <resolvers>
+        <filesystem name="local-sag-is-lib">
+            <artifact pattern="${SAGHome}/IntegrationServer/lib/[artifact].[ext]"/>
+        </filesystem>
+        <filesystem name="local-sag.common.lib.ext">
+            <artifact pattern="${SAGHome}/common/lib/ext/[artifact].[ext]"/>
+        </filesystem>
+    </resolvers>
+    <modules>
+      <module organisation="sag.is.lib" resolver="local-sag-is-lib"/>
+      <module organisation="sag.common.lib.ext" resolver="local-sag.common.lib.ext"/>
+    </modules>
+</ivysettings>

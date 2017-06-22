@@ -1,29 +1,56 @@
 <?xml version="1.0"?>
-<project name="Build and Deploy Solution" default="buildDeployTest" basedir="." >
-	<property file="${project.properties}"/>
-	<property file="System.properties"/>
-        
-	<import file="buildInitProject.xml"/>
-	<import file="buildCallABE.xml"/>
-	<import file="buildDeployer.xml"/>
-	<import file="buildTest.xml"/>
-	
+<project name="BDA" default="buildDeployTest" basedir=".">
+	<property file="${project.properties}" />
+	<property file="System.properties" />
 
-	<taskdef classpath="lib/ant-contrib.jar" resource="net/sf/antcontrib/antlib.xml"/>
-				
-	<target name="build" depends="initProject,buildWM">		
+	<import file="buildInitProject.xml" />
+	<import file="buildCallABE.xml" />
+	<import file="buildDeployer.xml" />
+	<import file="buildTest.xml" />
+	<import file="buildISCCR.xml" />
+	<import file="buildRepo.xml" />
+
+	<target name="build" depends="bda.init.Project, bda.abe.buildWM, bda.repo.processBuildOutput">
 		<description>Build project.</description>
 	</target>
-		
-	<target name="deploy" depends="initProject,deployWM">
+
+	<target name="deploy" depends="bda.init.Project, bda.repo.prepareFbrForDeployment, bda.deployer.startDeployer">
 		<description>Deploy project.</description>
 	</target>
 
-        <target name="test" depends="initProject,startTest">
+	<target name="extractVarSubTemplates" depends="bda.init.Project">
+		<description>Extract varsub.</description>
+		<ant antfile="buildDeployer_Varsub.xml" target="bda.deployer.varsub.generateVarSubTemplates" inheritrefs="true" />
+	</target>
+
+	<target name="prepareArtifactoryDownloadSpec" depends="bda.init.Project, bda.repo.prepareArtifactoryDownloadSpec">
+		<description>Preparing donwload spec.</description>
+	</target>
+
+	<target name="prepareArtifactoryUploadSpec" depends="bda.init.Project, bda.repo.processBuildOutputForArtifactory">
+		<description>Preparing donwload spec.</description>
+	</target>
+
+	<target name="test" depends="bda.init.Project, bda.test.startTest">
 		<description>Run tests.</description>
-	</target>	
+	</target>
+
+	<target name="staticCodeAnalysis" depends="bda.init.Project, bda.test.isccr.reviewPackages">
+		<description>Run static code analysis.</description>
+	</target>
 	
 	<target name="buildDeployTest" depends="build, deploy, test">
 		<description>Build and deploy the project.</description>
 	</target>
+
+	<target name="_TEST_startTest" depends="bda.init.Project, bda.test.isccr.reviewPackages, test">
+		<description>_TEST</description>
+	</target>
+
+	<!--
+	-->
+	<target name="_getJarsToLocal" depends="bda.init.Project, bda.dependencies.util.downloadJarsToLibFolder">
+		<description>Get jars from remote repo with ivy and then retrieve into local lib/ext folder</description>
+	</target>
+
 </project>

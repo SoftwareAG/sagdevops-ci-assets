@@ -1,0 +1,635 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2009 (http://www.altova.com) by Dave Pemberton (Software AG) -->
+<CodeCheckConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" xsi:noNamespaceSchemaLocation="C:\Development\cont-code-review\trunk\FlowCodeChecker\CodeCheckConfiguration.xsd">
+	<globalParameters>
+		<!-- 
+________________________________________________________________________________________________________
+ 
+ COMMON EDITABLE PROPERTIES
+__________________________________________________________________________________________________________
+-->
+		<!-- Package Name - provided from a system variable (passed in from the jenkins job name) -->
+		<globalParameter name="code.review.pkgname">
+			<description>Package Name</description>
+			<value>${code.review.pkgname}</value>
+		</globalParameter>
+		<!-- Package Prefix - can be passed in as a system variable or hardcoded, e.g. Wx -->
+		<globalParameter name="code.review.pkgprefix">
+			<description>Package prefix</description>
+			<value>${code.review.pkgprefix}</value>
+		</globalParameter>
+		<!--  directory to the IS Package to be tested -->
+		<globalParameter name="code.review.directory">
+			<description>Package Directory</description>
+			<value>${code.review.directory}</value>
+		</globalParameter>
+		<!--  directory for the report output - leave empty to generate in the executing location -->
+		<globalParameter name="code.review.output.directory">
+			<description>output directory for the reports</description>
+			<value>${code.review.output.directory}</value>
+		</globalParameter>
+		<!-- Whether to prepend the date to the reports to preserve review history rather than overwriting -->
+		<globalParameter name="code.review.output.preserve">
+			<description>Pre-pend the date to the generated report file names to allow for historical comparison over time</description>
+			<value>false</value>
+		</globalParameter>
+		<!-- Value to use for the root folder checks -->
+		<globalParameter name="folder-prefix">
+			<description>Root folder prefix used in all services</description>
+			<value>com.softwareag</value>
+		</globalParameter>
+		<!-- 
+________________________________________________________________________________________________________
+ 
+ PROPERTIES LESS COMMONLY EDITIED
+__________________________________________________________________________________________________________
+-->
+		<!-- XSL / Path to XSL for report generation. -->
+		<globalParameter name="code.review.xsltReportFile">
+			<description>Path to the xslt file for report generation</description>
+			<value>${code.review.xsltReportFile}</value>
+		</globalParameter>
+		<globalParameter name="code.review.multi.xsltReportFile">
+			<description>Path to the xslt file for a multi package report generation</description>
+			<value>GenerateMultiReport.xsl</value>
+		</globalParameter>
+
+		<!-- Global Ignore Failure - i.e. if any of the checks fail, allow the build to continue -->
+		<globalParameter name="code.review.ignore.fail">
+			<description>Ignore Failures and continue with the build irrespective of the code quality</description>
+			<value>false</value>
+		</globalParameter>
+		<!--  Set the log level, needs to be one of SEVERE, WANING, INFO, DEBUG, TRACE -->
+		<globalParameter name="code.review.logger.level">
+			<description>Logger Output format</description>
+			<!-- LOG LEVEL -->
+			<value>INFO</value>
+			<!-- END LOG LEVEL -->
+		</globalParameter>
+		<!-- Timout for an individual check item -->
+		<globalParameter name="code.review.operation.threads.timeout">
+			<description>Timout (seconds) of a single check</description>
+			<value>120</value>
+		</globalParameter>
+		<!-- Number of rule processing threads when running in embedded mode (i.e. when run from eclipse).  This value should be
+			set approximately to the number of CPUs to obtain best performance -->
+		<globalParameter name="code.review.operation.threads.embedded">
+			<description/>
+			<value>3</value>
+		</globalParameter>
+		<!--Number of rule processing threads when running in interactive mode.  
+			Note if you increase this value to be greater than one, the log level should be 
+			decreased to WARN as the log output will not be readable -->
+		<globalParameter name="code.review.operation.threads.interactive">
+			<description/>
+			<value>1</value>
+		</globalParameter>
+	</globalParameters>
+	<checks>
+		<!--
+__________________________________________________________________________________________________________
+
+SERVICE PROPERTY CHECKS
+__________________________________________________________________________________________________________
+-->
+		<check id="SP1" name="Stateless" enabled="true" ignoreFailure="false">
+			<description><![CDATA[Services should be stateless to avoid creating session state where not needed. Each session
+consumes resources on the IS, consumes memory, creates a database entry, and in a clustered environment needs
+to be synchronized between cluster nodes. To minimize the build-up of unnecessary sessions it is recommended to ensure stateless services are used where possible.  This can be changed on the 'stateless' flow property within Designer by setting the value to yes.
+The table below highlights all services in the package which are currently configured as stateless]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.ServiceProperties</class>
+				<parameters>
+					<parameter>stateless</parameter>
+					<parameter>yes</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<check id="SP2" name="Pipeline Save Restore" enabled="true" ignoreFailure="false">
+			<description>No Save/Restore Pipeline options should be set against the service.  The Save/Restore pipeline options where set can result in unnecessary IO and therefore gives a reduced service performance as these services need to read or write to the disk and concurrent service execution could be compromised.  It is recommended to remote these options from the services before deployment to a non-development environment, or use the extended property (watt.server.pipeline.processor) to disable these in the non-development environments.  Where this is the case, this rule can be ignored</description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.ServiceProperties</class>
+				<parameters>
+					<parameter>pipeline_option</parameter>
+					<parameter>0</parameter>
+					<!-- this appears sometimes in generated assets and means the same as value 1 -->
+					<parameter>1</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<!--
+__________________________________________________________________________________________________________
+
+FLOW QUALITY CHECKS
+__________________________________________________________________________________________________________
+-->
+		<check id="FQ1" name="Pipeline Services" enabled="true" ignoreFailure="false">
+			<description><![CDATA[No Save/Restore/Trace Pipieline services should exist within the flow service.  Save/Restore pipeline services result in unnecessary IO and therefore gives a reduced service performance as these services need to read or write to the disk and concurrent service execution could be compromised.  It is recommended to delete these from the services before deployment to a non-development environment to ensure maximum performance.  Alternative to this is to use the pipeline service options from within designer and disable these in the non-development environments as described in the previous check.]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.FlowXMLXpathChecker</class>
+				<parameters>
+					<parameter>count(//INVOKE[@SERVICE='pub.flow:savePipelineToFile' or @SERVICE='pub.flow:savePipeline'])=0</parameter>
+					<parameter>count(//INVOKE[@SERVICE='pub.flow:restorePipelineFromFile' or @SERVICE='pub.flow:restorePipeline'])=0</parameter>
+					<parameter>count(//INVOKE[@SERVICE='pub.flow:tracePipeline'])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.flow:savePipelineToFile' or @SERVICE='pub.flow:savePipeline'])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.flow:restorePipelineFromFile' or @SERVICE='pub.flow:restorePipeline'])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.flow:tracePipeline'])=0</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<check id="FQ2" name="Clear Pipeline" enabled="true" ignoreFailure="false">
+			<description><![CDATA[The ClearPipeline service should not be used as pipeline variables should be dropped immediately as soon as they are no longer required.  ClearPipeline leads to unnecessary overhead at the pipeline is walked to determine whether to preserve or drop variables, and can have significant impact on performance when a large pipeline is present.  It is recommended to delete these services from the flow and drop variables once they are no longer needed.]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.FlowXMLXpathChecker</class>
+				<parameters>
+					<parameter>count(//INVOKE[@SERVICE='pub.flow:clearPipeline'])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.flow:clearPipeline'])=0</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<check id="FQ3" name="Deprecated Services" enabled="true" ignoreFailure="false">
+			<description><![CDATA[Use of deprecated services is not recommended as these will be dropped from the product in a future release.  Please refer to the built-in-services-guide for replacements to any deprecated services discovered to be in use and modify the flow to remove the deprecated service and update with the recommended alternative.]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.FlowXMLXpathChecker</class>
+				<parameters>
+					<!-- setResponse -->
+					<parameter>count(//INVOKE[@SERVICE='pub.flow:setResponse'])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.flow:setResponse'])=0</parameter>
+					<parameter>count(//INVOKE[@SERVICE='pub.client:soapHTTP'])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.client:soapHTTP'])=0</parameter>
+					<parameter>count(//INVOKE[@SERVICE='pub.client:soapRPC'])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.client:soapRPC'])=0</parameter>
+					<parameter>count(//INVOKE[@SERVICE='pub.event.eda:eventToDocument'])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.event.eda:eventToDocument'])=0</parameter>
+					<parameter>count(//INVOKE[@SERVICE='pub.event.eda:send'])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.event.eda:send'])=0</parameter>
+					<parameter>count(//INVOKE[@SERVICE='pub.publish:syncToBroker'])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.publish:syncToBroker'])=0</parameter>
+					<parameter>count(//INVOKE[@SERVICE='pub.security:setKeyAndChain'])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.security:setKeyAndChain'])=0</parameter>
+					<parameter>count(//INVOKE[@SERVICE='pub.security.pkcs7:sign'])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.security.pkcs7:sign'])=0</parameter>
+					<parameter>count(//INVOKE[@SERVICE='pub.smime:createSignedAndEncryptedData'])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.smime:createSignedAndEncryptedData'])=0</parameter>
+					<parameter>count(//INVOKE[@SERVICE='pub.smime:createSignedData'])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.smime:createSignedData'])=0</parameter>
+					<parameter>count(//INVOKE[@SERVICE='pub.smime:processEncryptedData'])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.smime:processEncryptedData'])=0</parameter>
+					<parameter>count(//INVOKE[@SERVICE='pub.soap.handler:addHeaderElement'])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.soap.handler:addHeaderElement'])=0</parameter>
+					<parameter>count(//INVOKE[@SERVICE='pub.soap.handler:getHeaderElement'])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.soap.handler:getHeaderElement'])=0</parameter>
+					<parameter>count(//INVOKE[@SERVICE='pub.soap.handler:registerConsumer'])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.soap.handler:registerConsumer'])=0</parameter>
+					<parameter>count(//INVOKE[@SERVICE='pub.soap.handler:registerProvider'])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.soap.handler:registerProvider'])=0</parameter>
+					<parameter>count(//INVOKE[@SERVICE='pub.soap.handler:removeHeaderElement'])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.soap.handler:removeHeaderElement'])=0</parameter>
+					<parameter>count(//INVOKE[@SERVICE='pub.soap.processor:list'])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.soap.processor:list'])=0</parameter>
+					<parameter>count(//INVOKE[@SERVICE='pub.soap.processor:processMessage'])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.soap.processor:processMessage'])=0</parameter>
+					<parameter>count(//INVOKE[@SERVICE='pub.soap.processor:processRPCMessage'])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.soap.processor:processRPCMessage'])=0</parameter>
+					<parameter>count(//INVOKE[@SERVICE='pub.soap.processor:registerProcessor'])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.soap.processor:registerProcessor'])=0</parameter>
+					<parameter>count(//INVOKE[@SERVICE='pub.soap.processor:unregisterProcessor'])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.soap.processor:unregisterProcessor'])=0</parameter>
+					<parameter>count(//INVOKE[starts-with(@SERVICE,'pub.pki')])=0</parameter>
+					<parameter>count(//MAPINVOKE[starts-with(@SERVICE,'pub.pki')])=0</parameter>
+					<parameter>count(//INVOKE[starts-with(@SERVICE,'wm.server.pki')])=0</parameter>
+					<parameter>count(//MAPINVOKE[starts-with(@SERVICE,'wm.server.pki')])=0</parameter>
+					<parameter>count(//INVOKE[starts-with(@SERVICE,'pub.vcs')])=0</parameter>
+					<parameter>count(//MAPINVOKE[starts-with(@SERVICE,'pub.vcs')])=0</parameter>
+					<parameter>count(//INVOKE[starts-with(@SERVICE,'wm.server.vcs')])=0</parameter>
+					<parameter>count(//MAPINVOKE[starts-with(@SERVICE,'wm.server.vcs')])=0</parameter>
+					<parameter>count(//INVOKE[starts-with(@SERVICE,'wm.vcs')])=0</parameter>
+					<parameter>count(//MAPINVOKE[starts-with(@SERVICE,'wm.vcs')])=0</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<check id="FQ4" name="Disabled Services" enabled="true" ignoreFailure="false">
+			<description><![CDATA[services should be removed to avoid performance issues as the flow is interpreted during execution.  This also results in smaller, more maintainable flow services which result in a better understanding and lower cost of maintenance.  Recommendation is to delete rather than disable any code no longer needed.]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.FlowXMLXpathChecker</class>
+				<parameters>
+					<parameter>count(//*[@DISABLED='true'])=0</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<check id="FQ5" name="Use of Pub.Storage" enabled="true" ignoreFailure="false">
+			<description><![CDATA[pub.storage services should not be used due to performance issues.  The pub.storage services have an implicit locking model and are not intended to be a high performance all-purpose database.  Where pub.storage services have been used, it is recommended to re-architect these, particularly in high-throughput scenarios.]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.FlowXMLXpathChecker</class>
+				<parameters>
+					<parameter>count(//INVOKE[starts-with(@SERVICE,'pub.storage')])=0</parameter>
+					<parameter>count(//MAPINVOKE[starts-with(@SERVICE,'pub.storage')])=0</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<check id="FQ6" name="Debug Log" enabled="true" ignoreFailure="false">
+			<description><![CDATA[Debug Log services should be removed to avoid performance issues during execution.  Where logging is required, the recommendation is to implement a more general purpose and configurable logging framework to help keep you logs more manageable and separate from product logging]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.FlowXMLXpathChecker</class>
+				<parameters>
+					<parameter>count(//INVOKE[@SERVICE='pub.flow:debugLog'])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.flow:debugLog'])=0</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<check id="FQ7" name="Public Services Try/Catch" enabled="true" ignoreFailure="false">
+			<description><![CDATA[Public services must have a try catch within them to ensure graceful handling of error conditions when these occur.  Public services (or top level services) need to decide how to retry or return the error condition to the consuming application.  Recommendation is to use Sequence nodes to wrap the execution of the public service within a try/catch block and use the catch to handle the error condition.  Try/catch can be achieved with sequence nodes by having a top level sequence with the exit on value set to "SUCCESS" and 2 inner sequences, the try, with the exit on value set to "FAILURE" and the catch, with the exit on value set to "DONE".  It is also recommended to add comments to these sequences to aid understanding so that a developer can identify these are for try/catch usage. ]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.FilteredFlowXMLXpathChecker</class>
+				<parameters>
+					<!--  regular expression with a global variable substitution for the folder prefix
+					      looks for the folder prefix, then anything between, and a 'pub' folder to
+					      discover top-level services.
+					 -->
+					<parameter>^%folder-prefix%\.*\S*\.pub[\.\:]\S*</parameter>
+					<!--  XPath to check for try/catch -->
+					<parameter>count(//SEQUENCE[@EXIT-ON='SUCCESS' and SEQUENCE[@EXIT-ON='FAILURE'] and SEQUENCE[@EXIT-ON='DONE']]) > 0</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<check id="FQ8" name="Connections Package" enabled="true" ignoreFailure="false">
+			<description><![CDATA[All JDBC Adapter connections should be in separate packages, that is a package should not contain connections mixed in with other assets.  This aids deployment of services as this means changes to packages can be deployed without unnecessarily affecting the JDBC Adapter database connections.  Recommendation is to have adapter connections in packages on their own, and not mix these types.]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.ConnectionsChecker</class>
+				<parameters>
+					<!--  Set to true for a connections package or false for a non-connections package -->
+					<parameter>false</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<!-- Timeout checks where needed -->
+		<check id="FQ9" name="FTP Timeout" enabled="true" ignoreFailure="false">
+			<description><![CDATA[Ensure timeout is specified on FTP services.  If no timeout is specified on FTP services, the default timeout value is unlimited, meaning there is a possibility of consuming threads on the Integration Server for a long period of time, especially in the scenario where the FTP server isn't available.  Recommendation is to add a timeout value to the invocation where these services are used.]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.FlowXMLXpathChecker</class>
+				<parameters>
+					<parameter>count(//INVOKE[@SERVICE='pub.client.ftp:login' and not(//@FIELD='/timeout;1;0')])=0</parameter>
+					<parameter>count(//MAPINVOKE[@SERVICE='pub.client.ftp:login' and not(//@FIELD='/timeout;1;0')])=0</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<check id="FQ10" name="Service invoke comments" enabled="true" ignoreFailure="true">
+			<description><![CDATA[Comments should be provided for each service that is invoked from the main service.  This helps to improve code readability and maintainability to help reduce cost of change.  Every service invoke should have a comment value set.]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.FlowXMLXpathChecker</class>
+				<parameters>
+					<parameter>count(//INVOKE[string-length(COMMENT)=0 and not(@DISABLED)])=0</parameter>
+				</parameters>
+				<exclusions>
+					<exclusion>com\.softwareag\.example\.pub\:addNumber</exclusion>
+				</exclusions>
+			</implementation>
+		</check>
+		<check id="FQ11" name="Sequence comments" enabled="true" ignoreFailure="true">
+			<description><![CDATA[Comments should be provided for each sequence node that is used.  This helps to improve code readability and maintainability to help reduce cost of change.  Every sequence node should have a comment value set.]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.FlowXMLXpathChecker</class>
+				<parameters>
+					<parameter>count(//SEQUENCE[string-length(COMMENT)=0 and not(@DISABLED)])=0</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<check id="FQ12" name="Unauthorised Access/Orphaned" enabled="true" ignoreFailure="true">
+			<description><![CDATA[All services within this package should be invoked through a public service.  This rule Identifies any assets within the package that are not used directly or indirectly from a public flow service or DSP file contained within this package, and therefore are either not used, or are called from outside the package breaking the public/private access principle.]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.OrphanedChecker</class>
+				<parameters>
+					<!--  regular expression with a global variable substitution for the folder prefix
+					      looks for the folder prefix, then anything between, and a 'pub' folder to
+					      discover top-level services.
+					 -->
+					<parameter>^%folder-prefix%\.*\S*\.pub[\.\:]\S*</parameter>
+					<!-- Service Invokes -->
+					<parameter>//INVOKE/@SERVICE</parameter>
+					<!-- Map Service invokes -->
+					<parameter>//MAPINVOKE/@SERVICE</parameter>
+					<!-- Documents -->
+					<parameter>//Values//value[@name='rec_ref']</parameter>
+					<!-- Java search term with a single asterisk '*' as a filter -->
+					<parameter>Service.doInvoke(*)</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<check id="FQ13" name="Branch without switch or evaluate labels" enabled="true" ignoreFailure="false">
+			<description><![CDATA[The BRANCH step selects and executes a child step based on the value of one or more variables in the pipeline. You indicate the variables you want to branch on by specifying a switch value or by writing an expression that includes the variables, therefore a branch must have either a switch value or have evaluate labels set to true.]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.FlowXMLXpathChecker</class>
+				<parameters>
+					<parameter>count(//BRANCH[not(@DISABLED)][not(@LABELEXPRESSIONS)][not(@SWITCH)])=0</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<check id="FQ14" name="Branch on expression when child step is without specified label or $null" enabled="true" ignoreFailure="false">
+			<description><![CDATA[If you branch on expressions (Evaluate labels is set to True), you cannot branch on null or empty values. When executing the BRANCH step and evaluating labels, Integration Server ignores target steps with a blank or set to $null label.]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.FlowXMLXpathChecker</class>
+				<parameters>
+					<parameter>count(//BRANCH[not(@DISABLED) and @LABELEXPRESSIONS="true"]/*[not(@DISABLED) and ((not(@NAME) or @NAME='$null') and (not(local-name()='COMMENT')))])=0</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<check id="FQ15" name="Exit Node From Specification" enabled="true" ignoreFailure="false">
+			<description><![CDATA[The EXIT step exits the entire flow service or a single flow step. Specifically, it may exit from the nearest ancestor loop step, a specified ancestor step, the parent step, or the entire flow service.  An exit 'From' value is required to determine where to exit from]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.FlowXMLXpathChecker</class>
+				<parameters>
+					<parameter>count( //EXIT[not(@FROM) or (FROM and @FROM!='')][not(@DISABLED)] )=0</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<check id="FQ16" name="Branch step must have child nodes" enabled="true" ignoreFailure="false">
+			<description><![CDATA[A Branch step in a flow service must have a child node for it to be relevant.  If a branch step has no child nodes it should be deleted]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.FlowXMLXpathChecker</class>
+				<parameters>
+					<parameter>count(//BRANCH[count(./*[local-name()!='COMMENT'])=0])=0</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<check id="FQ17" name="Loop step must have child nodes" enabled="true" ignoreFailure="false">
+			<description><![CDATA[A Loop step in a flow service must have a child node for it to be relevant.  If a loop step has no child nodes it should be deleted]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.FlowXMLXpathChecker</class>
+				<parameters>
+					<parameter>count(//LOOP[count(./*[local-name()!='COMMENT'])=0])=0</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<check id="FQ18" name="Repeat step must have child nodes" enabled="true" ignoreFailure="false">
+			<description><![CDATA[A Repeat step in a flow service must have a child node for it to be relevant.  If a repeat step has no child nodes it should be deleted]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.FlowXMLXpathChecker</class>
+				<parameters>
+					<parameter>count(//RETRY[count(./*[local-name()!='COMMENT'])=0])=0</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<check id="FQ19" name="Sequence step must have child nodes" enabled="true" ignoreFailure="false">
+			<description><![CDATA[A Sequence step in a flow service must have a child node for it to be relevant.  If a sequence step has no child nodes it should be deleted]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.FlowXMLXpathChecker</class>
+				<parameters>
+					<parameter>count(//SEQUENCE[count(./*[local-name()!='COMMENT'])=0])=0</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<check id="FQ20" name="Map steps must have mapped fields" enabled="true" ignoreFailure="false">
+			<description><![CDATA[A Map step in a flow service must have mapped fields.  If a map step has no mapped fields it should be deleted]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.FlowXMLXpathChecker</class>
+				<parameters>
+					<parameter>count(//MAP[@MODE='STANDALONE' and count(./*[local-name()!='COMMENT'])=0])=0</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<check id="FQ21" name="Loop must have an input array provided" enabled="true" ignoreFailure="false">
+			<description><![CDATA[A loop step must have an input array variable provided]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.FlowXMLXpathChecker</class>
+				<parameters>
+					<parameter>count(//LOOP[not(@IN-ARRAY)][not(@DISABLED)])=0</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<check id="FQ22" name="Flow service should not be empty" enabled="true" ignoreFailure="false">
+			<description><![CDATA[A flow service should contain implementation, otherwise it should be removed from the pacakge]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.FlowXMLXpathChecker</class>
+				<parameters>
+					<parameter>count(//FLOW/*[local-name()!='COMMENT' and not(@DISABLED='true')])>0</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<!--
+__________________________________________________________________________________________________________
+
+NAMING STANDARDS CHECKS
+__________________________________________________________________________________________________________
+-->
+		<check id="NS1" name="Naming Standards - Root Folder " enabled="true" ignoreFailure="false">
+			<description><![CDATA[Root Folder should not be the same as the package as this can cause namespace issues should the code need to be refactored or moved to other packages for promotion to common services, inhibiting reusability.  Recommendation is to set a separate prefix folder structure from the package and use this across all packages differentiating below the prefix.  This can be one or two levels deep (but ideally should be no more) and commonly is the inverse domain name of the organisation, e.g. "com.softwareag"]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.NamingStandards</class>
+				<parameters>
+					<parameter>rootfolder</parameter>
+					<parameter>%code.review.pkgname%</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<check id="NS2" name="Naming Standards - Folder " enabled="true" ignoreFailure="false">
+			<description><![CDATA[Folders should only contain lower case ascii characters and digits.  In certain scenarios, use of the underscore character '_' is allowed but should be avoided where possible.]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.NamingStandards</class>
+				<parameters>
+					<parameter>folder</parameter>
+					<parameter>[a-z]{1}[a-z0-9_]*</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<check id="NS3" name="Naming Standards - Folder Prefix" enabled="true" ignoreFailure="false">
+			<description><![CDATA[Ensure that all assets exist within the specified prefix folders.  Recommendation is to set a separate prefix folder structure from the package and use this across all packages differentiating below the prefix.  This can be one or two levels deep (but ideally should be no more) and commonly is the inverse domain name of the organisation, e.g. "com.softwareag".]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.NamingStandards</class>
+				<parameters>
+					<parameter>folder-prefix</parameter>
+					<parameter>%folder-prefix%</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<check id="NS4" name="Naming Standards - Package" enabled="true" ignoreFailure="false">
+			<description><![CDATA[Ensure the package prefix has been specified and package name conforms to standards.  <br/>1. The package name should not end with the word "Package" or "Pkg".  <br/>2. Package names must not be prefixed with "Wm". These usually represent packages distributed by webMethods. <br/>3. Packages should start with an uppercase character and only contain alpha numeric character plus the underscore when absolutely required.. <br/>4. Package Name should start with your provided prefix.  A package prefix aids identification of packages created by the organisation.]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.NamingStandards</class>
+				<parameters>
+					<parameter>package</parameter>
+					<parameter>%code.review.pkgname%</parameter>
+					<parameter>%code.review.pkgprefix%</parameter>
+					<parameter>[A-Z]{1}[a-zA-Z0-9_]*</parameter>
+					<!-- pass a system variable called package.prefix -->
+				</parameters>
+			</implementation>
+		</check>
+		<check id="NS5" name="Naming Standards - Services" enabled="true" ignoreFailure="false">
+			<description><![CDATA[Ensure Services (Flow and Java) conform to naming standards, that is, a service must start with a lower case letter, should be camel case, and contain only alpha numeric characters (with the exception of the generated REST services)]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.NamingStandards</class>
+				<parameters>
+					<parameter>service</parameter>
+					<parameter>_get|_post|_delete|_put|_head|_default|[a-z]{1}[a-zA-Z0-9]*</parameter>
+					<!-- pass a system variable called package.prefix -->
+				</parameters>
+			</implementation>
+		</check>
+		<check id="NS6" name="Naming Standards - Documents" enabled="true" ignoreFailure="false">
+			<description><![CDATA[Ensure Document definition names conform to naming standards.  A document name must start with an upper case letter, should be camel case, and contain only alpha numeric characters and the underscore character when absolutely necessary. Documents generated from XSDs may be named docTypeRef_* and these are catered for in this check.]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.NamingStandards</class>
+				<parameters>
+					<parameter>document</parameter>
+					<parameter>[A-Z]{1}[a-zA-Z0-9_]*|docTypeRef_[a-zA-Z0-9]+_[a-zA-Z0-9]*</parameter>
+					<!-- pass a system variable called package.prefix -->
+				</parameters>
+			</implementation>
+		</check>
+		<check id="NS7" name="Naming Standards - Schemas" enabled="true" ignoreFailure="false">
+			<description><![CDATA[Ensure Schemas definitions conform to naming standards.  A schema must start with an upper case letter, should be camel case, and contain only alpha numeric characters and the underscore character when absolutely necessary.]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.NamingStandards</class>
+				<parameters>
+					<parameter>schema</parameter>
+					<parameter>schema_[A-Z]{1}[a-zA-Z0-9_]*|[A-Z]{1}[a-zA-Z0-9_]*</parameter>
+					<!-- pass a system variable called package.prefix -->
+				</parameters>
+			</implementation>
+		</check>
+		<check id="NS8" name="Naming Standards - FlatFiles" enabled="true" ignoreFailure="false">
+			<description><![CDATA[Ensure Flat File Dictionaries and Schema definitions conform to naming standards.  They must start with an upper case letter, should be camel case, and contain only alpha numeric characters and the underscore character when absolutely necessary.]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.NamingStandards</class>
+				<parameters>
+					<parameter>flatfile</parameter>
+					<parameter>[A-Z]{1}[a-zA-Z0-9_]*</parameter>
+					<!-- pass a system variable called package.prefix -->
+				</parameters>
+			</implementation>
+		</check>
+		<check id="NS9" name="Naming Standards - Blaze" enabled="true" ignoreFailure="false">
+			<description><![CDATA[Ensure Blaze Rules Conform to the Naming Standards.   Blaze rule service names must only contain alpha numeric characters and the underscore when absolutely necessary.]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.NamingStandards</class>
+				<parameters>
+					<parameter>blaze</parameter>
+					<parameter>[a-zA-Z0-9_]*</parameter>
+					<!-- pass a system variable called package.prefix -->
+				</parameters>
+			</implementation>
+		</check>
+		<check id="NS10" name="Naming Standards - XSL" enabled="true" ignoreFailure="false">
+			<description><![CDATA[Ensure XSL Services Conform to the Naming Standards.  XSL service names must start with a lower case letter, should be camel case, and contain only alpha numeric characters]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.NamingStandards</class>
+				<parameters>
+					<parameter>xsl</parameter>
+					<parameter>[a-z]{1}[a-zA-Z0-9_]*</parameter>
+					<!-- pass a system variable called package.prefix -->
+				</parameters>
+			</implementation>
+		</check>
+		<check id="NS11" name="Naming Standards - Adapters" enabled="true" ignoreFailure="false">
+			<description><![CDATA[Ensure Adapter Services Conform to the Naming Standards.  Adapter service names must start with a lower case letter, should be camel case, and contain only alpha numeric characters]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.NamingStandards</class>
+				<parameters>
+					<parameter>adapter</parameter>
+					<parameter>[a-z]{1}[a-zA-Z0-9_]*</parameter>
+					<!-- pass a system variable called package.prefix -->
+				</parameters>
+			</implementation>
+		</check>
+		<check id="NS12" name="Naming Standards - Trigger" enabled="true" ignoreFailure="false">
+			<description><![CDATA[Ensure Triggers Conform to the Naming Standards.  Trigger names must start with a lower case letter, should be camel case, and contain only alpha numeric characters]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.NamingStandards</class>
+				<parameters>
+					<parameter>trigger</parameter>
+					<parameter>[a-z]{1}[a-zA-Z0-9_]*</parameter>
+					<!-- pass a system variable called package.prefix -->
+				</parameters>
+			</implementation>
+		</check>
+		<check id="NS13" name="Naming Standards - WSD" enabled="true" ignoreFailure="false">
+			<description><![CDATA[Ensure WSDs Conform to the Naming Standards.  WSD names must start with a lower case letter, should be camel case, and contain only alpha numeric characters and the underscore character where absolutely necessary]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.NamingStandards</class>
+				<parameters>
+					<parameter>wsd</parameter>
+					<parameter>[a-z]{1}[a-zA-Z0-9_]*</parameter>
+					<!-- pass a system variable called package.prefix -->
+				</parameters>
+			</implementation>
+		</check>
+		<check id="NS14" name="Naming Standards - Connections" enabled="true" ignoreFailure="false">
+			<description><![CDATA[Ensure Connections Conform to the Naming Standards.  Connection names must start with an upper case letter, should be camel case, and contain only alpha numeric characters and the underscore character where absolutely necessary]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.NamingStandards</class>
+				<parameters>
+					<parameter>connection</parameter>
+					<parameter>[A-Z]{1}[a-zA-Z0-9_]*</parameter>
+					<!-- pass a system variable called package.prefix -->
+				</parameters>
+			</implementation>
+		</check>
+		<check id="NS15" name="Naming Standards - Document variable names" enabled="true" ignoreFailure="false">
+			<description><![CDATA[Ensure variable names within document defintions conform to the naming standards.  Variable names in document definitions must start with a lower case letter, should be camel case, and contain only alpha numeric characters.  Caters for documents generated from XSDs where the document name may contain namespace prefix and use of underscore and hyphen present]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.DocumentChecker</class>
+				<parameters>
+					<!--  XPath selector within each document to identify check items -->
+					<parameter>//value[@name="field_name"]</parameter>
+					<!--  RegExp to apply to the items to be checked -->
+					<parameter>[a-z]{1}[a-zA-Z0-9]*|\@[a-z]{1}[a-zA-Z0-9]*|[a-zA-Z0-9]*\:[a-zA-Z]{1}[a-zA-Z0-9_\-]*|_env</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<check id="NS16" name="Naming Standards - Service Signature" enabled="true" ignoreFailure="false">
+			<description><![CDATA[Ensure Input/Output variables in service signatures conform to the naming standards.  Variable names in service signatures must start with a lower case letter, should be camel case, and contain only alpha numeric characters]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.FlowSignatureChecker</class>
+				<parameters>
+					<!--  XPath selector within each document to identify check items -->
+					<parameter>//Values//record[@name='svc_sig']//value[@name='field_name']</parameter>
+					<!--  RegExp to apply to the items to be checked -->
+					<parameter>\$resourceID|\$path|\$httpMethod|flow.inputs|flow.outputs|ProcessData|TaskData|TaskCompletionInfo|TaskQueueInfo|JMSMessage|JMSType|ActionEvent|ChallengeEvent|[a-z]{1}[a-zA-Z0-9]*</parameter>
+				</parameters>
+			</implementation>
+		</check>
+		<!--
+__________________________________________________________________________________________________________
+
+MISC CHECKS
+__________________________________________________________________________________________________________
+-->
+		<check id="MS1" name="Non-Production Services - Package Suffixes" enabled="true" ignoreFailure="false">
+			<description><![CDATA[Ensure packages with specified suffixes are not deployed to production.  This is to ensure that test packages (*_TEST), stub packages (*_STUB)  and development packages (*_DEV) are not deployed incorrectly into production class environments.]]></description>
+			<implementation>
+				<class>com.softwareag.gcs.wm.codereview.operations.NamingStandards</class>
+				<parameters>
+					<parameter>package-suffix</parameter>
+					<parameter>%code.review.pkgname%</parameter>
+					<parameter>_TEST</parameter>
+					<parameter>_STUB</parameter>
+					<parameter>_DEV</parameter>
+					<!-- pass a system variable called package.prefix -->
+				</parameters>
+			</implementation>
+		</check>
+	</checks>
+	<!--
+__________________________________________________________________________________________________________
+
+SENSORS and DECORATORS
+__________________________________________________________________________________________________________
+-->
+	<sensors>
+		<sensor scope="package">
+			<definition sensorName="totals" sensorClass="com.softwareag.gcs.wm.codereview.sensors.TotalsSensor">
+				<decorator name="FlowTotals" class="com.softwareag.gcs.wm.codereview.decorators.SummaryTotals"/>
+			</definition>
+		</sensor>
+		<sensor scope="package">
+			<definition sensorName="CodeLines" sensorClass="com.softwareag.gcs.wm.codereview.sensors.CodeLines">
+				<decorator name="FlowComplexity" class="com.softwareag.gcs.wm.codereview.decorators.FlowComplexity"/>
+				<decorator name="FlowTotals" class="com.softwareag.gcs.wm.codereview.decorators.FlowTotals"/>
+			</definition>
+		</sensor>
+		<sensor scope="review">
+			<definition sensorName="PackageOrder" sensorClass="com.softwareag.gcs.wm.codereview.sensors.PackageOrder">
+			</definition>
+		</sensor>		
+	</sensors>
+</CodeCheckConfiguration>

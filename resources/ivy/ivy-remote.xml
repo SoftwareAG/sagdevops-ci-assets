@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+	<info module="BDA" organisation="com.softwareag.wx.bda" />
+	<dependencies>
+		<dependency org="org.apache.ivy" name="ivy" rev="2.4.0" />
+		<dependency org="org.codehaus.groovy" name="groovy-all"
+			rev="2.4.11" transitive="false" />
+		<dependency org="commons-cli" name="commons-cli" rev="1.4"  transitive="false"/>
+		<dependency org="org.apache.ant" name="ant-launcher" rev="1.10.1"/>
+		<dependency org="com.oopsconsultancy" name="xmltask" rev="1.16"  transitive="false"/>
+		<!-- httpunit and xmlunit are required by WmTestSuite v9.12 -->
+		<dependency org="httpunit" name="httpunit" rev="1.6.2"  transitive="false"/>
+		<dependency org="xmlunit" name="xmlunit" rev="1.0"  transitive="false"/>
+		<dependency org="junit" name="junit" rev="4.8.2"/>
+		<!-- for bda logger -->
+		<dependency org="log4j" name="log4j" rev="1.2.17" conf="default->master" transitive="false">
+			<artifact name="log4j" type="jar" ext="jar" />
+		</dependency>
+		<!-- SAG local jars (type=sag-jar) -->
+		<!-- + ant contrib tasks -->
+		<dependency org="sag.common.lib.ext" name="ant-contrib-1.0b3"
+			rev="1.0b3">
+			<artifact name="ant-contrib-1.0b3" type="sag-jar" ext="jar" />
+		</dependency>
+		<!-- + IntegrationServer core classes -->
+		<dependency org="sag.is.lib" name="wm-isserver" rev="9.12">
+			<artifact name="wm-isserver" type="sag-jar" ext="jar" />
+		</dependency>
+	</dependencies>
+</ivy-module>
