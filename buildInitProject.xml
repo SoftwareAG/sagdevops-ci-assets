@@ -50,6 +50,10 @@
 	<target name="bda.init.ISProjectsDir" unless="isProjectsDir">
 		<property name="isProjectsDir" value="" />
 	</target>
+	
+	<target name="bda.init.ISConfigDir" unless="isConfigDir">
+		<property name="isConfigDir" value="" />
+	</target>
 
 	<target name="bda.init.BPMProjectsDir" unless="bpmProjectsDir">
 		<property name="bpmProjectsDir" value="" />
@@ -106,7 +110,7 @@
 	<target name="bda.init.MandatoryProperties" depends="bda.init.ProjectName,bda.init.buildStorageDir,bda.init.TargetEnv">
 	</target>
 
-	<target name="bda.init.OptionalProperties" depends="bda.init.ReportDir, bda.init.BuildNumber, bda.init.ISProjectsDir, bda.init.BPMProjectsDir,bda.init.MWSProjectsDir,bda.init.RulesProjectsDir,bda.init.UMProjectDir,bda.init.TestPackageNamePattern">
+	<target name="bda.init.OptionalProperties" depends="bda.init.ReportDir, bda.init.BuildNumber, bda.init.ISProjectsDir, bda.init.ISConfigDir, bda.init.BPMProjectsDir,bda.init.MWSProjectsDir,bda.init.RulesProjectsDir,bda.init.UMProjectDir,bda.init.TestPackageNamePattern">
 	</target>
 	
 	<target name="bda.init.taskdefs">
