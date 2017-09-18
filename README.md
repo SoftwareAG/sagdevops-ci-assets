@@ -55,6 +55,11 @@ Whenever a developer checks in new IS packages and Tests those will be automatic
 ## Notice
 The wM Test Suite tests will have to be places in a directory a *setup* directory inside the test project, so that it can be picked up by the test executor.
 
+
+# Authors
+[Henning Waack](mailto:Henning.Waack@softwareag.com)  
+[Angel Tcholtchev](mailto:Angel.tcholtchev@softwareag.com)
+
 ______________________
 These tools are provided as-is and without warranty or support. They do not constitute part of the Software AG product suite. Users are free to use, fork and modify them, subject to the license agreement. While Software AG welcomes contributions, we cannot guarantee to include every contribution in the master project.
 _____________
