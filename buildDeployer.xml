@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!--
     Copyright © 2018 Software AG, Darmstadt, Germany and/or its licensors
     SPDX-License-Identifier: Apache-2.0
@@ -7,7 +8,6 @@
     Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.                                                            
  -->
 
-<?xml version="1.0"?>
 <project name="Deploy" default="deployWM" basedir=".">
      
 	<!-- Global Variables that concern the code and should be changed only if the code is changed -->
